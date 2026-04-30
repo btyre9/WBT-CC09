@@ -1,0 +1,169 @@
+{
+  "meta": {
+    "id": "module-id-here",
+    "title": "[Module Title Here]",
+    "version": "1.0.0",
+    "language": "en-US",
+    "pass_threshold": 80,
+    "vo_start_delay_ms": 1000
+  },
+  "slides": [
+    {
+      "id": "SLD-CC02-001",
+      "title": "Understanding Today's Porsche Customer",
+      "audio_vo": "assets/audio/vo/SLD-CC02-001-INTRO.mp3"
+    },
+    {
+      "id": "SLD-CC02-002",
+      "title": "Know Your Customer",
+      "audio_vo": "assets/audio/vo/SLD-CC02-002-INTRO.mp3"
+    },
+    {
+      "id": "SLD-CC02-003",
+      "title": "Learning Objectives",
+      "audio_vo": "assets/audio/vo/SLD-CC02-003-INTRO.mp3"
+    },
+    {
+      "id": "SLD-CC02-004",
+      "title": "Who Are Porsche Customers?",
+      "audio_vo": "assets/audio/vo/SLD-CC02-004-INTRO.mp3"
+    },
+    {
+      "id": "SLD-CC02-005",
+      "title": "Why People Buy Porsche",
+      "audio_vo": "assets/audio/vo/SLD-CC02-005-INTRO.mp3"
+    },
+    {
+      "id": "SLD-CC02-006",
+      "title": "The Only Brand That Fits All Categories",
+      "audio_vo": "assets/audio/vo/SLD-CC02-006-INTRO.mp3"
+    },
+    {
+      "id": "SLD-CC02-007",
+      "title": "Driven by Dreams",
+      "audio_vo": "assets/audio/vo/SLD-CC02-007-INTRO.mp3"
+    },
+    {
+      "id": "KC-CC02-001",
+      "title": "Knowledge Check",
+      "audio_vo": "assets/audio/vo/KC-CC02-001-INTRO.mp3"
+    },
+    {
+      "id": "KC-CC02-002",
+      "title": "Knowledge Check",
+      "audio_vo": "assets/audio/vo/KC-CC02-002-INTRO.mp3"
+    },
+    {
+      "id": "SLD-CC02-008",
+      "title": "What Porsche Customers Expect",
+      "audio_vo": "assets/audio/vo/SLD-CC02-008-INTRO.mp3"
+    },
+    {
+      "id": "SLD-CC02-009",
+      "title": "Adapting to Different Knowledge Levels",
+      "audio_vo": "assets/audio/vo/SLD-CC02-009-INTRO.mp3"
+    },
+    {
+      "id": "SLD-CC02-010",
+      "title": "Understanding CSI Dimensions",
+      "audio_vo": "assets/audio/vo/SLD-CC02-010-INTRO.mp3"
+    },
+    {
+      "id": "SLD-CC02-011",
+      "title": "Educating Customers Prevents Complaints",
+      "audio_vo": "assets/audio/vo/SLD-CC02-011-INTRO.mp3"
+    },
+    {
+      "id": "KC-CC02-003",
+      "title": "Knowledge Check",
+      "audio_vo": "assets/audio/vo/KC-CC02-003-INTRO.mp3"
+    },
+    {
+      "id": "KC-CC02-004",
+      "title": "Knowledge Check",
+      "audio_vo": "assets/audio/vo/KC-CC02-004-INTRO.mp3"
+    },
+    {
+      "id": "SLD-CC02-012",
+      "title": "Building Professional Trust",
+      "audio_vo": "assets/audio/vo/SLD-CC02-012-INTRO.mp3"
+    },
+    {
+      "id": "SLD-CC02-013",
+      "title": "Understanding Drives Excellence",
+      "audio_vo": "assets/audio/vo/SLD-CC02-013-INTRO.mp3"
+    },
+    {
+      "id": "FQ-CC02-001",
+      "title": "Final Assessment — Question 1",
+      "audio_vo": "assets/audio/vo/FQ-CC02-001-INTRO.mp3"
+    },
+    {
+      "id": "FQ-CC02-002",
+      "title": "Final Assessment — Question 2",
+      "audio_vo": "assets/audio/vo/FQ-CC02-002-INTRO.mp3"
+    },
+    {
+      "id": "FQ-CC02-003",
+      "title": "Final Assessment — Question 3",
+      "audio_vo": "assets/audio/vo/FQ-CC02-003-INTRO.mp3"
+    },
+    {
+      "id": "FQ-CC02-004",
+      "title": "Final Assessment — Question 4",
+      "audio_vo": "assets/audio/vo/FQ-CC02-004-INTRO.mp3"
+    },
+    {
+      "id": "FQ-CC02-005",
+      "title": "Final Assessment — Question 5",
+      "audio_vo": "assets/audio/vo/FQ-CC02-005-INTRO.mp3"
+    },
+    {
+      "id": "FQ-CC02-006",
+      "title": "Final Assessment — Question 6",
+      "audio_vo": "assets/audio/vo/FQ-CC02-006-INTRO.mp3"
+    },
+    {
+      "id": "FQ-CC02-007",
+      "title": "Final Assessment — Question 7",
+      "audio_vo": "assets/audio/vo/FQ-CC02-007-INTRO.mp3"
+    },
+    {
+      "id": "FQ-CC02-008",
+      "title": "Final Assessment — Question 8",
+      "audio_vo": "assets/audio/vo/FQ-CC02-008-INTRO.mp3"
+    },
+    {
+      "id": "FQ-CC02-009",
+      "title": "Final Assessment — Question 9",
+      "audio_vo": "assets/audio/vo/FQ-CC02-009-INTRO.mp3"
+    },
+    {
+      "id": "FQ-CC02-010",
+      "title": "Final Assessment — Question 10",
+      "audio_vo": "assets/audio/vo/FQ-CC02-010-INTRO.mp3"
+    },
+    {
+      "id": "FQ-CC02-SCORE",
+      "title": "Module 2 Results",
+      "audio_vo": "assets/audio/vo/FQ-CC02-SCORE-INTRO.mp3"
+    }
+  ],
+  "quiz": {
+    "final_quiz": {
+      "passing_score": 80,
+      "questions": [
+        "FQ-CC02-001",
+        "FQ-CC02-002",
+        "FQ-CC02-003",
+        "FQ-CC02-004",
+        "FQ-CC02-005",
+        "FQ-CC02-006",
+        "FQ-CC02-007",
+        "FQ-CC02-008",
+        "FQ-CC02-009",
+        "FQ-CC02-010"
+      ]
+    }
+  }
+}

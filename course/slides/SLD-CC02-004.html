@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>Average Household Income Across Automotive Brands</title>
+  <link rel="stylesheet" href="../assets/css/pds-tokens.css">
+  <link rel="stylesheet" href="../assets/css/slide-base.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <script>(function(){function s(){document.documentElement.style.setProperty('--scale',Math.min(window.innerWidth/1920,window.innerHeight/920));}s();window.addEventListener('resize',s);})();</script>
+  <style>
+    /* ── Layout ─────────────────────────────────────────── */
+    .chart-layout {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: var(--pds-slide-pad-y) var(--pds-slide-pad-x);
+      gap: 28px;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    .chart-header {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .chart-title {
+      font-family: var(--pds-font-family);
+      font-size: var(--pds-font-size-2xl);
+      font-weight: var(--pds-font-weight-bold);
+      color: var(--pds-text-primary);
+      line-height: 1.18;
+      max-width: 1360px;
+    }
+    .chart-subtitle {
+      font-family: var(--pds-font-family);
+      font-size: var(--pds-font-size-md);
+      font-weight: var(--pds-font-weight-regular);
+      color: var(--pds-text-secondary);
+    }
+
+    /* ── Main horizontal bar chart ───────────────────────── */
+    .main-chart {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 248px 1fr 228px;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .bar-label {
+      font-family: var(--pds-font-family);
+      font-size: var(--pds-font-size-md);
+      font-weight: var(--pds-font-weight-regular);
+      color: var(--pds-text-secondary);
+      text-align: right;
+      white-space: nowrap;
+    }
+    .bar-label--highlighted {
+      font-weight: var(--pds-font-weight-bold);
+      color: var(--pds-text-primary);
+    }
+
+    .bar-track {
+      height: 52px;
+      border-radius: 0 var(--pds-radius-sm) var(--pds-radius-sm) 0;
+      background: rgba(251, 252, 255, 0.06);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 0 var(--pds-radius-sm) var(--pds-radius-sm) 0;
+      transform: scaleX(0);
+      /* transform-origin set via GSAP */
+    }
+    .bar-fill--highlighted { background: var(--pds-accent); }
+    .bar-fill--default      { background: rgba(251, 252, 255, 0.22); }
+
+    .bar-value {
+      font-family: var(--pds-font-family);
+      font-size: var(--pds-font-size-md);
+      font-weight: var(--pds-font-weight-semibold);
+      color: var(--pds-text-primary);
+      opacity: 0;
+    }
+
+    /* ── Bottom section ──────────────────────────────────── */
+    .bottom-section {
+      flex-shrink: 0;
+      display: flex;
+      align-items: flex-end;
+      gap: 64px;
+      padding-top: 20px;
+      border-top: 1px solid var(--pds-border);
+    }
+
+    .bottom-text {
+      flex-shrink: 0;
+      width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .bottom-text p {
+      font-family: var(--pds-font-family);
+      font-size: var(--pds-font-size-lg);
+      color: var(--pds-text-secondary);
+      line-height: 1.4;
+    }
+    .bottom-text p + p {
+      font-weight: var(--pds-font-weight-semibold);
+      color: var(--pds-text-primary);
+    }
+
+    .mini-chart {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      gap: 36px;
+      height: 120px;
+    }
+
+    .mini-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      height: 100%;
+    }
+
+    .mini-bar-fill {
+      width: 100%;
+      height: 80px;
+      background: rgba(251, 252, 255, 0.22);
+      border-radius: var(--pds-radius-sm) var(--pds-radius-sm) 0 0;
+      transform: scaleY(0);
+      /* transform-origin set via GSAP */
+    }
+
+    .mini-bar-label {
+      font-family: var(--pds-font-family);
+      font-size: var(--pds-font-size-sm);
+      color: var(--pds-text-muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="slide" data-slide-id="SLD-CC02-004">
+  <div class="chart-layout">
+
+    <!-- Header -->
+    <div class="chart-header">
+      <span class="pds-eyebrow">Understanding Today's Porsche Customer</span>
+      <div class="pds-accent-bar"></div>
+      <h2 class="chart-title">Average Household Income Across Major Automotive Brands</h2>
+      <p class="chart-subtitle">Average household income by brand</p>
+    </div>
+
+    <!-- Main horizontal bar chart -->
+    <div class="main-chart">
+
+      <div class="bar-row">
+        <span class="bar-label bar-label--highlighted">Porsche</span>
+        <div class="bar-track">
+          <div class="bar-fill bar-fill--highlighted" style="width:100%;"></div>
+        </div>
+        <span class="bar-value">$630,000+</span>
+      </div>
+
+      <div class="bar-row">
+        <span class="bar-label">Mercedes-Benz</span>
+        <div class="bar-track">
+          <div class="bar-fill bar-fill--default" style="width:82.5%;"></div>
+        </div>
+        <span class="bar-value" style="visibility:hidden;"></span>
+      </div>
+
+      <div class="bar-row">
+        <span class="bar-label">BMW</span>
+        <div class="bar-track">
+          <div class="bar-fill bar-fill--default" style="width:79.4%;"></div>
+        </div>
+        <span class="bar-value" style="visibility:hidden;"></span>
+      </div>
+
+      <div class="bar-row">
+        <span class="bar-label">Audi</span>
+        <div class="bar-track">
+          <div class="bar-fill bar-fill--default" style="width:74.6%;"></div>
+        </div>
+        <span class="bar-value" style="visibility:hidden;"></span>
+      </div>
+
+      <div class="bar-row">
+        <span class="bar-label">Lexus</span>
+        <div class="bar-track">
+          <div class="bar-fill bar-fill--default" style="width:69.8%;"></div>
+        </div>
+        <span class="bar-value" style="visibility:hidden;"></span>
+      </div>
+
+      <div class="bar-row">
+        <span class="bar-label">Tesla</span>
+        <div class="bar-track">
+          <div class="bar-fill bar-fill--default" style="width:63.5%;"></div>
+        </div>
+        <span class="bar-value" style="visibility:hidden;"></span>
+      </div>
+
+    </div>
+
+    <!-- Bottom section -->
+    <div class="bottom-section">
+      <div class="bottom-text">
+        <p>Average household income profile</p>
+        <p>is consistent across Porsche</p>
+      </div>
+      <div class="mini-chart">
+        <div class="mini-col">
+          <div class="mini-bar-fill"></div>
+          <span class="mini-bar-label">911</span>
+        </div>
+        <div class="mini-col">
+          <div class="mini-bar-fill"></div>
+          <span class="mini-bar-label">Cayenne</span>
+        </div>
+        <div class="mini-col">
+          <div class="mini-bar-fill"></div>
+          <span class="mini-bar-label">Macan</span>
+        </div>
+        <div class="mini-col">
+          <div class="mini-bar-fill"></div>
+          <span class="mini-bar-label">Taycan</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../assets/vendor/gsap/gsap.min.js"></script>
+<script src="../assets/vendor/porsche-components.js"></script>
+<script>
+/* ── SandboxRuntime shim ─────────────────────────────────────────────────── */
+var SandboxRuntime = (function () {
+  var CR = (function () {
+    try { return window.parent && window.parent.CourseRuntime ? window.parent.CourseRuntime : null; }
+    catch (_) { return null; }
+  })();
+
+  function makeFakeVO() {
+    var listeners = {};
+    var obj = {
+      currentTime: 0,
+      _wasPlaying: false,
+      addEventListener: function (e, f) { (listeners[e] = listeners[e] || []).push(f); },
+      removeEventListener: function (e, f) {
+        if (listeners[e]) listeners[e] = listeners[e].filter(function (g) { return g !== f; });
+      },
+      _fire: function (e) { (listeners[e] || []).forEach(function (f) { f(); }); },
+      play: function () { return Promise.resolve(); }
+    };
+    (function poll() {
+      requestAnimationFrame(function () {
+        if (CR) {
+          obj.currentTime = CR.getAudioCurrentTime ? CR.getAudioCurrentTime() : 0;
+          var p = CR.isAudioPlaying ? CR.isAudioPlaying() : false;
+          if (!obj._wasPlaying && p) obj._wasPlaying = true;
+          if (obj._wasPlaying && !p && obj.currentTime > 0) {
+            obj._wasPlaying = false;
+            obj._fire('ended');
+          }
+          obj._fire('timeupdate');
+        }
+        poll();
+      });
+    })();
+    return obj;
+  }
+
+  function makeInteraction() {
+    return {
+      src: '',
+      play: function () {
+        if (CR && CR.playInteractionAudio) {
+          CR.playInteractionAudio({ src: this.src });
+        } else {
+          var a = new Audio(this.src);
+          a.play().catch(function () {});
+        }
+        return Promise.resolve();
+      }
+    };
+  }
+
+  window.addEventListener('message', function (e) {
+    if (!e.data || e.data.type !== 'player-play-state') return;
+    var s = document.querySelector('.slide');
+    if (s) s.classList.toggle('is-paused', e.data.state === 'paused');
+  });
+
+  return { voAudio: makeFakeVO(), interactionAudio: makeInteraction() };
+})();
+
+/* ── Chart animation ─────────────────────────────────────────────────────── */
+(function () {
+  var tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+  /* 1 — Header elements stagger in */
+  tl.from('.pds-eyebrow',    { y: 22, opacity: 0, duration: 0.45 }, 0);
+  tl.from('.pds-accent-bar', { width: 0, opacity: 0, duration: 0.5, ease: 'power2.inOut' }, 0.1);
+  tl.from('.chart-title',    { y: 26, opacity: 0, duration: 0.55 }, 0.2);
+  tl.from('.chart-subtitle', { y: 18, opacity: 0, duration: 0.4  }, 0.32);
+
+  /* 2 — Bars grow left-to-right with stagger (CSS starts them at scaleX 0) */
+  tl.to('.bar-fill', {
+    scaleX: 1,
+    transformOrigin: 'left center',
+    duration: 0.7,
+    stagger: 0.1
+  }, 0.5);
+
+  /* 3 — Porsche value label fades in after its bar completes */
+  tl.to('.bar-value', { opacity: 1, duration: 0.35 }, 1.05);
+
+  /* 4 — Bottom section fades up */
+  tl.from('.bottom-section', { y: 18, opacity: 0, duration: 0.5 }, 1.2);
+
+  /* 5 — Mini bars grow upward with stagger */
+  tl.to('.mini-bar-fill', {
+    scaleY: 1,
+    transformOrigin: 'bottom center',
+    duration: 0.45,
+    stagger: 0.08
+  }, 1.3);
+
+  /* Trigger "Click Next" audio cue after VO ends */
+  SandboxRuntime.voAudio.addEventListener('ended', function () {
+    SandboxRuntime.interactionAudio.src = '../assets/audio/vo/Click_Next.mp3';
+    SandboxRuntime.interactionAudio.play();
+  });
+})();
+</script>
+
+</body>
+</html>
