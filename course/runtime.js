@@ -247,9 +247,7 @@
 
   function isModuleFirstSlide(slide) {
     if (!slide) return false;
-    var id = String(slide.id || "");
-    // Underscore naming: SLD_CC01_001 | Hyphen naming: SLD-CC01-001 | Legacy: slide-CC01_SLD_001
-    return /^SLD[_-][A-Z]{2}\d{2}[_-]001$/.test(id) || /_SLD_001$/.test(id);
+    return String(slide.id || "") === "1S01";
   }
 
   function updateNavButtons() {
@@ -264,13 +262,11 @@
     if (slide.audio_vo) return slide.audio_vo;
 
     var id = String(slide.id || "");
-    // Underscore naming: SLD_CC01_001 → SLD_CC01_001_INTRO.mp3
-    if (/^SLD_[A-Z]{2}\d{2}_\d{3}$/.test(id)) return "assets/audio/vo/" + id + "_INTRO.mp3";
-    // Hyphen naming: SLD-CC01-001
-    if (/^SLD-[A-Z]{2}\d{2}-\d{3}$/.test(id)) return "assets/audio/vo/" + id + ".mp3";
-    // Legacy naming: slide-CC01_SLD_001
-    var m = id.match(/^slide-([A-Z]{2}\d{2}_SLD_\d{3})$/);
-    if (m) return "assets/audio/vo/" + m[1] + ".mp3";
+    // Standard slides (1S01–1S50), KC slides (2KC01–2KC04), and quiz score (3FQ-SCORE) have INTRO VO.
+    // Final quiz question slides (3FQ01–3FQ10) are silent — no VO.
+    if (/^1S\d{2}$/.test(id) || /^2KC\d{2}$/.test(id) || id === "3FQ-SCORE") {
+      return "assets/audio/vo/" + id + "-INTRO.mp3";
+    }
     return "";
   }
 
@@ -288,23 +284,8 @@
 
   function resolveInteractionMapCandidates(slideId) {
     var id = String(slideId || "");
-    var names = [];
-    if (id) names.push(id + ".json");
-
-    var sldMatch = id.match(/^slide-([A-Z]{2}\d{2}_SLD_(\d{3}))$/);
-    if (sldMatch) {
-      var code = sldMatch[1];
-      var num3 = sldMatch[2];
-      var num = Number(num3);
-      names.push(code + ".json");
-      if (Number.isFinite(num)) {
-        var num2 = ("0" + String(num)).slice(-2);
-        names.push("slide-" + num2 + ".json");
-      }
-      names.push("slide-" + num3 + ".json");
-    }
-
-    return uniqueStrings(names);
+    if (!id) return [];
+    return [id + ".json"];
   }
 
   function toAssetAudioUrl(src) {
@@ -364,7 +345,7 @@
   }
 
   function isKCSlide(id) {
-    return /^KC[_-]/.test(String(id || ""));
+    return /^2KC/.test(String(id || ""));
   }
 
   function setAudioStartOverlayVisible(visible) {
@@ -538,7 +519,7 @@
     var slides = state.data && state.data.slides || [];
     var curSlide = slides[state.slideIndex];
     var isLastSlide = state.slideIndex >= slides.length - 1;
-    if (curSlide && /^SLD_/.test(curSlide.id) && !isLastSlide) {
+    if (curSlide && /^1S/.test(curSlide.id) && !isLastSlide) {
       playSfx("clickNext");
     }
   }
@@ -680,7 +661,7 @@
   }
 
   function isFQSlide(id) {
-    return /^FQ[_-]/.test(String(id || ""));
+    return /^3FQ/.test(String(id || ""));
   }
 
   function renderToc() {
@@ -1129,28 +1110,8 @@
 
   function resolveCaptionCandidates(slideId) {
     var id = String(slideId || "");
-    var names = [];
-
-    if (id) {
-      names.push(id + "_INTRO.vtt");
-      names.push(id + ".vtt");
-    }
-
-    var sldMatch = id.match(/^slide-([A-Z]{2}\d{2}_SLD_(\d{3}))$/);
-    if (sldMatch) {
-      var code = sldMatch[1];
-      var num3 = sldMatch[2];
-      var num = Number(num3);
-
-      names.push(code + ".vtt");
-      if (Number.isFinite(num)) {
-        var num2 = ("0" + String(num)).slice(-2);
-        names.push("slide-" + num2 + ".vtt");
-      }
-      names.push("slide-" + num3 + ".vtt");
-    }
-
-    return uniqueCaptionCandidates(names);
+    if (!id) return [];
+    return [id + "-INTRO.vtt", id + ".vtt"];
   }
 
   function syncCaptionToAudioTime() {
@@ -1493,30 +1454,8 @@
 
   function resolveCueCandidates(slideId) {
     var id = String(slideId || "");
-    var names = [];
-    if (id) names.push(id + ".json");
-
-    var sldMatch = id.match(/^slide-([A-Z]{2}\d{2}_SLD_(\d{3}))$/);
-    if (sldMatch) {
-      var code = sldMatch[1];
-      var num3 = sldMatch[2];
-      var num = Number(num3);
-      names.push(code + ".json");
-      if (Number.isFinite(num)) {
-        var num2 = ("0" + String(num)).slice(-2);
-        names.push("slide-" + num2 + ".json");
-      }
-      names.push("slide-" + num3 + ".json");
-    }
-
-    var out = [];
-    var seen = {};
-    for (var i = 0; i < names.length; i += 1) {
-      if (!names[i] || seen[names[i]]) continue;
-      seen[names[i]] = true;
-      out.push(names[i]);
-    }
-    return out;
+    if (!id) return [];
+    return [id + ".json"];
   }
 
   function setCueEditorSlide(slideId) {
@@ -1763,7 +1702,7 @@
           updateNavButtons();
           break;
         case "sandbox-swap-audio":
-          // Slide requests a mid-slide audio swap (e.g. SLD-CC01-008 part 2).
+          // Slide requests a mid-slide audio swap (e.g. a split-explore slide part 2).
           // Replace state.audio so the player's progress bar / play / speed all work.
           if (e.data.src) {
             if (state.audio) {

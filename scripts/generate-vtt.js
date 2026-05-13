@@ -3,7 +3,7 @@
  * generate-vtt.js
  * Generates WebVTT caption files — one per VO audio clip.
  *
- * Standalone:  node scripts/generate-vtt.js [--whisper] [--key sk-...] [--clip SLD-CC01-001-INTRO]
+ * Standalone:  node scripts/generate-vtt.js [--whisper] [--key sk-...] [--clip 1S01-INTRO]
  * As module:   const { generateVtts } = require('./generate-vtt')
  *              await generateVtts(segments, { outputDir, audioDir, durationSec })
  *
@@ -11,8 +11,8 @@
  *   Placeholder (default) — one cue spanning the full duration, text from VoiceoverText
  *   Whisper (--whisper)   — real word-level transcription via OpenAI Whisper API
  *
- * Segment format: { fileName: 'SLD-CC01-004-CLICK-Appearance.mp3', text: 'Your appearance...' }
- * VTT output:     SLD-CC01-004-CLICK-Appearance.vtt  (mirrors the audio filename)
+ * Segment format: { fileName: '1S04-CLICK-Appearance.mp3', text: 'Your appearance...' }
+ * VTT output:     1S04-CLICK-Appearance.vtt  (mirrors the audio filename)
  *
  * Flags:
  *   --whisper         Use OpenAI Whisper API

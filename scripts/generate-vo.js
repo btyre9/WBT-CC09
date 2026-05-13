@@ -8,7 +8,7 @@
  *   node scripts/generate-vo.js [--manifest storyboard/vo_manifest.csv]
  *                               [--key <wellsaid-api-key>]
  *                               [--speaker <avatar-id>]
- *                               [--clip SLD-CC01-004-CLICK-Appearance]
+ *                               [--clip 1S04-CLICK-Appearance]
  *                               [--force]
  *                               [--delay <ms>]
  *
@@ -31,16 +31,13 @@
  *   on-screen text always shows the correct spelling.
  *
  * VO scope:
- *   Only SLD (slide) clips get voiceover. Knowledge checks (KC-) and final quiz (FQ-)
- *   slides do not use VO — exclude them from the manifest or they will be skipped anyway
- *   if their FileName prefix is filtered upstream.
+ *   Standard slides (1S) and KC slides (2KC) get voiceover. Final quiz question slides
+ *   (3FQ01–3FQ10) are silent. The quiz score slide (3FQ-SCORE) has VO.
  *
  * File naming convention:
- *   Use underscores for spaces within a name segment, PascalCase for multi-word labels.
- *   Hyphens are reserved as structural separators between ID parts.
- *   Example:  SLD-CC02-007-CLICK-PioneeringTradition.mp3   ✓
- *             SLD-CC02-007-CLICK-Pioneering_Tradition.mp3  ✓  (if label has a space)
- *             SLD-CC02-007-CLICK-Pioneering-Tradition.mp3  ✗  (ambiguous separator)
+ *   <SlideID>-<TRIGGER>[-Label].mp3  — hyphens throughout, PascalCase labels.
+ *   Example:  1S04-CLICK-PioneeringTradition.mp3   ✓
+ *             1S04-CLICK-Pioneering-Tradition.mp3  ✗  (ambiguous — use PascalCase)
  *
  * Each generated file is saved as: course/assets/audio/vo/{FileName}
  * Matching VTT is saved as:        course/assets/captions/{FileName minus .mp3}.vtt

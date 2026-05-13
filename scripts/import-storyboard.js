@@ -18,10 +18,10 @@
  * Storyboard format — plain Key: Value paragraphs under Heading 2 slide headings:
  *
  *   ## Slide 01 — Title Slide
- *   Slide-ID: SLD_CC01_001
+ *   Slide-ID: 1S01
  *   Template-ID: hero-title
  *   Voiceover-INTRO: As a Porsche technician...
- *   >> When user clicks Appearance card → SLD_CC01_001_CLICK_Appearance.mp3
+ *   >> When user clicks Appearance card → 1S01-CLICK-Appearance.mp3
  *   Voiceover-CLICK-Appearance: Your professional appearance...
  *
  * Lines starting with >> are stage direction annotations — displayed in the doc,
@@ -33,9 +33,9 @@
  *   Voiceover-TAB-<Label>        — plays when a tab / accordion is revealed
  *   Voiceover-STEP-<N>           — plays at step N in a sequence
  *
- * Generated VO file name pattern (underscore convention):
- *   SLD_<CourseID>_<SlideNum>_<TriggerType>[_<Label>].mp3
- *   e.g. SLD_CC01_001_INTRO.mp3 | SLD_CC01_004_CLICK_Appearance.mp3
+ * Generated VO file name pattern (hyphen convention, no course code):
+ *   <SlideID>-<TriggerType>[-<Label>].mp3
+ *   e.g. 1S01-INTRO.mp3 | 1S04-CLICK-Appearance.mp3 | 3FQ-SCORE-INTRO.mp3
  */
 
 'use strict';
@@ -64,7 +64,7 @@ const PREFERRED_KEY_ORDER = [
   'Subtitle', 'Notes', 'Status',
 ];
 
-const MANIFEST_FIELDS = ['FileName', 'SlideID', 'CourseID', 'TriggerType', 'Label', 'VoiceoverText'];
+const MANIFEST_FIELDS = ['FileName', 'SlideID', 'TriggerType', 'Label', 'VoiceoverText'];
 
 // ---------------------------------------------------------------------------
 // Key normalisation
@@ -287,7 +287,7 @@ function parseLines(lines) {
   if (!courseTitle) courseTitle = 'Untitled Course';
 
   slides.forEach((slide, idx) => {
-    slide['Slide-ID']    = slide['Slide-ID']    || `slide_${String(idx + 1).padStart(2, '0')}`;
+    slide['Slide-ID']    = slide['Slide-ID']    || `1S${String(idx + 1).padStart(2, '0')}`;
     slide['Template-ID'] = slide['Template-ID'] || 'content-standard';
     slide['Slide-Title'] = slide['Slide-Title'] || slide.section_heading || `Slide ${idx + 1}`;
   });
@@ -299,28 +299,12 @@ function parseLines(lines) {
 // VO segment extraction
 // ---------------------------------------------------------------------------
 
-function parseSlideIdParts(slideId) {
-  const upper = slideId.trim().toUpperCase();
-  // Underscore format: SLD_CC01_001, KC_CC01_001, FQ_CC01_001
-  const us = upper.match(/^([A-Z]+)_([A-Z]{2}\d+)_(\d+)$/);
-  if (us) return { prefix: us[1], courseId: us[2], slideNum: us[3].padStart(3, '0') };
-  // Hyphen format (legacy): SLD-CC01-001
-  const hy = upper.match(/^([A-Z]+)-([A-Z]{2}\d+)-(\d+)$/);
-  if (hy) return { prefix: hy[1], courseId: hy[2], slideNum: hy[3].padStart(3, '0') };
-  // Bare course+num: CC01_001
-  const bare = upper.match(/^([A-Z]{2}\d+)[_-](\d+)$/);
-  if (bare) return { prefix: 'SLD', courseId: bare[1], slideNum: bare[2].padStart(3, '0') };
-  // Numeric only
-  const mNum = upper.match(/^(\d+)$/);
-  if (mNum) return { prefix: 'SLD', courseId: 'COURSE', slideNum: mNum[1].padStart(3, '0') };
-  return { prefix: 'SLD', courseId: upper, slideNum: '000' };
+function buildFileName(slideId, triggerType, label) {
+  return slideId + '-' + triggerType + (label ? '-' + label : '') + '.mp3';
 }
 
-function buildFileName(prefix, courseId, slideNum, triggerType, label) {
-  return [prefix, courseId, slideNum, triggerType, ...(label ? [label] : [])].join('_') + '.mp3';
-}
-
-function extractVoSegments(slide, prefix, courseId, slideNum) {
+function extractVoSegments(slide) {
+  const slideId     = slide['Slide-ID'] || 'UNKNOWN';
   const triggerOrder = { INTRO: 0, CLICK: 1, TAB: 2, STEP: 3 };
   const segments = [];
 
@@ -329,8 +313,8 @@ function extractVoSegments(slide, prefix, courseId, slideNum) {
 
     if (key === 'Voiceover') {
       segments.push({
-        FileName: buildFileName(prefix, courseId, slideNum, 'INTRO', ''),
-        SlideID: slide['Slide-ID'], CourseID: courseId,
+        FileName: buildFileName(slideId, 'INTRO', ''),
+        SlideID: slideId,
         TriggerType: 'INTRO', Label: '', VoiceoverText: value.trim(),
       });
       continue;
@@ -349,8 +333,8 @@ function extractVoSegments(slide, prefix, courseId, slideNum) {
     if (triggerType === 'STEP' && /^\d+$/.test(label)) label = label.padStart(2, '0');
 
     segments.push({
-      FileName: buildFileName(prefix, courseId, slideNum, triggerType, label),
-      SlideID: slide['Slide-ID'], CourseID: courseId,
+      FileName: buildFileName(slideId, triggerType, label),
+      SlideID: slideId,
       TriggerType: triggerType, Label: label, VoiceoverText: value.trim(),
     });
   }
@@ -420,7 +404,6 @@ function parseArgs(argv) {
     tts:         path.join('course', 'data', 'tts_script.csv'),
     captions:    path.join('course', 'assets', 'captions'),
     audioDir:    path.join('course', 'assets', 'audio', 'vo'),
-    courseId:    null,
     duration:    5.0,
     wellsaid:    false,
     wsKey:       process.env.WELLSAID_API_KEY    || null,
@@ -434,7 +417,6 @@ function parseArgs(argv) {
     if (argv[i] === '--tts')         args.tts       = argv[++i];
     if (argv[i] === '--captions')    args.captions  = argv[++i];
     if (argv[i] === '--audio-dir')   args.audioDir  = argv[++i];
-    if (argv[i] === '--course-id')   args.courseId  = argv[++i];
     if (argv[i] === '--duration')    args.duration  = parseFloat(argv[++i]) || 5.0;
     if (argv[i] === '--wellsaid')    args.wellsaid  = true;
     if (argv[i] === '--ws-key')      args.wsKey     = argv[++i];
@@ -494,19 +476,7 @@ async function main() {
   // ── 3. Build VO manifest ──────────────────────────────────────────────────
   const allSegments = [];
   for (const slide of slides) {
-    const slideId = slide['Slide-ID'] || 'slide-00';
-    let prefix, courseId, slideNum;
-
-    if (args.courseId) {
-      prefix   = 'SLD';
-      courseId = args.courseId.toUpperCase();
-      const m  = slideId.match(/(\d+)$/);
-      slideNum = m ? m[1].padStart(3, '0') : '000';
-    } else {
-      ({ prefix, courseId, slideNum } = parseSlideIdParts(slideId));
-    }
-
-    allSegments.push(...extractVoSegments(slide, prefix, courseId, slideNum));
+    allSegments.push(...extractVoSegments(slide));
   }
 
   fs.mkdirSync(path.dirname(args.manifest), { recursive: true });

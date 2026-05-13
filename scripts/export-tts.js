@@ -12,7 +12,7 @@
  * Output: CSV  FileName, VoiceoverText  (pronunciation-corrected)
  *
  * The output CSV is what gets sent to WellSaid (or any TTS service).
- * FileName is the target audio filename — e.g. SLD-CC01-004-CLICK-Appearance.mp3
+ * FileName is the target audio filename — e.g. 1S04-CLICK-Appearance.mp3
  */
 
 'use strict';
