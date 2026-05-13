@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/ALIBI8I/.claude/projects/g--My-Drive-00-Projects-Porsche-WBT-Template/memory/**)",
+      "Read(//g/My Drive/00-Projects/CC02/output/**)",
+      "Read(//g/My Drive/00-Projects/CC02/**)",
+      "Read(//g/My Drive/00-Projects/**)",
+      "Bash(awk '{print $NF}')",
+      "Bash(grep -v \"^\\\\.\\\\|^$\")",
+      "Bash(git ls-tree *)",
+      "Bash(awk -F/ '{print $1}')",
+      "Bash(git rm *)",
+      "Bash(cd /Users/home/Documents/Porsche-WBT-Template *)",
+      "Bash(grep -nE \"SLD[-_]CC|KC[-_]CC|FQ[-_]CC|_INTRO\\\\.mp3|_CLICK_|CC\\\\\\\\\\\\\\\\d.{1,4}_S\" course/runtime.js)",
+      "Bash(git add *)"
+    ],
+    "additionalDirectories": [
+      "G:\\My Drive\\00-Projects\\CC02\\course\\assets\\vendor",
+      "\\tmp",
+      "G:\\My Drive\\00-Projects\\CC02\\course\\assets\\mgfx",
+      "/Users/home/Documents/Porsche-WBT-Template/course/assets/captions"
+    ]
+  }
+}

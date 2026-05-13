@@ -8,17 +8,17 @@ How to use: Each slide starts with a "Slide XX" heading. Fields follow in Key: V
 Lines starting with >> are stage direction annotations — ignored by the parser.
 Run `npm run import-storyboard -- --docx storyboard/[ModuleName]-Storyboard.docx` to parse into the course.
 
-File naming convention: underscores only — SLD_XX01_001, not SLD-XX01-001.
+File naming convention: underscores only — 01, not SLD-XX01-001.
 
 ---
 
 ## Slide 01 — Title Slide
 
-Slide-ID: SLD_XX01_001
+Slide-ID: 01
 Template-ID: hero-title
 Slide-Title: [Module Title Here]
 On-Screen-Text: [Module Title] | [Series Name] | [Organization]
->> On slide load → SLD_XX01_001_INTRO.mp3
+>> On slide load → 1S01-INTRO.mp3
 Voiceover-INTRO: [Welcome VO introducing the module, its purpose, and what the learner will gain.]
 Caption-Text: [First sentence of the VO — used as closed caption text.]
 Image: [Art direction: describe the ideal hero image — subject, mood, composition, setting. This will be used to source or generate the asset.]
@@ -29,11 +29,11 @@ Notes: Full-bleed hero image. Title fades in at 0.5s.
 
 ## Slide 02 — Learning Objectives
 
-Slide-ID: SLD_XX01_002
+Slide-ID: 02
 Template-ID: objectives
 Slide-Title: Learning Objectives
 On-Screen-Text: Module [N] Learning Objectives
->> On slide load → SLD_XX01_002_INTRO.mp3
+>> On slide load → 1S02-INTRO.mp3
 Voiceover-INTRO: [VO listing each learning objective. Each objective should be mentioned explicitly so the slide animations can sync to the audio.]
 Caption-Text: [Summary caption for this slide.]
 Status: Draft
@@ -43,11 +43,11 @@ Notes: Each objective fades in sequentially as mentioned in VO. All objectives m
 
 ## Slide 03 — Content Slide (with Stat)
 
-Slide-ID: SLD_XX01_003
+Slide-ID: 03
 Template-ID: content-stat
 Slide-Title: [Section Heading]
 On-Screen-Text: [Key statistic or pull quote that appears visually on the slide]
->> On slide load → SLD_XX01_003_INTRO.mp3
+>> On slide load → 1S03-INTRO.mp3
 Voiceover-INTRO: [VO explaining the section content. Reference the on-screen stat/quote in the audio.]
 Caption-Text: [First sentence or key phrase from the VO.]
 Image: [Art direction for slide image.]
@@ -58,17 +58,17 @@ Notes: Stat figure should be visually prominent. Content reveals in sections.
 
 ## Slide 04 — Card Explore (Interactive)
 
-Slide-ID: SLD_XX01_004
+Slide-ID: 04
 Template-ID: card-explore
 Slide-Title: [Section Heading]
 On-Screen-Text: [Instruction text displayed on slide, e.g. "Click each card to explore."]
->> On slide load → SLD_XX01_004_INTRO.mp3
+>> On slide load → 1S04-INTRO.mp3
 Voiceover-INTRO: [INTRO VO — sets up the topic and instructs learner to click cards.]
->> User clicks [Card 1 Label] → SLD_XX01_004_CLICK_CardOne.mp3
+>> User clicks [Card 1 Label] → 1S04-CLICK-CardOne.mp3
 Voiceover-CLICK-CardOne: [VO that plays when learner clicks Card 1.]
->> User clicks [Card 2 Label] → SLD_XX01_004_CLICK_CardTwo.mp3
+>> User clicks [Card 2 Label] → 1S04-CLICK-CardTwo.mp3
 Voiceover-CLICK-CardTwo: [VO that plays when learner clicks Card 2.]
->> User clicks [Card 3 Label] → SLD_XX01_004_CLICK_CardThree.mp3
+>> User clicks [Card 3 Label] → 1S04-CLICK-CardThree.mp3
 Voiceover-CLICK-CardThree: [VO that plays when learner clicks Card 3.]
 Caption-Text: [Caption for the slide — usually summarizes the INTRO VO.]
 Image: [Art direction for slide background image.]
@@ -79,10 +79,10 @@ Notes: Cards locked until INTRO VO ends. All cards must be clicked to unlock Nex
 
 ## Slide 05 — Knowledge Check
 
-Slide-ID: KC_XX01_001
+Slide-ID: 01
 Template-ID: knowledge-check
 Slide-Title: Knowledge Check
->> On slide load → KC_XX01_001_INTRO.mp3
+>> On slide load → 2KC01-INTRO.mp3
 Voiceover-INTRO: Let's check your understanding. Select the best answer.
 Question: [The knowledge check question text.]
 Choice-1: [First answer option]
@@ -90,7 +90,7 @@ Choice-2: [Second answer option]
 Choice-3: [Third answer option]
 Choice-4: [Fourth answer option]
 Correct-Answer: [Number of correct choice — e.g. 2]
-Review-Slide: SLD_XX01_003
+Review-Slide: 03
 Caption-Text: Let's check your understanding.
 Status: Draft
 Notes: Wrong answer → "Back to Review" button → returns to Review-Slide. Correct answer unlocks Next.
@@ -99,10 +99,10 @@ Notes: Wrong answer → "Back to Review" button → returns to Review-Slide. Cor
 
 ## Slide 06 — Final Quiz Question 1
 
-Slide-ID: FQ_XX01_001
+Slide-ID: 01
 Template-ID: final-quiz
 Slide-Title: Final Assessment — Question 1
->> On slide load → FQ_XX01_001_INTRO.mp3
+>> On slide load → 3FQ01-INTRO.mp3
 Voiceover-INTRO: Question one. Choose the best answer.
 Question: [Quiz question text.]
 Choice-1: [First answer option]
@@ -118,7 +118,7 @@ Notes: Part of final assessment. Pass threshold: 80%. Score reported to SCORM.
 
 ## Slide 07 — Quiz Score
 
-Slide-ID: FQ_XX01_SCORE
+Slide-ID: 3FQ-SCORE
 Template-ID: quiz-score
 Slide-Title: Module Results
 On-Screen-Text: Module [N] Complete
@@ -129,7 +129,7 @@ Notes: Pass threshold: 80%. Pass state: congratulations + continue. Fail state: 
 
 ## Field Reference
 
-Slide-ID: Unique slide identifier — SLD_XX01_001, KC_XX01_001, FQ_XX01_001. Use underscores only.
+Slide-ID: Unique slide identifier — 01, 01, 01. Use underscores only.
 Template-ID: Slide layout — hero-title, objectives, content-bullets, content-stat, content-quote, content-split, card-explore, split-explore, video-bg, closing, knowledge-check, final-quiz, quiz-score
 Slide-Title: Display title shown in course menu
 >> Stage direction lines (starting with >>) are ignored by the parser — show clip triggers and filenames
@@ -146,6 +146,6 @@ Video-File: (Production) Actual filename once the video has been sourced — e.g
 Question: (KC / FQ only) The question text
 Choice-1 … Choice-4: (KC / FQ only) Answer choices
 Correct-Answer: (KC / FQ only) Number of the correct choice — e.g. 2
-Review-Slide: (KC only) Slide ID to return to on wrong answer — e.g. SLD_XX01_003
+Review-Slide: (KC only) Slide ID to return to on wrong answer — e.g. 03
 Status: Authoring status — Draft, In Review, or Approved
 Notes: Developer / production notes — not parsed into course data

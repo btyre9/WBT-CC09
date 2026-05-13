@@ -85,7 +85,7 @@ When a slide sends `sandbox-swap-audio` (mid-slide audio change), the runtime re
 // In the slide — add endCue to the swap message:
 window.parent.postMessage({
   type:   'sandbox-swap-audio',
-  src:    'assets/audio/vo/SLD-CC01-008-2.mp3',
+  src:    'assets/audio/vo/1S08-2.mp3',
   endCue: '../assets/audio/vo/Click_The_Next_Button_To_Continue.mp3'
 }, '*');
 
@@ -112,13 +112,13 @@ SandboxRuntime.voAudio.addEventListener('ended', function () {
 
 ### 3b. Mid-slide audio swap (two-part VO slides)
 
-Used on slides like SLD-CC01-008 where part 2 audio starts only after a user interaction.
+Used on slides like 1S08 where part 2 audio starts only after a user interaction.
 
 ```javascript
 window.parent.postMessage({ type: 'sandbox-lock-next' }, '*');
 window.parent.postMessage({
   type:   'sandbox-swap-audio',
-  src:    'assets/audio/vo/SLD-CC01-008-2.mp3',   // relative to player page
+  src:    'assets/audio/vo/1S08-2.mp3',   // relative to player page
   endCue: '../assets/audio/vo/Click_The_Next_Button_To_Continue.mp3'
 }, '*');
 
@@ -139,7 +139,7 @@ SandboxRuntime.voAudio.addEventListener('timeupdate', function () {
 ### 3c. Interaction audio (click-triggered clips)
 
 ```javascript
-SandboxRuntime.interactionAudio.src = '../assets/audio/interaction/SLD-CC01-008-passion.mp3';
+SandboxRuntime.interactionAudio.src = '../assets/audio/interaction/1S08-passion.mp3';
 SandboxRuntime.interactionAudio.play().catch(function () {});
 ```
 
@@ -233,7 +233,7 @@ function revealComplete() {
 }
 ```
 
-### 5b. Single interactive card (e.g. SLD-CC01-008 Service Quality)
+### 5b. Single interactive card (e.g. 1S08 Service Quality)
 
 - Card should be visually inert (chip opacity 0, `pointer-events: none`) until VO ends
 - Guard function call with a `part1Complete` flag
@@ -497,9 +497,9 @@ Lottie player ../assets/vendor/lottie/lottie.min.js
 
 ### How it works
 
-- FQ slides (e.g., `FQ-CC01-001` through `FQ-CC01-004`) send `sandbox-next` with a `correct` boolean
+- FQ slides (e.g., `3FQ01` through `3FQ04`) send `sandbox-next` with a `correct` boolean
 - The runtime (`sandbox-next` handler) increments `state.finalAnswered` and `state.finalCorrect`
-- `FQ-CC01-SCORE` calls `window.parent.CourseRuntime.getFinalResults()` to read the totals
+- `3FQ-SCORE` calls `window.parent.CourseRuntime.getFinalResults()` to read the totals
 
 ### From the FQ slide (answering a question):
 
@@ -534,7 +534,7 @@ The runtime derives `finalTotal` by counting FQ slide IDs in the manifest (not f
 
 ## 10. Asset Path Rules (Slides)
 
-All paths are **relative to the slide file** (`course/slides/SLD-CC01-XXX.html`):
+All paths are **relative to the slide file** (`course/slides/1SNN.html`):
 
 | Asset type | Path |
 |---|---|
@@ -543,8 +543,8 @@ All paths are **relative to the slide file** (`course/slides/SLD-CC01-XXX.html`)
 | Icons | `../assets/icons/my-icon.svg` |
 | GSAP | `../assets/vendor/gsap/gsap.min.js` |
 | Porsche Components | `../assets/vendor/porsche-components.js` |
-| VO audio | `../assets/audio/vo/SLD-CC01-XXX.mp3` |
-| Interaction audio | `../assets/audio/interaction/SLD-CC01-XXX-descriptor.mp3` |
+| VO audio | `../assets/audio/vo/1SNN.mp3` |
+| Interaction audio | `../assets/audio/interaction/1SNN-descriptor.mp3` |
 | Video | `../assets/video/my-video.mp4` |
 
 ### `src` in `sandbox-swap-audio` (path relative to **player page**, not slide):
@@ -552,7 +552,7 @@ All paths are **relative to the slide file** (`course/slides/SLD-CC01-XXX.html`)
 ```javascript
 window.parent.postMessage({
   type: 'sandbox-swap-audio',
-  src:  'assets/audio/vo/SLD-CC01-008-2.mp3',  // no leading ../
+  src:  'assets/audio/vo/1S08-2.mp3',  // no leading ../
   endCue: '../assets/audio/vo/Click_The_Next_Button_To_Continue.mp3' // with ../
 }, '*');
 ```
@@ -575,7 +575,7 @@ Correct: PTech-customer14.webp
 Changes to `course/slides/` do NOT automatically appear in `output/course/slides/`. You must copy them manually before building the zip:
 
 ```bash
-cp course/slides/SLD-CC01-XXX.html output/course/slides/SLD-CC01-XXX.html
+cp course/slides/1SNN.html output/course/slides/1SNN.html
 ```
 
 And for runtime changes (apply logic manually, never raw copy — see §1):

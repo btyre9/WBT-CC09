@@ -45,7 +45,7 @@ One field per line. No blank lines between fields within a slide block.
 Blank line after the last field before the next `## Slide` heading.
 
 ```
-Slide-ID: SLD_CC02_001
+Slide-ID: 1S01
 Template-ID: hero-title
 Slide-Title: Understanding Today's Porsche Customer
 Image-File: porsche_showroom_CC02.webp
@@ -61,29 +61,23 @@ Notes: [Your brief rationale for choosing this template and any production notes
 Lines starting with `>>` are **ignored** by the parser. Use them to annotate audio cues
 for the developer. Include one for every Voiceover field:
 ```
->> On slide load → SLD_CC02_001_INTRO.mp3
+>> On slide load → 1S01-INTRO.mp3
 Voiceover-INTRO: Welcome to Module 2...
->> User clicks ServiceQuality card → SLD_CC02_008_CLICK_ServiceQuality.mp3
+>> User clicks ServiceQuality card → 1S08-CLICK-ServiceQuality.mp3
 Voiceover-CLICK-ServiceQuality: Service quality represents...
 ```
 
-### Slide ID naming — underscores only
+### Slide ID and image naming
 | Type | Format | Example |
 |---|---|---|
-| Content slide | `SLD_XX00_000` | `SLD_CC02_005` |
-| Knowledge check | `KC_XX00_000` | `KC_CC02_001` |
-| Final quiz question | `FQ_XX00_000` | `FQ_CC02_001` |
-| Quiz score | `FQ_XX00_SCORE` | `FQ_CC02_SCORE` |
+| Content slide | `1SNN` | `1S05` |
+| Knowledge check | `2KCNN` | `2KC01` |
+| Final quiz question | `3FQNN` | `3FQ01` |
+| Quiz score | `3FQ-SCORE` | `3FQ-SCORE` |
 
-`XX` = course code (e.g. `CC`), `00` = module number (e.g. `02`), `000` = slide number padded to 3 digits.
-**Never use hyphens in Slide-IDs.** The parser requires underscores.
+2-digit zero-padded slide numbers. **No course code in filenames** — the project folder carries module identity. Image filenames mirror the Slide-ID: `1S05.webp` (single image) or `1S05a.webp`, `1S05b.webp` (multiple).
 
-### Image filename convention
-Every image filename must include the module code suffix so filenames are unique per module:
-- Format: `descriptive_name_CC02.webp`
-- Examples: `red_911_woman_CC02.webp`, `technician_at_desk_CC02.webp`
-- Use lowercase, underscores for spaces, no hyphens
-- Use `.webp` extension
+Full specification: [NAMING-CONVENTIONS.md](../NAMING-CONVENTIONS.md).
 
 ---
 
@@ -93,12 +87,12 @@ Build every module in this order unless the outline specifies otherwise:
 
 | Position | Template | Slide-ID pattern | Purpose |
 |---|---|---|---|
-| 1 | `hero-title` | `SLD_XX00_001` | Module opening — full-bleed hero image |
-| 2 | `objectives` | `SLD_XX00_002` | Learning objectives list |
+| 1 | `hero-title` | `01` | Module opening — full-bleed hero image |
+| 2 | `objectives` | `02` | Learning objectives list |
 | 3–N | Content templates + `knowledge-check` | mixed | Core content with KCs woven in throughout |
-| Last content | `closing` | `SLD_XX00_NNN` | Module wrap-up |
-| N+1+ | `final-quiz` | `FQ_XX00_001`+ | One question per learning objective |
-| Last | `quiz-score` | `FQ_XX00_SCORE` | Results display, SCORM reporting |
+| Last content | `closing` | `1SNN` | Module wrap-up |
+| N+1+ | `final-quiz` | `01`+ | One question per learning objective |
+| Last | `quiz-score` | `3FQ-SCORE` | Results display, SCORM reporting |
 
 **Knowledge Check placement:** KCs are placed throughout the content — not grouped at the end.
 Insert a KC after every 3–4 content slides, at natural topic boundaries. The KC should test
@@ -134,12 +128,12 @@ overlay gradient. Module eyebrow, accent bar, large title, optional subtitle.
 ```
 ## Slide 01 — Title Slide
 
-Slide-ID: SLD_CC02_001
+Slide-ID: 1S01
 Template-ID: hero-title
 Slide-Title: Understanding Today's Porsche Customer
 Image-File: red_911_woman_CC02.webp
 Hero-Subtitle: Module 2 of 12
->> On slide load → SLD_CC02_001_INTRO.mp3
+>> On slide load → 1S01-INTRO.mp3
 Voiceover-INTRO: Welcome to Module 2 — Understanding Today's Porsche Customer. In this module, you'll discover who the Porsche customer really is, what motivates their purchase decisions, and how your role as a service advisor shapes their lasting impression of the brand.
 Caption-Text: Welcome to Module 2 — Understanding Today's Porsche Customer.
 Image: Wide-angle showroom shot. A woman in business attire stands beside a red 911. Warm, aspirational lighting. Clean white background. Premium atmosphere.
@@ -164,13 +158,13 @@ section heading on the left, numbered objectives that animate in sequentially on
 ```
 ## Slide 02 — Learning Objectives
 
-Slide-ID: SLD_CC02_002
+Slide-ID: 1S02
 Template-ID: objectives
 Slide-Title: In this module, you will:
 Objective-1: Identify the key characteristics of today's Porsche customer
 Objective-2: Explain how CSI scores are calculated and what drives them
 Objective-3: Apply the four-step delivery conversation framework
->> On slide load → SLD_CC02_002_INTRO.mp3
+>> On slide load → 1S02-INTRO.mp3
 Voiceover-INTRO: By the end of this module, you will be able to do three things. First — identify the key characteristics of today's Porsche customer and what sets them apart. Second — explain how CSI scores are calculated and what daily behaviors move the needle. And third — apply the four-step delivery conversation framework in your next customer interaction.
 Caption-Text: By the end of this module, you will be able to do three things.
 Status: Draft
@@ -205,12 +199,12 @@ image on the right. The left column shows either body copy or a Pull-Quote (see 
 ```
 ## Slide 03 — Who Is the Porsche Customer?
 
-Slide-ID: SLD_CC02_003
+Slide-ID: 1S03
 Template-ID: content-split
 Slide-Title: Who Is the Porsche Customer?
 On-Screen-Text: With an average household income exceeding $630,000, Porsche customers are not buying transportation — they are buying an experience, a lifestyle, and a standard of service that begins the moment they arrive.
 Image-File: customer_profile_CC02.webp
->> On slide load → SLD_CC02_003_INTRO.mp3
+>> On slide load → 1S03-INTRO.mp3
 Voiceover-INTRO: Who is the Porsche customer? The data tells a clear story. With an average household income exceeding $630,000, this is one of the most discerning customer bases in the automotive world. They don't evaluate a Porsche the way most buyers evaluate a car. They evaluate the entire experience — from the ease of scheduling service to the quality of conversation when they walk in the door. Understanding that distinction changes how you approach every interaction.
 Caption-Text: With an average household income exceeding $630,000, Porsche customers are not buying transportation.
 Image: Close-up of a well-dressed customer reviewing paperwork at a service desk. Professional, relaxed setting. Soft natural light. Porsche logo visible in background.
@@ -222,12 +216,12 @@ Notes: content-split chosen — single concept, image reinforces the premium cus
 ```
 ## Slide 04 — What Drives Their Decision
 
-Slide-ID: SLD_CC02_004
+Slide-ID: 1S04
 Template-ID: content-split
 Slide-Title: What Drives Their Decision
 Pull-Quote: Porsche customers don't buy a car — they invest in an experience that begins the moment they meet you.
 Image-File: handshake_CC02.webp
->> On slide load → SLD_CC02_004_INTRO.mp3
+>> On slide load → 1S04-INTRO.mp3
 Voiceover-INTRO: What drives a Porsche customer's decision? Research consistently shows that the quality of human interaction is the single most influential factor — not the vehicle specs, not the price, and not the incentives. The moment a customer steps into your dealership, they are already forming an impression of the brand. You are the brand at that moment.
 Caption-Text: The quality of human interaction is the single most influential factor.
 Image: Warm, professional handshake between a service advisor and a customer in a well-lit showroom. Eye contact, confident posture. Porsche branding visible subtly in background.
@@ -257,11 +251,11 @@ The `On-Screen-Text` field uses the format `VALUE Label`:
 ```
 ## Slide 05 — The Customer at a Glance
 
-Slide-ID: SLD_CC02_005
+Slide-ID: 1S05
 Template-ID: content-stat
 Slide-Title: The Customer at a Glance
 On-Screen-Text: 630,000+ Average Household Income
->> On slide load → SLD_CC02_005_INTRO.mp3
+>> On slide load → 1S05-INTRO.mp3
 Voiceover-INTRO: Let's put a number to it. The average Porsche customer household income exceeds $630,000 per year. That figure matters not because of what it says about wealth — but because of what it says about expectations. At that level of experience with premium goods and services, this customer will immediately notice the difference between a good interaction and a great one. Your attention to detail is what creates that difference.
 Caption-Text: The average Porsche customer household income exceeds $630,000 per year.
 Status: Draft
@@ -290,12 +284,12 @@ intro paragraph and bulleted list on the left, image on the right.
 ```
 ## Slide 06 — The Six Porsche Brand Principles
 
-Slide-ID: SLD_CC02_006
+Slide-ID: 1S06
 Template-ID: content-bullets
 Slide-Title: The Six Porsche Brand Principles
 On-Screen-Text: Every interaction you have with a Porsche customer should reflect these core principles.
 Image-File: brand_book_CC02.webp
->> On slide load → SLD_CC02_006_INTRO.mp3
+>> On slide load → 1S06-INTRO.mp3
 Voiceover-INTRO: Porsche defines six brand principles that guide every customer touchpoint. Fascination — we inspire passion in everything we do. Performance — we exceed expectations in every dimension. Innovation — we push boundaries with purpose. Tradition — we honor our heritage while looking forward. Exclusivity — we create something rare and personal. And responsibility — we act with integrity and care. These aren't abstract values. They're the filter for every decision you make on the floor.
 Caption-Text: Porsche defines six brand principles that guide every customer touchpoint.
 Image: Flat lay of a Porsche brand standards book open on a clean desk. Brand colors visible. Premium, editorial feel.
@@ -323,13 +317,13 @@ philosophy lines, or memorable customer insights.
 ```
 ## Slide 07 — Brand Philosophy
 
-Slide-ID: SLD_CC02_007
+Slide-ID: 1S07
 Template-ID: content-quote
 Quote: At Porsche, we don't just build cars — we build relationships that last a lifetime.
 Quote-Attribution: Oliver Blume
 Quote-Title: CEO, Porsche AG
 Image-File: brand_moment_CC02.webp
->> On slide load → SLD_CC02_007_INTRO.mp3
+>> On slide load → 1S07-INTRO.mp3
 Voiceover-INTRO: This statement from Porsche AG CEO Oliver Blume captures something fundamental about the brand's philosophy. The relationship doesn't end at the sale. It deepens every time that customer returns to you for service, advice, or a conversation about what comes next. Every visit is a continuation of a relationship you have the opportunity to build.
 Caption-Text: At Porsche, we don't just build cars — we build relationships that last a lifetime.
 Image: Wide, atmospheric shot of a Porsche 911 on an empty mountain road at dusk. Cinematic, golden light. Sense of journey and purpose.
@@ -354,8 +348,8 @@ all cards have been visited.
 
 **Card label format:** PascalCase, no spaces — e.g. `ServiceQuality`, `VehiclePickUp`
 
-**Audio file naming:** `{SLIDE_ID}_CLICK_{Label}.mp3`
-Example: `SLD_CC02_008_CLICK_ServiceQuality.mp3`
+**Audio file naming:** `{Slide-ID}-CLICK-{Label}.mp3`
+Example: `1S08-CLICK-ServiceQuality.mp3`
 
 **When to choose:** 3–6 discrete concepts of roughly equal weight where you want the
 learner to actively choose what they explore. Avoid for sequential or hierarchical content
@@ -365,21 +359,21 @@ learner to actively choose what they explore. Avoid for sequential or hierarchic
 ```
 ## Slide 08 — The Five Dimensions of CSI
 
-Slide-ID: SLD_CC02_008
+Slide-ID: 1S08
 Template-ID: card-explore
 Slide-Title: The Five Dimensions of CSI
->> On slide load → SLD_CC02_008_INTRO.mp3
+>> On slide load → 1S08-INTRO.mp3
 Voiceover-INTRO: Your CSI score is calculated across five distinct dimensions. Each one measures something specific about the customer experience you deliver. Click each card to learn what that dimension covers and why it matters to your score.
 Caption-Text: Your CSI score is calculated across five distinct dimensions.
->> User clicks ServiceQuality card → SLD_CC02_008_CLICK_ServiceQuality.mp3
+>> User clicks ServiceQuality card → 1S08-CLICK-ServiceQuality.mp3
 Voiceover-CLICK-ServiceQuality: Service Quality measures how well the technical work was performed — was the vehicle fixed right the first time, and was it returned in the condition the customer expected? This dimension carries the highest single weighting in the overall score.
->> User clicks VehiclePickUp card → SLD_CC02_008_CLICK_VehiclePickUp.mp3
+>> User clicks VehiclePickUp card → 1S08-CLICK-VehiclePickUp.mp3
 Voiceover-CLICK-VehiclePickUp: Vehicle Pick Up covers the final handoff — the walkthrough of work completed, the explanation of the invoice, and whether the customer left feeling informed and confident. This is the last impression you make, and it often defines the one they remember.
->> User clicks ServiceAdvisor card → SLD_CC02_008_CLICK_ServiceAdvisor.mp3
+>> User clicks ServiceAdvisor card → 1S08-CLICK-ServiceAdvisor.mp3
 Voiceover-CLICK-ServiceAdvisor: The Service Advisor dimension reflects you directly — your communication, your follow-through, and whether the customer felt heard and respected throughout the process.
->> User clicks ServiceInitiation card → SLD_CC02_008_CLICK_ServiceInitiation.mp3
+>> User clicks ServiceInitiation card → 1S08-CLICK-ServiceInitiation.mp3
 Voiceover-CLICK-ServiceInitiation: Service Initiation captures the first impression — check-in speed, how the work order was explained, and whether expectations were set clearly at the start of the visit.
->> User clicks CustomerHandling card → SLD_CC02_008_CLICK_CustomerHandling.mp3
+>> User clicks CustomerHandling card → 1S08-CLICK-CustomerHandling.mp3
 Voiceover-CLICK-CustomerHandling: Customer Handling measures how concerns and problems were addressed — not whether issues arose, but how you responded when they did. Recovery handled well can score as high as a perfect visit.
 Image: Clean top-down view of a service bay with cars being worked on. Organized, professional, clinical. Strong geometric composition.
 Status: Draft
@@ -416,7 +410,7 @@ unlocks Next.
 ```
 ## Slide 09 — Knowledge Check 1
 
-Slide-ID: KC_CC02_001
+Slide-ID: 2KC01
 Template-ID: knowledge-check
 Slide-Title: Knowledge Check
 Question: What does a Porsche customer's average household income indicate about their buying decisions?
@@ -425,8 +419,8 @@ Choice-2: They prioritize vehicle performance specifications above all else
 Choice-3: They buy the brand experience rather than just a vehicle
 Choice-4: They rarely consider service quality in their purchase decision
 Correct-Answer: 3
-Review-Slide: SLD_CC02_003
->> On slide load → KC_CC02_001_INTRO.mp3
+Review-Slide: 1S03
+>> On slide load → 2KC01-INTRO.mp3
 Voiceover-INTRO: Let's check your understanding. Select the best answer.
 Caption-Text: Let's check your understanding.
 Status: Draft
@@ -452,7 +446,7 @@ advances to the next question automatically. Write one question per learning obj
 ```
 ## Slide 11 — Final Quiz Question 1
 
-Slide-ID: FQ_CC02_001
+Slide-ID: 3FQ01
 Template-ID: final-quiz
 Slide-Title: Final Assessment — Question 1
 Question: Which CSI dimension carries the largest single weighting in the overall score?
@@ -461,7 +455,7 @@ Choice-2: Vehicle Pick Up
 Choice-3: Customer Handling
 Choice-4: Service Quality
 Correct-Answer: 4
->> On slide load → FQ_CC02_001_INTRO.mp3
+>> On slide load → 3FQ01-INTRO.mp3
 Voiceover-INTRO: Question one. Choose the best answer.
 Caption-Text: Question one. Choose the best answer.
 Status: Draft
@@ -481,7 +475,7 @@ the slide is fully dynamic.
 ```
 ## Slide 13 — Quiz Score
 
-Slide-ID: FQ_CC02_SCORE
+Slide-ID: 3FQ-SCORE
 Template-ID: quiz-score
 Slide-Title: Module 2 Assessment Results
 Status: Draft
@@ -506,12 +500,12 @@ prompts the learner to continue to the assessment.
 ```
 ## Slide 10 — Module Closing
 
-Slide-ID: SLD_CC02_010
+Slide-ID: 1S10
 Template-ID: closing
 Slide-Title: Module Complete
 On-Screen-Text: You now have a deeper understanding of today's Porsche customer and what drives their expectations.
 Image-File: closing_911_CC02.webp
->> On slide load → SLD_CC02_010_INTRO.mp3
+>> On slide load → 1S10-INTRO.mp3
 Voiceover-INTRO: You've covered a lot of ground in this module. You now understand who the Porsche customer is, what drives their expectations, and how your daily behaviors shape their experience of the brand. In the next section, you'll complete a short assessment to confirm your understanding before moving to Module 3. Take your time and trust what you've learned.
 Caption-Text: You've covered a lot of ground in this module.
 Status: Draft
@@ -567,11 +561,11 @@ Before finalizing your storyboard output, verify:
 - [ ] File starts with `# Course: [Title]` followed by a blank line
 - [ ] Every slide has a `## Slide NN —` heading with a two-digit zero-padded number
 - [ ] Every slide has `Slide-ID`, `Template-ID`, `Slide-Title`, `Voiceover-INTRO`, `Caption-Text`, `Status`, `Notes`
-- [ ] All Slide-IDs use underscores (`SLD_CC02_001`) — never hyphens
+- [ ] All Slide-IDs use underscores (`1S01`) — never hyphens
 - [ ] Every image filename includes the module code suffix (`_CC02.webp`)
 - [ ] Every `Voiceover-CLICK-*` field has a matching `>>` stage direction line above it
 - [ ] Each `knowledge-check` slide has `Question`, four `Choice-N` fields, `Correct-Answer`, and `Review-Slide`
 - [ ] Each `final-quiz` slide has `Question`, four `Choice-N` fields, and `Correct-Answer` (no `Review-Slide`)
-- [ ] The last slide is `quiz-score` with `FQ_XX00_SCORE` as the Slide-ID
+- [ ] The last slide is `quiz-score` with `3FQ-SCORE` as the Slide-ID
 - [ ] Pull-Quote and On-Screen-Text are never both present on the same slide
 - [ ] `Notes:` field briefly explains the template choice on every slide

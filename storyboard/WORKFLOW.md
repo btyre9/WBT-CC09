@@ -40,21 +40,21 @@ All files use **underscores only** — no hyphens.
 
 | Type | Format | Example |
 |---|---|---|
-| Standard slide | `SLD_XX01_001` | Numbered in sequence |
-| Knowledge check | `KC_XX01_001` | Numbered in sequence |
-| Final quiz | `FQ_XX01_001` | Numbered in sequence |
-| Score slide | `FQ_XX01_SCORE` | One per module |
+| Standard slide | `01` | Numbered in sequence |
+| Knowledge check | `01` | Numbered in sequence |
+| Final quiz | `01` | Numbered in sequence |
+| Score slide | `3FQ-SCORE` | One per module |
 
 VO audio files follow the same convention:
 
 | Trigger | File name |
 |---|---|
-| Slide INTRO | `SLD_XX01_001_INTRO.mp3` |
-| Card click | `SLD_XX01_004_CLICK_Appearance.mp3` |
-| Tab open | `SLD_XX01_005_TAB_Charging.mp3` |
-| Step N | `SLD_XX01_007_STEP_02.mp3` |
+| Slide INTRO | `1S01-INTRO.mp3` |
+| Card click | `1S04-CLICK-Appearance.mp3` |
+| Tab open | `1S05-TAB-Charging.mp3` |
+| Step N | `1S07-STEP-02.mp3` |
 
-HTML slide files: `SLD_XX01_001.html`, `KC_XX01_001.html`, etc.
+HTML slide files: `01.html`, `01.html`, etc.
 
 ---
 
@@ -68,7 +68,7 @@ Give Claude or Copilot the following prompt along with your content outline:
 > Use the Key: Value format below. Each slide starts with a Heading 2
 > in the format 'Slide 01 — Title'. Use >> lines to show VO clip triggers
 > and filenames. Use underscores in all file names and slide IDs (e.g.
-> SLD_XX01_001). Follow the Field Reference at the end of
+> 01). Follow the Field Reference at the end of
 > Module-Storyboard-Template.md for all field names and slide types."
 
 Then paste in your content outline (learning objectives, key messages,
@@ -90,10 +90,10 @@ Each slide section must follow this structure:
 ```
 ## Slide 01 — Slide Title Here
 
-Slide-ID: SLD_XX01_001
+Slide-ID: 01
 Template-ID: hero-title
 Slide-Title: Slide Title Here
->> On slide load → SLD_XX01_001_INTRO.mp3
+>> On slide load → 1S01-INTRO.mp3
 Voiceover-INTRO: The voiceover that plays when the slide loads.
 Caption-Text: The closed-caption text (usually matches Voiceover-INTRO).
 Image: Description of what the image should show. Replace with filename when asset is ready.
@@ -104,11 +104,11 @@ Notes: Any developer or production notes.
 For interactive slides with multiple VO clips:
 
 ```
->> On slide load → SLD_XX01_004_INTRO.mp3
+>> On slide load → 1S04-INTRO.mp3
 Voiceover-INTRO: Click each card to explore the five pillars.
->> User clicks Appearance card → SLD_XX01_004_CLICK_Appearance.mp3
+>> User clicks Appearance card → 1S04-CLICK-Appearance.mp3
 Voiceover-CLICK-Appearance: Your professional appearance communicates competence...
->> User clicks Communication card → SLD_XX01_004_CLICK_Communication.mp3
+>> User clicks Communication card → 1S04-CLICK-Communication.mp3
 Voiceover-CLICK-Communication: Clear, jargon-free communication builds trust...
 ```
 
@@ -126,10 +126,10 @@ Voiceover-CLICK-Communication: Clear, jargon-free communication builds trust...
 
 | Field | When it plays | Example filename |
 |---|---|---|
-| `Voiceover-INTRO` | On slide load | `SLD_XX01_001_INTRO.mp3` |
-| `Voiceover-CLICK-Label` | User clicks a card or hotspot | `SLD_XX01_004_CLICK_Appearance.mp3` |
-| `Voiceover-TAB-Label` | User opens a tab or accordion | `SLD_XX01_005_TAB_Charging.mp3` |
-| `Voiceover-STEP-N` | User advances a step sequence | `SLD_XX01_007_STEP_02.mp3` |
+| `Voiceover-INTRO` | On slide load | `1S01-INTRO.mp3` |
+| `Voiceover-CLICK-Label` | User clicks a card or hotspot | `1S04-CLICK-Appearance.mp3` |
+| `Voiceover-TAB-Label` | User opens a tab or accordion | `1S05-TAB-Charging.mp3` |
+| `Voiceover-STEP-N` | User advances a step sequence | `1S07-STEP-02.mp3` |
 
 ### Template types
 
@@ -204,7 +204,7 @@ WELLSAID_SPEAKER_ID=your_speaker_id_here
 To regenerate a single clip:
 
 ```bash
-npm run generate-vo -- --clip SLD_XX01_004_CLICK_Appearance --force
+npm run generate-vo -- --clip 1S04-CLICK-Appearance --force
 ```
 
 ### Option B: Manual / send CSV to WellSaid
@@ -229,7 +229,7 @@ To regenerate a single clip:
 
 ```bash
 npm run generate-vtt -- --whisper --key YOUR_OPENAI_API_KEY \
-  --clip SLD_XX01_004_CLICK_Appearance
+  --clip 1S04-CLICK-Appearance
 ```
 
 ---
@@ -315,7 +315,7 @@ course/slides/SLD-XX01-003-LearningObjectives.html
 ```
 
 **To use it for a new module:**
-1. Copy the file into your module's `course/slides/` folder and rename it (e.g. `SLD-CC03-003.html`)
+1. Copy the file into your module's `course/slides/` folder and rename it (e.g. `1S03.html`)
 2. Update `data-slide-id` to match your module ID
 3. Replace the intro text and each objective text block
 4. Add or remove objective `<div>` blocks to match your LO count
@@ -376,7 +376,7 @@ npm run generate-vo -- --key KEY --speaker ID
 
 # Regenerate one clip (overwrite existing)
 npm run generate-vo -- --key KEY --speaker ID \
-  --clip SLD_XX01_004_CLICK_Appearance --force
+  --clip 1S04-CLICK-Appearance --force
 
 # Generate placeholder VTTs from manifest
 npm run generate-vtt
@@ -419,7 +419,7 @@ course/
   data/
     course.data.json             ← course structure (player reads this)
     tts_script.csv               ← pronunciation-corrected VO script
-  slides/                        ← HTML slide files (SLD_XX01_001.html, etc.)
+  slides/                        ← HTML slide files (01.html, etc.)
   index.html                     ← dev player entry point
   runtime.js                     ← player runtime
 
