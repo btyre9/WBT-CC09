@@ -12,7 +12,12 @@
       "Bash(git rm *)",
       "Bash(cd /Users/home/Documents/Porsche-WBT-Template *)",
       "Bash(grep -nE \"SLD[-_]CC|KC[-_]CC|FQ[-_]CC|_INTRO\\\\.mp3|_CLICK_|CC\\\\\\\\\\\\\\\\d.{1,4}_S\" course/runtime.js)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(gh auth *)",
+      "Bash(gh repo *)",
+      "Bash(git push *)",
+      "Bash(git restore *)"
     ],
     "additionalDirectories": [
       "G:\\My Drive\\00-Projects\\CC02\\course\\assets\\vendor",
