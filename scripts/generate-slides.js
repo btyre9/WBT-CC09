@@ -172,16 +172,26 @@ function buildObjectivesHtml(slide) {
 // Card items (card-explore template)
 // ---------------------------------------------------------------------------
 
-function buildCardsHtml(triggers) {
+function buildCardsHtml(triggers, slide) {
   const letters = ['01', '02', '03', '04', '05', '06'];
   return triggers.map((t, idx) => {
     const num   = letters[idx] || String(idx + 1).padStart(2, '0');
-    const title = camelToWords(t.label);
+    const title = escHtml(slide[`Card-Title-${t.label}`] || camelToWords(t.label));
+    const sig   = slide[`Card-Sig-${t.label}`] ? `        <div class="card-sig">${escHtml(slide[`Card-Sig-${t.label}`])}</div>\n` : '';
+    const rawBullets = slide[`Card-Bullets-${t.label}`];
+    let bodyHtml;
+    if (rawBullets) {
+      const lis = rawBullets.split('|').map(b => `          <li>${escHtml(b.trim())}</li>`).join('\n');
+      bodyHtml = `        <ul class="card-bullets">\n${lis}\n        </ul>`;
+    } else {
+      bodyHtml = `        <div class="card-body"></div>`;
+    }
     return (
       `      <div class="explore-card pds-card" data-card="${escAttr(t.label)}" id="card-${escAttr(t.label)}" tabindex="0" role="button" aria-label="Explore ${escAttr(title)}">\n` +
       `        <div class="card-number">${num}</div>\n` +
-      `        <div class="card-title">${escHtml(title)}</div>\n` +
-      `        <div class="card-body"><!-- Add card detail content here --></div>\n` +
+      `        <div class="card-title">${title}</div>\n` +
+      sig +
+      bodyHtml + '\n' +
       `        <div class="card-chip">Explore &rarr;</div>\n` +
       `      </div>`
     );
@@ -283,15 +293,137 @@ function renderTemplate(html, tokens) {
 // Build token map for a slide
 // ---------------------------------------------------------------------------
 
-function buildTokens(slide, allSlides, courseTitle, templateHtml) {
+function buildVoTimesArray(slide) {
+  const times = [];
+  for (let i = 1; i <= 10; i++) {
+    const val = slide[`VO-Cue-${i}`];
+    if (!val) break;
+    times.push(parseFloat(val));
+  }
+  if (times.length === 0) return 'null';
+  return JSON.stringify(times);
+}
+
+function buildMatchData(slide) {
+  const pairs = [];
+  for (let i = 1; i <= 20; i++) {
+    const item   = slide[`Match-${i}-Item`];
+    const target = slide[`Match-${i}-Target`];
+    if (!item || !target) break;
+    pairs.push({ id: String(i), item: item, target: target });
+  }
+  return JSON.stringify(pairs);
+}
+
+function countMatchPairs(slide) {
+  let count = 0;
+  for (let i = 1; i <= 20; i++) {
+    if (!slide[`Match-${i}-Item`]) break;
+    count++;
+  }
+  return count;
+}
+
+function buildTabPanelsHtml(slide, slideId) {
+  const tabs = [];
+  for (const [key] of Object.entries(slide)) {
+    const m = key.match(/^Voiceover-TAB-(.+)$/);
+    if (!m) continue;
+    const label = m[1];
+    tabs.push(label);
+  }
+  return tabs;
+}
+
+function buildTabPanelsHtmlToken(slide) {
+  const tabLabels = buildTabPanelsHtml(slide, slide['Slide-ID'] || '');
+  if (tabLabels.length === 0) return '';
+  const items = tabLabels.map((label, idx) => {
+    const num = String(idx + 1);
+    return (
+      `        <li data-step="${escAttr(label)}"><span>${num}</span>${escHtml(camelToWords(label))}</li>`
+    );
+  });
+  return (
+    `      <ul class="progress-list anim" aria-label="Visited steps">\n` +
+    items.join('\n') + '\n' +
+    `      </ul>`
+  );
+}
+
+function buildTabNamesJson(slide) {
+  const tabLabels = buildTabPanelsHtml(slide, slide['Slide-ID'] || '');
+  return JSON.stringify(tabLabels);
+}
+
+function buildTabButtonsHtml(slide, slideId) {
+  const sep = slideId.includes('_') ? '_' : '-';
+  const labels = [];
+  for (const [key] of Object.entries(slide)) {
+    const m = key.match(/^Voiceover-TAB-(.+)$/);
+    if (m) labels.push(m[1]);
+  }
+  return labels.map((label, i) => {
+    const audioPath = `../assets/audio/vo/${slideId}${sep}TAB${sep}${label}.mp3`;
+    const displayText = camelToWords(label);
+    const tabindex = i === 0 ? '0' : '-1';
+    return `      <button class="tab-btn" data-tab="${escAttr(label)}" data-audio="${escAttr(audioPath)}" role="tab" aria-selected="false" tabindex="${tabindex}">${escHtml(displayText)}</button>`;
+  }).join('\n');
+}
+
+function buildTabBodyPanelsHtml(slide) {
+  const labels = [];
+  for (const [key] of Object.entries(slide)) {
+    const m = key.match(/^Voiceover-TAB-(.+)$/);
+    if (m) labels.push(m[1]);
+  }
+  return labels.map((label, i) => {
+    const num = String(i + 1).padStart(2, '0');
+    const body = escHtml(slide[`Tab-Body-${label}`] || '');
+    return (
+      `      <div class="tab-panel" id="panel-${escAttr(label)}" role="tabpanel">\n` +
+      `        <span class="tab-panel__step-num" aria-hidden="true">${num}</span>\n` +
+      `        <p class="tab-panel__body">${body}</p>\n` +
+      `      </div>`
+    );
+  }).join('\n');
+}
+
+function buildTabImageMapJson(slide, slideId, defaultImagePath) {
+  const sep = slideId.includes('_') ? '_' : '-';
+  const labels = [];
+  for (const [key] of Object.entries(slide)) {
+    const m = key.match(/^Voiceover-TAB-(.+)$/);
+    if (m) labels.push(m[1]);
+  }
+  const map = {};
+  labels.forEach(label => {
+    const perTab = slide[`Tab-Image-${label}`];
+    map[label] = perTab ? `../assets/images/${perTab}` : defaultImagePath;
+  });
+  return JSON.stringify(map);
+}
+
+function buildTokens(slide, allSlides, courseTitle, templateHtml, availableImages) {
   const slideId     = slide['Slide-ID'];
   const templateId  = slide['Template-ID'];
   const slideTitle  = slide['Slide-Title'] || slideId;
   const onScreen    = slide['On-Screen-Text'] || slideTitle;
   const imageFile   = slide['Image-File'];
-  const imagePath   = imageFile
-    ? `../assets/images/${imageFile}`
-    : '../assets/images/placeholder.webp';
+
+  // BUG 6: resolve image with fallback from available images
+  const specifiedPath = imageFile ? path.resolve('course/assets/images', imageFile) : null;
+  let resolvedImageFile;
+  if (imageFile && specifiedPath && fs.existsSync(specifiedPath)) {
+    resolvedImageFile = imageFile;
+  } else if (availableImages && availableImages.length > 0) {
+    const idx = allSlides.indexOf(slide) % availableImages.length;
+    resolvedImageFile = availableImages[idx];
+  } else {
+    resolvedImageFile = 'placeholder.webp';
+  }
+  const imagePath = `../assets/images/${resolvedImageFile}`;
+  const imageFileDisplay = imageFile || 'placeholder.webp';
 
   const { value: statValue, label: statLabel } = splitStat(onScreen, slideTitle);
   const clicks = extractClickTriggers(slide, slideId);
@@ -321,6 +453,8 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml) {
     HERO_SUBTITLE:  escHtml(heroSubtitle),
     MODULE_LABEL:   escHtml(courseTitle),
     IMAGE_PATH:     imagePath,
+    // BUG 5: IMAGE_FILE token — intended filename for placeholder display
+    IMAGE_FILE:     imageFileDisplay || 'placeholder.webp',
     // Stat template
     STAT_VALUE:     escHtml(statValue),
     STAT_LABEL:     escHtml(statLabel),
@@ -330,8 +464,11 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml) {
     QUOTE_ATTRIBUTION_TITLE:  escHtml(quoteAttributionTitle),
     // Objectives template
     OBJECTIVES_HTML: buildObjectivesHtml(slide),
+    // BUG 5: VO cue tokens for objectives template
+    VO_TIMES_ARRAY:  buildVoTimesArray(slide),
+    VO_CLEAR_TIME:   slide['VO-Clear-Time'] ? String(parseFloat(slide['VO-Clear-Time'])) : 'null',
     // Card-explore template
-    CARDS_HTML:      buildCardsHtml(clicks),
+    CARDS_HTML:      buildCardsHtml(clicks, slide),
     CARD_AUDIO_MAP:  buildCardAudioMap(clicks),
     TOTAL_CARDS:     String(clicks.length || 3),
     // content-split body — pull quote or plain body copy
@@ -342,6 +479,18 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml) {
     CORRECT_ANSWER:  String(parseInt(slide['Correct-Answer'], 10) || 1),
     REVIEW_SLIDE:    slide['Review-Slide'] || '',
     QUESTION_NUMBER: String(fqQuestionNumber(allSlides, slideId)),
+    // BUG 5: drag-match tokens
+    MATCH_DATA_JSON: buildMatchData(slide),
+    TOTAL_PAIRS:     String(countMatchPairs(slide)),
+    MATCH_COL_LEFT:  escHtml(slide['Match-Col-Left']  || 'Terms'),
+    MATCH_COL_RIGHT: escHtml(slide['Match-Col-Right'] || 'Definitions'),
+    // BUG 5: tab-panel tokens
+    TAB_PANELS_HTML:      buildTabPanelsHtmlToken(slide),
+    TAB_NAMES_JSON:       buildTabNamesJson(slide),
+    // New tab-panel v2 tokens (matching CC08 reference design)
+    TAB_BUTTONS_HTML:     buildTabButtonsHtml(slide, slideId),
+    TAB_BODY_PANELS_HTML: buildTabBodyPanelsHtml(slide),
+    TAB_IMAGE_MAP_JSON:   buildTabImageMapJson(slide, slideId, imagePath),
   };
 
   return tokens;
@@ -391,6 +540,14 @@ async function main() {
 
   const { courseTitle, slides } = parseCourseMd(sbPath);
   console.log(`Course: ${courseTitle}  |  Slides: ${slides.length}\n`);
+
+  // BUG 6: Load available images for fallback resolution
+  const imagesDir = path.resolve('course/assets/images');
+  let availableImages = [];
+  if (fs.existsSync(imagesDir)) {
+    availableImages = fs.readdirSync(imagesDir)
+      .filter(f => /\.(webp|jpg|jpeg|png)$/i.test(f) && f !== 'placeholder.webp');
+  }
 
   // Ensure output directories exist
   fs.mkdirSync(path.resolve(args.slidesDir), { recursive: true });
@@ -451,7 +608,7 @@ async function main() {
     }
 
     // Build tokens and render
-    const tokens   = buildTokens(slide, slides, courseTitle, templateHtml);
+    const tokens   = buildTokens(slide, slides, courseTitle, templateHtml, availableImages);
     const rendered = renderTemplate(templateHtml, tokens);
 
     // Write slide file

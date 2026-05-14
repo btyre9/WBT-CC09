@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
-  <title>{{SLIDE_TITLE}}</title>
+  <title>What You'll Learn</title>
   <link rel="stylesheet" href="../assets/css/pds-tokens.css">
   <link rel="stylesheet" href="../assets/css/slide-base.css">
   <link rel="stylesheet" href="../assets/css/animations.css">
@@ -174,12 +174,12 @@
 </head>
 <body>
 
-<div class="slide" data-slide-id="{{SLIDE_ID}}">
+<div class="slide" data-slide-id="1S02">
 
   <!-- Right image panel -->
   <div class="slide-image" id="slide-image">
-    <div class="img-placeholder" aria-hidden="true">{{IMAGE_FILE}}</div>
-    <img src="{{IMAGE_PATH}}" alt="" draggable="false" onerror="this.style.display='none'">
+    <div class="img-placeholder" aria-hidden="true">1S02.webp</div>
+    <img src="../assets/images/911-GT3-S-C.webp" alt="" draggable="false" onerror="this.style.display='none'">
   </div>
 
   <!-- Left content area -->
@@ -187,12 +187,31 @@
 
     <div class="red-accent anim-fade" id="el-accent"></div>
 
-    <h2 class="slide-title anim-slide-up" id="el-title">{{SLIDE_TITLE}}</h2>
+    <h2 class="slide-title anim-slide-up" id="el-title">What You'll Learn</h2>
 
-    <p class="intro-text anim-fade" id="el-intro">{{ON_SCREEN_TEXT}}</p>
+    <p class="intro-text anim-fade" id="el-intro">By the end of this module, you will be able to do 5 things.</p>
 
     <ul class="obj-list" id="el-objectives">
-      {{OBJECTIVES_HTML}}
+            <li class="obj-item">
+        <span class="obj-number">01</span>
+        <span class="obj-text">Reframe customer objections as opportunities to educate and build trust</span>
+      </li>
+      <li class="obj-item">
+        <span class="obj-number">02</span>
+        <span class="obj-text">Apply the CPR framework — Clarify, Paraphrase, Respond — when an objection is unclear</span>
+      </li>
+      <li class="obj-item">
+        <span class="obj-number">03</span>
+        <span class="obj-text">Apply the R-A-C-E framework — Respect, Align, Contrast, Elevate — when a customer mentions a competitor</span>
+      </li>
+      <li class="obj-item">
+        <span class="obj-number">04</span>
+        <span class="obj-text">Maintain professionalism when addressing customer concerns</span>
+      </li>
+      <li class="obj-item">
+        <span class="obj-number">05</span>
+        <span class="obj-text">Recognize when to accept &quot;no&quot; gracefully while preserving the relationship</span>
+      </li>
     </ul>
 
   </div>
@@ -223,8 +242,8 @@
   /* ── VO cue-driven objective highlighting ─────────────────────────────── */
   /* Fill in cue times after VO is recorded. All null = no highlighting.   */
   /* voClearTime = when the last objective finishes being read; null = off. */
-  var voTimes    = {{VO_TIMES_ARRAY}};
-  var voClearTime = {{VO_CLEAR_TIME}};
+  var voTimes    = [4,11,19,28,35];
+  var voClearTime = 43;
   var activeIdx = -1;
 
   function getAudioTime() {

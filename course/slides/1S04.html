@@ -3,145 +3,129 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
-  <title>{{SLIDE_TITLE}}</title>
+  <title>Two Misconceptions That Cost You Customers</title>
   <link rel="stylesheet" href="../assets/css/pds-tokens.css">
   <link rel="stylesheet" href="../assets/css/slide-base.css">
   <link rel="stylesheet" href="../assets/css/animations.css">
   <script>(function(){function s(){document.documentElement.style.setProperty('--scale',Math.min(window.innerWidth/1920,window.innerHeight/920));}s();window.addEventListener('resize',s);})();</script>
   <style>
-    .quote-image-panel {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
+    .bullets-image-panel {
+      height: 100%;
+      border-radius: var(--pds-radius-xl);
+      overflow: hidden;
+      box-shadow: var(--pds-shadow-card);
     }
-    .quote-image-panel img {
+    .bullets-image-panel img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       object-position: center;
       display: block;
     }
-    /* Gradient: strong left for text legibility, fades right */
-    .quote-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      background: linear-gradient(
-        105deg,
-        rgba(14, 15, 17, 0.96) 0%,
-        rgba(14, 15, 17, 0.88) 45%,
-        rgba(14, 15, 17, 0.40) 75%,
-        rgba(14, 15, 17, 0.10) 100%
-      );
-    }
-    .quote-content {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      height: 100%;
-      padding: var(--pds-slide-pad-y) var(--pds-slide-pad-x);
-      max-width: 1100px;
-      gap: var(--pds-space-xl);
-    }
-    .quote-header {
+    /* Bullet list */
+    .bullet-list {
+      list-style: none;
       display: flex;
       flex-direction: column;
       gap: var(--pds-space-md);
     }
-    /* Opening quote mark */
-    .quote-mark {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 120px;
-      line-height: 0.6;
-      color: var(--pds-accent);
-      opacity: 0.6;
-      flex-shrink: 0;
-      user-select: none;
-      align-self: flex-start;
+    .bullet-item {
+      display: flex;
+      gap: var(--pds-space-md);
+      align-items: flex-start;
     }
-    .quote-text {
-      font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-2xl);
-      font-weight: var(--pds-font-weight-regular);
-      line-height: 1.35;
-      color: var(--pds-text-primary);
-      font-style: italic;
-      max-width: 900px;
-    }
-    .quote-divider {
-      width: 56px;
-      height: 2px;
+    .bullet-bar {
+      width: 3px;
+      min-height: 100%;
       background: var(--pds-accent);
       border-radius: 2px;
+      flex-shrink: 0;
+      align-self: stretch;
+      opacity: 0.7;
     }
-    .quote-attribution {
+    .bullet-content {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
-    .quote-attribution-name {
+    .bullet-header {
       font-family: var(--pds-font-family);
       font-size: var(--pds-font-size-md);
       font-weight: var(--pds-font-weight-semibold);
       color: var(--pds-text-primary);
-      letter-spacing: 0.04em;
+      line-height: var(--pds-line-height-tight);
     }
-    .quote-attribution-title {
+    .bullet-body {
       font-family: var(--pds-font-family);
       font-size: var(--pds-font-size-sm);
       font-weight: var(--pds-font-weight-regular);
-      color: var(--pds-text-muted);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    .quote-context {
-      font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-md);
       color: var(--pds-text-secondary);
       line-height: var(--pds-line-height-loose);
-      max-width: 680px;
-      padding: var(--pds-space-lg);
-      background: rgba(33, 34, 37, 0.70);
-      border-left: 3px solid rgba(213, 0, 28, 0.50);
-      border-radius: 0 var(--pds-radius-md) var(--pds-radius-md) 0;
     }
   </style>
 </head>
 <body>
 
-<div class="slide" data-slide-id="{{SLIDE_ID}}">
+<div class="slide" data-slide-id="1S04">
 
-  <!-- Background image -->
-  <div class="quote-image-panel">
-    <img src="{{IMAGE_PATH}}" alt="" onerror="this.style.display='none'">
-    <div class="quote-overlay"></div>
-  </div>
+  <div class="slide__split">
 
-  <!-- Quote content -->
-  <div class="quote-content">
+    <!-- Left: text + bullet list -->
+    <div class="slide__split--text">
+      <span class="pds-eyebrow anim-fade-right">Addressing Customer Concerns and Objections</span>
+      <div class="pds-accent-bar anim-bar-grow" style="--anim-delay: 0.1s;"></div>
+      <h2 class="pds-heading-display anim-fade-right" style="--anim-delay: 0.2s;">Two Misconceptions That Cost You Customers</h2>
+      <p class="pds-body anim-fade-right" style="--anim-delay: 0.3s;">Two assumptions sit underneath a lot of bad objection handling. Both are wrong. Both cost you customers.</p>
 
-    <div class="quote-header">
-      <span class="pds-eyebrow anim-fade-up">{{MODULE_LABEL}}</span>
-      <h2 class="pds-heading-lg anim-fade-up" style="--anim-delay: 0.1s;">{{SLIDE_TITLE}}</h2>
+      <!-- Bullet list — add/edit items to match the VO content -->
+      <ul class="bullet-list stagger-children" id="bullet-list" style="--anim-delay: 0.4s; margin-top: var(--pds-space-sm);">
+
+        <li class="bullet-item">
+          <div class="bullet-bar"></div>
+          <div class="bullet-content">
+            <span class="bullet-header"><!-- Bullet heading 1 --></span>
+            <span class="bullet-body"><!-- Supporting detail for bullet 1. --></span>
+          </div>
+        </li>
+
+        <li class="bullet-item">
+          <div class="bullet-bar"></div>
+          <div class="bullet-content">
+            <span class="bullet-header"><!-- Bullet heading 2 --></span>
+            <span class="bullet-body"><!-- Supporting detail for bullet 2. --></span>
+          </div>
+        </li>
+
+        <li class="bullet-item">
+          <div class="bullet-bar"></div>
+          <div class="bullet-content">
+            <span class="bullet-header"><!-- Bullet heading 3 --></span>
+            <span class="bullet-body"><!-- Supporting detail for bullet 3. --></span>
+          </div>
+        </li>
+
+        <li class="bullet-item">
+          <div class="bullet-bar"></div>
+          <div class="bullet-content">
+            <span class="bullet-header"><!-- Bullet heading 4 --></span>
+            <span class="bullet-body"><!-- Supporting detail for bullet 4. --></span>
+          </div>
+        </li>
+
+        <li class="bullet-item">
+          <div class="bullet-bar"></div>
+          <div class="bullet-content">
+            <span class="bullet-header"><!-- Bullet heading 5 --></span>
+            <span class="bullet-body"><!-- Supporting detail for bullet 5. --></span>
+          </div>
+        </li>
+
+      </ul>
     </div>
 
-    <div style="display: flex; flex-direction: column; gap: var(--pds-space-lg);">
-      <div class="quote-mark anim-fade-in" style="--anim-delay: 0.2s;">&ldquo;</div>
-      <blockquote class="quote-text anim-fade-up" style="--anim-delay: 0.3s;">
-        {{QUOTE_TEXT}}
-      </blockquote>
-      <div class="quote-divider anim-bar-grow" style="--anim-delay: 0.5s; width: 0;"></div>
-      <div class="quote-attribution anim-fade-up" style="--anim-delay: 0.6s;">
-        <span class="quote-attribution-name">{{QUOTE_ATTRIBUTION_NAME}}</span>
-        <span class="quote-attribution-title">{{QUOTE_ATTRIBUTION_TITLE}}</span>
-      </div>
-    </div>
-
-    <!-- Optional context box — remove if not needed -->
-    <div class="quote-context anim-fade-up" style="--anim-delay: 0.8s;">
-      {{ON_SCREEN_TEXT}}
+    <!-- Right: image -->
+    <div class="slide__split--media anim-fade-left" style="--anim-delay: 0.25s; height: 720px;">
+      <img src="../assets/images/Cayenne-E-Hybrid-Coupé.webp" alt="" onerror="this.style.display='none'">
     </div>
 
   </div>
@@ -214,9 +198,15 @@ var SandboxRuntime = (function () {
 
 /* ── Slide logic ─────────────────────────────────────────────────────────── */
 (function () {
-  document.querySelectorAll('.anim-fade-up, .anim-fade-in, .anim-bar-grow').forEach(function (el) {
+  document.querySelectorAll('.anim-fade-right, .anim-fade-left, .anim-bar-grow').forEach(function (el) {
     el.classList.add('is-visible');
   });
+
+  // Stagger in bullet list after header elements
+  setTimeout(function () {
+    var list = document.getElementById('bullet-list');
+    if (list) list.classList.add('is-visible');
+  }, 400);
 
 })();
 </script>

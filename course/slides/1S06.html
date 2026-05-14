@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
-  <title>{{SLIDE_TITLE}}</title>
+  <title>The CPR Framework — When the Objection Is Unclear</title>
   <link rel="stylesheet" href="../assets/css/pds-tokens.css">
   <link rel="stylesheet" href="../assets/css/slide-base.css">
   <link rel="stylesheet" href="../assets/css/animations.css">
@@ -27,7 +27,39 @@
       flex: 1;
       align-items: stretch;
     }
-    /* Each card emitted by the generator via {{CARDS_HTML}} */
+    /* Each card emitted by the generator via       <div class="explore-card pds-card" data-card="Clarify" id="card-Clarify" tabindex="0" role="button" aria-label="Explore Clarify">
+        <div class="card-number">01</div>
+        <div class="card-title">Clarify</div>
+        <div class="card-sig">Pinpoint</div>
+        <ul class="card-bullets">
+          <li>Listen for the vague pushback</li>
+          <li>Repeat back what you heard</li>
+          <li>Ask a narrowing question</li>
+        </ul>
+        <div class="card-chip">Explore &rarr;</div>
+      </div>
+      <div class="explore-card pds-card" data-card="Paraphrase" id="card-Paraphrase" tabindex="0" role="button" aria-label="Explore Paraphrase">
+        <div class="card-number">02</div>
+        <div class="card-title">Paraphrase</div>
+        <div class="card-sig">Confirm</div>
+        <ul class="card-bullets">
+          <li>Restate in your own words</li>
+          <li>&quot;It sounds like…&quot; or &quot;I hear you saying…&quot;</li>
+          <li>Let them confirm or correct</li>
+        </ul>
+        <div class="card-chip">Explore &rarr;</div>
+      </div>
+      <div class="explore-card pds-card" data-card="Respond" id="card-Respond" tabindex="0" role="button" aria-label="Explore Respond">
+        <div class="card-number">03</div>
+        <div class="card-title">Respond</div>
+        <div class="card-sig">Address</div>
+        <ul class="card-bullets">
+          <li>Speak directly to the real concern</li>
+          <li>Provide evidence or explanation</li>
+          <li>Invite their next question</li>
+        </ul>
+        <div class="card-chip">Explore &rarr;</div>
+      </div> */
     .explore-card {
       position: relative;
       flex: 1;
@@ -156,23 +188,55 @@
 </head>
 <body>
 
-<div class="slide" data-slide-id="{{SLIDE_ID}}">
+<div class="slide" data-slide-id="1S06">
 
   <div class="card-section">
 
     <!-- Header -->
     <div class="card-header">
-      <span class="pds-eyebrow anim-fade-up">{{MODULE_LABEL}}</span>
+      <span class="pds-eyebrow anim-fade-up">Addressing Customer Concerns and Objections</span>
       <div style="display:flex; align-items:center; gap: var(--pds-space-lg);">
-        <h2 class="pds-heading-display anim-fade-up" style="--anim-delay:0.1s;">{{SLIDE_TITLE}}</h2>
+        <h2 class="pds-heading-display anim-fade-up" style="--anim-delay:0.1s;">The CPR Framework — When the Objection Is Unclear</h2>
         <div class="pds-accent-bar anim-bar-grow" style="--anim-delay:0.15s; align-self:flex-end; margin-bottom:8px;"></div>
       </div>
-      <p class="pds-body anim-fade-up" style="--anim-delay:0.2s;">{{ON_SCREEN_TEXT}}</p>
+      <p class="pds-body anim-fade-up" style="--anim-delay:0.2s;">When a customer pushes back but you cannot tell exactly why, CPR buys you the information you need to respond to the real concern. Click each card to explore.</p>
     </div>
 
     <!-- Cards grid — locked until INTRO VO ends -->
     <div class="card-grid is-locked stagger-children" id="card-grid">
-      {{CARDS_HTML}}
+            <div class="explore-card pds-card" data-card="Clarify" id="card-Clarify" tabindex="0" role="button" aria-label="Explore Clarify">
+        <div class="card-number">01</div>
+        <div class="card-title">Clarify</div>
+        <div class="card-sig">Pinpoint</div>
+        <ul class="card-bullets">
+          <li>Listen for the vague pushback</li>
+          <li>Repeat back what you heard</li>
+          <li>Ask a narrowing question</li>
+        </ul>
+        <div class="card-chip">Explore &rarr;</div>
+      </div>
+      <div class="explore-card pds-card" data-card="Paraphrase" id="card-Paraphrase" tabindex="0" role="button" aria-label="Explore Paraphrase">
+        <div class="card-number">02</div>
+        <div class="card-title">Paraphrase</div>
+        <div class="card-sig">Confirm</div>
+        <ul class="card-bullets">
+          <li>Restate in your own words</li>
+          <li>&quot;It sounds like…&quot; or &quot;I hear you saying…&quot;</li>
+          <li>Let them confirm or correct</li>
+        </ul>
+        <div class="card-chip">Explore &rarr;</div>
+      </div>
+      <div class="explore-card pds-card" data-card="Respond" id="card-Respond" tabindex="0" role="button" aria-label="Explore Respond">
+        <div class="card-number">03</div>
+        <div class="card-title">Respond</div>
+        <div class="card-sig">Address</div>
+        <ul class="card-bullets">
+          <li>Speak directly to the real concern</li>
+          <li>Provide evidence or explanation</li>
+          <li>Invite their next question</li>
+        </ul>
+        <div class="card-chip">Explore &rarr;</div>
+      </div>
     </div>
 
   </div>
@@ -249,8 +313,12 @@ var SandboxRuntime = (function () {
   window.parent.postMessage({ type: 'sandbox-lock-next' }, '*');
 
   // Audio map: label → path  (injected by generator)
-  var CARD_AUDIO = {{CARD_AUDIO_MAP}};
-  var TOTAL_CARDS = {{TOTAL_CARDS}};
+  var CARD_AUDIO = {
+  'Clarify': '../assets/audio/vo/1S06-CLICK-Clarify.mp3',
+  'Paraphrase': '../assets/audio/vo/1S06-CLICK-Paraphrase.mp3',
+  'Respond': '../assets/audio/vo/1S06-CLICK-Respond.mp3'
+};
+  var TOTAL_CARDS = 3;
   var visited = new Set();
   var cardsUnlocked = false;
 

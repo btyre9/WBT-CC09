@@ -7,7 +7,158 @@
     "pass_threshold": 80,
     "vo_start_delay_ms": 1000
   },
-  "slides": [],
+  "slides": [
+    {
+      "id": "1S01",
+      "title": "Addressing Customer Concerns and Objections",
+      "audio_vo": "assets/audio/vo/1S01-INTRO.mp3"
+    },
+    {
+      "id": "1S02",
+      "title": "What You'll Learn",
+      "audio_vo": "assets/audio/vo/1S02-INTRO.mp3"
+    },
+    {
+      "id": "1S03",
+      "title": "What an Objection Really Is",
+      "audio_vo": "assets/audio/vo/1S03-INTRO.mp3"
+    },
+    {
+      "id": "1S04",
+      "title": "Two Misconceptions That Cost You Customers",
+      "audio_vo": "assets/audio/vo/1S04-INTRO.mp3"
+    },
+    {
+      "id": "1S05",
+      "title": "Why Objections Still Happen",
+      "audio_vo": "assets/audio/vo/1S05-INTRO.mp3"
+    },
+    {
+      "id": "1S06",
+      "title": "The CPR Framework — When the Objection Is Unclear",
+      "audio_vo": "assets/audio/vo/1S06-INTRO.mp3"
+    },
+    {
+      "id": "1S07",
+      "title": "CPR in Action — The Brake Service Objection",
+      "audio_vo": "assets/audio/vo/1S07-INTRO.mp3"
+    },
+    {
+      "id": "2KC01",
+      "title": "Knowledge Check",
+      "audio_vo": "assets/audio/vo/2KC01-INTRO.mp3"
+    },
+    {
+      "id": "2KC02",
+      "title": "Knowledge Check",
+      "audio_vo": "assets/audio/vo/2KC02-INTRO.mp3"
+    },
+    {
+      "id": "1S08",
+      "title": "The R-A-C-E Framework — When a Customer Mentions a Competitor",
+      "audio_vo": "assets/audio/vo/1S08-INTRO.mp3"
+    },
+    {
+      "id": "1S09",
+      "title": "The Two Words That Undo Everything",
+      "audio_vo": "assets/audio/vo/1S09-INTRO.mp3"
+    },
+    {
+      "id": "1S10",
+      "title": "R-A-C-E in Action — The Franz's Import Auto Objection",
+      "audio_vo": "assets/audio/vo/1S10-INTRO.mp3"
+    },
+    {
+      "id": "1S11",
+      "title": "Match the Objection to the Framework",
+      "audio_vo": "assets/audio/vo/1S11-INTRO.mp3"
+    },
+    {
+      "id": "2KC03",
+      "title": "Knowledge Check",
+      "audio_vo": "assets/audio/vo/2KC03-INTRO.mp3"
+    },
+    {
+      "id": "2KC04",
+      "title": "Knowledge Check",
+      "audio_vo": "assets/audio/vo/2KC04-INTRO.mp3"
+    },
+    {
+      "id": "1S12",
+      "title": "Professionalism Under Pressure",
+      "audio_vo": "assets/audio/vo/1S12-INTRO.mp3"
+    },
+    {
+      "id": "1S13",
+      "title": "When the Answer Is No — and Why That's Okay",
+      "audio_vo": "assets/audio/vo/1S13-INTRO.mp3"
+    },
+    {
+      "id": "1S14",
+      "title": "Preserve the Relationship",
+      "audio_vo": "assets/audio/vo/1S14-INTRO.mp3"
+    },
+    {
+      "id": "1S15",
+      "title": "Module 9 Complete",
+      "audio_vo": "assets/audio/vo/1S15-INTRO.mp3"
+    },
+    {
+      "id": "3FQ01",
+      "title": "Final Assessment — Question 1",
+      "audio_vo": "assets/audio/vo/3FQ01-INTRO.mp3"
+    },
+    {
+      "id": "3FQ02",
+      "title": "Final Assessment — Question 2",
+      "audio_vo": "assets/audio/vo/3FQ02-INTRO.mp3"
+    },
+    {
+      "id": "3FQ03",
+      "title": "Final Assessment — Question 3",
+      "audio_vo": "assets/audio/vo/3FQ03-INTRO.mp3"
+    },
+    {
+      "id": "3FQ04",
+      "title": "Final Assessment — Question 4",
+      "audio_vo": "assets/audio/vo/3FQ04-INTRO.mp3"
+    },
+    {
+      "id": "3FQ05",
+      "title": "Final Assessment — Question 5",
+      "audio_vo": "assets/audio/vo/3FQ05-INTRO.mp3"
+    },
+    {
+      "id": "3FQ06",
+      "title": "Final Assessment — Question 6",
+      "audio_vo": "assets/audio/vo/3FQ06-INTRO.mp3"
+    },
+    {
+      "id": "3FQ07",
+      "title": "Final Assessment — Question 7",
+      "audio_vo": "assets/audio/vo/3FQ07-INTRO.mp3"
+    },
+    {
+      "id": "3FQ08",
+      "title": "Final Assessment — Question 8",
+      "audio_vo": "assets/audio/vo/3FQ08-INTRO.mp3"
+    },
+    {
+      "id": "3FQ09",
+      "title": "Final Assessment — Question 9",
+      "audio_vo": "assets/audio/vo/3FQ09-INTRO.mp3"
+    },
+    {
+      "id": "3FQ10",
+      "title": "Final Assessment — Question 10",
+      "audio_vo": "assets/audio/vo/3FQ10-INTRO.mp3"
+    },
+    {
+      "id": "3FQ-SCORE",
+      "title": "Module 9 Assessment Results",
+      "audio_vo": "assets/audio/vo/3FQ-SCORE-INTRO.mp3"
+    }
+  ],
   "quiz": {
     "final_quiz": {
       "passing_score": 80,

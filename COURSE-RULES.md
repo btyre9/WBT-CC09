@@ -90,6 +90,26 @@ Every image assigned to a slide must have a corresponding storyboard field. The 
 
 The generator prints a `WARN` line for every image that falls back to a placeholder, so missing fields are visible at generation time. Treat any `WARN` line about an image as an authoring gap to fill before the module ships.
 
+### S10 — Limit passive (non-interactive) slides
+
+Passive slides — `content-split`, `content-stat`, `content-quote`, `content-bullets` — deliver narrated reading content with no learner interaction. Over-use kills engagement.
+
+**Rules:**
+
+- **No more than 2 passive slides total per module** (excluding `hero-title`, `objectives`, `closing`, and the **first 2 content slides** of any module — those always set up the topic and are expected to be informational).
+- **Never place 2 or more passive slides consecutively** after the opening pair. Every passive slide must be followed by an interactive slide before another passive slide can appear.
+- **Minimum 1 interactive slide every 6–7 slides.** An interactive slide is any template that requires a learner action before Next unlocks: `card-explore`, `tab-panel`, `tile-explore`, `hotspot`, `drag-match`, `step-sequence`, `bar-chart-modal`, `knowledge-check`, `final-quiz`.
+
+When content would normally justify a passive slide, prefer a `content-split` with a `drag-match` or `card-explore` immediately after — or restructure the content into an interactive template directly.
+
+### S11 — Never use the same template back-to-back
+
+No two consecutive content slides may use the same template. Variety in template type maintains visual rhythm and prevents learner habituation.
+
+**Exempt:** `knowledge-check`, `final-quiz`, and `quiz-score` — assessment slides are inherently sequential and always appear in banks.
+
+**All other templates** — `content-split`, `content-bullets`, `content-stat`, `content-quote`, `card-explore`, `tab-panel`, `drag-match`, `tile-explore`, `hotspot`, `step-sequence`, `bar-chart-modal` — must never repeat on the immediately following slide. Restructure or swap the second instance to a different template that serves the same learning goal.
+
 ---
 
 ## Part 2 — Slide IDs and Naming
@@ -205,6 +225,10 @@ The KC and FQ templates already implement this. When authoring a new template wi
 When the learner places the final correct match on a `drag-match` slide (i.e. `matchedCount === TOTAL_PAIRS`), play `course/assets/audio/sfx/bell1.mp3` once. The chime fires inside the `updateProgress` completion branch — the same branch that flips the progress bar to `is-complete`. It does **not** chain into any narration; it's a standalone reward cue.
 
 If a new interaction template introduces a similar "you finished it" moment (matching, sequencing, sorting), reuse `bell1.mp3` for consistency. Do not introduce new chime files unless the interaction is semantically different (e.g., level-up vs. completion).
+
+### A8 — No Click_Next audio cue
+
+Slides must not play `Click_Next.mp3` or any audio cue when VO ends or when interactions complete. The player's runtime handles Next-button signaling via the `pulse-unlock` CSS animation. Any `SandboxRuntime.voAudio.addEventListener('ended', ...)` block that plays Click_Next must be removed from slide HTML.
 
 ---
 

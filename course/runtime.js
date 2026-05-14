@@ -204,7 +204,7 @@
     captionLoadToken: 0,
     playbackRates: [1, 1.25, 1.5, 2],
     playbackRateIndex: 0,
-    sfx: { correct: null, incorrect: null, clickNext: null },
+    sfx: { correct: null, incorrect: null },
     // Knowledge check
     kcQuestions: [],
     kcIndex: 0,
@@ -253,8 +253,21 @@
   function updateNavButtons() {
     var atEnd = state.slideIndex >= state.totalSlides - 1;
     var locked = state.nextLockedByAudio || state.nextLockedByInteraction;
-    $("btn-next").disabled = atEnd || locked;
-    $("btn-next").style.opacity = locked ? "0.35" : "";
+    var btn = $("btn-next");
+    var wasDisabled = btn.disabled;
+    btn.disabled = atEnd || locked;
+    btn.style.opacity = locked ? "0.35" : "";
+    if (wasDisabled && !btn.disabled) {
+      pulseNextButton();
+    }
+  }
+
+  function pulseNextButton() {
+    var btn = $("btn-next");
+    if (!btn || btn.disabled) return;
+    btn.classList.remove("pulse-unlock");
+    void btn.offsetWidth; // force reflow to restart animation
+    btn.classList.add("pulse-unlock");
   }
 
   function resolveSlideAudioSrc(slide) {
@@ -515,13 +528,7 @@
     if (state.cueEditor.open) updateCueCurrentTimeLabel();
     state.nextLockedByAudio = false;
     updateNavButtons();
-    // Play transition cue on SLD slides that are not the last slide
-    var slides = state.data && state.data.slides || [];
-    var curSlide = slides[state.slideIndex];
-    var isLastSlide = state.slideIndex >= slides.length - 1;
-    if (curSlide && /^1S/.test(curSlide.id) && !isLastSlide) {
-      playSfx("clickNext");
-    }
+    postMessageToSlide({ type: 'player-intro-state', locked: false });
   }
 
   function onAudioMeta() {
@@ -632,6 +639,14 @@
       }
     } else {
       setAudioStartOverlayVisible(false);
+      // No audio for this slide — signal slide immediately after frame loads
+      var noAudioFrame = $("slide-frame");
+      if (noAudioFrame) {
+        noAudioFrame.addEventListener('load', function onNoAudioLoad() {
+          noAudioFrame.removeEventListener('load', onNoAudioLoad);
+          postMessageToSlide({ type: 'player-intro-state', locked: false });
+        });
+      }
     }
     updateAudioUi();
 
@@ -1680,7 +1695,6 @@
     var sfxCfg = state.data.quiz && state.data.quiz.runtime && state.data.quiz.runtime.sfx;
     if (sfxCfg && sfxCfg.correct) state.sfx.correct = new Audio("./" + sfxCfg.correct);
     if (sfxCfg && sfxCfg.incorrect) state.sfx.incorrect = new Audio("./" + sfxCfg.incorrect);
-    state.sfx.clickNext = new Audio("./assets/audio/vo/Click_Next.mp3");
 
     initFinalQuiz();
 

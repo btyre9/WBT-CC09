@@ -56,6 +56,7 @@
       justify-content: space-between;
       padding: 0 16px;
       z-index: 10;
+      position: relative;
     }
     .top-left {
       display: flex;
@@ -312,15 +313,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 12px;
-    }
-    .audio-timer {
-      color: rgba(255,255,255,0.7);
-      font-size: 13px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
     }
 
     .bottom-controls {
@@ -362,15 +354,18 @@
     }
     .ctrl-btn.active svg { fill: #d5001c; }
 
+    /* Thin clip-progress bar — bottom edge of top bar */
     .audio-progress {
-      width: min(520px, 58vw);
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(235, 235, 235, 0.24);
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 0;
       overflow: hidden;
       pointer-events: none;
     }
-    .audio-progress.disabled { opacity: 0.4; }
     .audio-progress-fill {
       width: 0%;
       height: 100%;
@@ -388,6 +383,14 @@
     }
     .ctrl-btn-next:hover { background: #b0001a; }
     .ctrl-btn-next:disabled { background: #d5001c; opacity: 0.3; }
+    @keyframes pulseUnlock {
+      0%   { box-shadow: 0 0 0 0 rgba(213,0,28,0.7); }
+      50%  { box-shadow: 0 0 0 10px rgba(213,0,28,0); }
+      100% { box-shadow: 0 0 0 0 rgba(213,0,28,0); }
+    }
+    .ctrl-btn-next.pulse-unlock {
+      animation: pulseUnlock 1.2s ease-out infinite;
+    }
     .next-label {
       color: #fff;
       font-family: 'Porsche Next TT', Arial, Helvetica, sans-serif;
@@ -671,6 +674,10 @@
 
   <!-- Top bar -->
   <div class="top-bar">
+    <!-- Clip progress — thin red line at bottom edge, tracks active audio clip -->
+    <div class="audio-progress" id="audio-progress">
+      <div class="audio-progress-fill" id="audio-progress-fill"></div>
+    </div>
     <div class="top-left">
       <button class="menu-btn" id="btn-menu">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m18 16v1h-12v-1zm0-5v1h-12v-1zm0-5v1h-12v-1z"/></svg>
@@ -715,13 +722,7 @@
       </svg>
     </div>
 
-    <div class="bottom-center">
-      <!-- Audio Progress (visual only) -->
-      <div class="audio-progress disabled" id="audio-progress" title="Audio progress (visual only)">
-        <div class="audio-progress-fill" id="audio-progress-fill"></div>
-      </div>
-      <span class="audio-timer" id="audio-timer">0:00</span>
-    </div>
+    <div class="bottom-center" aria-hidden="true"></div>
 
     <div class="bottom-controls">
       <!-- Play / Pause -->

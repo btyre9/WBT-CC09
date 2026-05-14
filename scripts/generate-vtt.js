@@ -104,6 +104,33 @@ function writeSegmentedVtt(segments) {
 }
 
 // ---------------------------------------------------------------------------
+// Caption corrections — reverse of the TTS pronunciation map
+// Whisper transcribes what WellSaid spoke (e.g. "Porsha"), so we map back
+// to the correct display spelling (e.g. "Porsche") for readable captions.
+// ---------------------------------------------------------------------------
+
+const PRONUNCIATION_MAP_PATH = path.join('storyboard', 'pronunciation-map.json');
+
+function buildCaptionCorrectionMap() {
+  if (!fs.existsSync(PRONUNCIATION_MAP_PATH)) return {};
+  const forward = JSON.parse(fs.readFileSync(PRONUNCIATION_MAP_PATH, 'utf8'));
+  const inverse = {};
+  for (const [display, spoken] of Object.entries(forward)) {
+    inverse[spoken] = display;
+  }
+  return inverse;
+}
+
+function applyCaptionCorrections(text, correctionMap) {
+  let out = text;
+  for (const [spoken, display] of Object.entries(correctionMap)) {
+    const escaped = spoken.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    out = out.replace(new RegExp(`\\b${escaped}\\b`, 'gi'), display);
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
 // OpenAI Whisper transcription
 // ---------------------------------------------------------------------------
 
@@ -235,8 +262,10 @@ async function main() {
           writePlaceholderVtt(seg.fileName, seg.text, outputFile, args.duration);
           console.log('no speech, wrote placeholder');
         } else {
+          const correctionMap = buildCaptionCorrectionMap();
+          const correctedSegs = segs.map((s) => ({ ...s, text: applyCaptionCorrections(s.text, correctionMap) }));
           fs.mkdirSync(path.dirname(outputFile), { recursive: true });
-          fs.writeFileSync(outputFile, writeSegmentedVtt(segs), 'utf8');
+          fs.writeFileSync(outputFile, writeSegmentedVtt(correctedSegs), 'utf8');
           console.log(`${segs.length} segment(s)`);
         }
         generated++;

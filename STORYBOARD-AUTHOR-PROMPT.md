@@ -96,6 +96,9 @@ There are exactly two title positions across the entire course. Every slide fall
 
 ## Template selection guide
 
+> **Rule S11 — No same template back-to-back:** No two consecutive content slides may use the same template. `knowledge-check`, `final-quiz`, and `quiz-score` are exempt (assessment banks are inherently sequential). For all other templates, if the next slide would repeat, choose a different template that serves the same learning goal.
+> **Rule S10 — Passive slide limit:** `content-split`, `content-stat`, `content-quote`, and `content-bullets` are passive (no learner interaction). Use **no more than 2 passive slides per module** — exempt: `hero-title`, `objectives`, `closing` (structural), and the **first 2 content slides** of the module (always informational by design). After the opening pair, never place two passive slides back-to-back — always separate them with an interactive slide. Ensure at least one interactive slide appears every 6–7 slides. When in doubt, restructure passive content into an interactive template instead.
+
 | Content type | Template ID |
 |---|---|
 | Module opener (Slide 01 only) | `hero-title` |
