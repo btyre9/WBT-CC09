@@ -2,10 +2,12 @@
 
 > **When to open this doc:** You're starting a new training module (CC09, CC10, etc.).
 > **It answers:** The exact step-by-step process from "I have learning material" to "I have a SCORM zip ready to upload."
-> **Companion docs:**
+> **For the storyboard authoring step specifically:** see [STORYBOARD-AUTHORING-KIT.md](STORYBOARD-AUTHORING-KIT.md) — a focused, self-contained reference that pulls together everything you need to write `course.md` without jumping between files.
+> **Companion docs (for deeper questions):**
+> [STORYBOARD-AUTHORING-KIT.md](STORYBOARD-AUTHORING-KIT.md) for storyboard authoring (recommended starting point) ·
 > [COURSE-RULES.md](COURSE-RULES.md) for every quality gate ·
-> [STORYBOARD-AUTHOR-PROMPT.md](STORYBOARD-AUTHOR-PROMPT.md) for how to write `course.md` ·
-> [TEMPLATE-REFERENCE.md](TEMPLATE-REFERENCE.md) for which slide template to pick ·
+> [STORYBOARD-AUTHOR-PROMPT.md](STORYBOARD-AUTHOR-PROMPT.md) for the long-form authoring prompt ·
+> [TEMPLATE-REFERENCE.md](TEMPLATE-REFERENCE.md) for full template HTML/CSS reference ·
 > [PIPELINE-REFERENCE.md](PIPELINE-REFERENCE.md) for command-by-command detail.
 
 ---
@@ -79,7 +81,11 @@ Windows: install via WSL, or use the `--whisper` API mode (costs ~$0.006/min).
 
 ## Step 4 — Author the storyboard
 
-Open `storyboard/course.md` and replace the template content with your module. Follow [STORYBOARD-AUTHOR-PROMPT.md](STORYBOARD-AUTHOR-PROMPT.md) for the field syntax and per-template required fields.
+Open `storyboard/course.md` and replace the template content with your module.
+
+**Recommended:** Use [STORYBOARD-AUTHORING-KIT.md](STORYBOARD-AUTHORING-KIT.md) as the working reference for this step — it's a single self-contained doc with the module structure, every template's required fields (including the new `accordion-content`, `accordion-content-image-left`, and `tab-panel`), the storyboard grammar rules, naming conventions, and the per-slide / per-module checklists.
+
+For the long-form authoring prompt (useful when handing this work to Claude as a project instruction), see [STORYBOARD-AUTHOR-PROMPT.md](STORYBOARD-AUTHOR-PROMPT.md).
 
 **Non-negotiable structure** (per [COURSE-RULES.md](COURSE-RULES.md)):
 
@@ -98,7 +104,7 @@ Open `storyboard/course.md` and replace the template content with your module. F
 **Key authoring rules to honor in `course.md`:**
 
 - **One field per line** (Rule S1) — no exceptions
-- **Image filenames** mirror the Slide-ID: `1S03.webp` (single image) or `1S03a.webp`, `1S03b.webp` for multiple images on the same slide. Full rules: [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md).
+- **Image filenames** mirror the Slide-ID: `1S03.jpg` (single image) or `1S03a.jpg`, `1S03b.jpg` for multiple images on the same slide. Full rules: [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md).
 - **Include both `Image-File` and `Image`** on every slide with an image slot — `Image-File` is the filename you'll drop in later; `Image` is art direction prose
 - **Optional `Image-Focus` and `Image-Fit`** when the default crop is wrong — use shorthand like `face-left`, `hero-top`, `bottom-detail` instead of editing HTML later
 - **KC pair intro pattern** (Rule Q0a): On the **first** KC of each pair, write `Voiceover-INTRO: Knowledge Check. Select the correct answer.` On the **second** KC of each pair, omit both `Voiceover-INTRO` and `Caption-Text`
@@ -128,8 +134,7 @@ Generates one `.mp3` per VO field in `course/assets/audio/vo/`. Uses WellSaid TT
 Output naming:
 
 - `1SNN-INTRO.mp3` — intro narration
-- `1SNN-CLICK-<Label>.mp3` — per-card / per-tile clicks
-- `1SNN-TAB-<Label>.mp3` — per-tab clicks
+- `1SNN-CLICK-<Label>.mp3` — per-card / per-tile / per-tab / per-accordion-item clicks
 - `1SNN-STEP-<N>.mp3` — step-sequence steps
 - `2KCNN-INTRO.mp3` — first KC of each pair only (Rule Q0a)
 - `3FQ-SCORE-INTRO.mp3` — quiz score narration
@@ -174,7 +179,7 @@ Bakes the freshly-written `VO-Cue-N` values into the slide HTML.
 
 ## Step 10 — Drop in real images
 
-Place `.webp` files in `course/assets/images/` using the **exact** filenames you wrote into `course.md`. Refresh the browser — the slide swaps from placeholder to real image automatically.
+Place `.jpg` files in `course/assets/images/` using the **exact** filenames you wrote into `course.md`. Refresh the browser — the slide swaps from placeholder to real image automatically.
 
 If an image's crop is wrong:
 
@@ -277,7 +282,7 @@ npm run generate-vo
 npm run generate-vtt -- --whisper-local
 npm run extract-vo-cues
 npm run generate-slides -- --force
-# (drop image .webp files into course/assets/images/)
+# (drop image .jpg files into course/assets/images/)
 npm run start-player        # review
 npm run package             # ship
 ```

@@ -22,7 +22,7 @@ Every slide should carry an image wherever the template supports one. Never leav
 | Field | Purpose | When to use |
 |-------|---------|-------------|
 | `Image` | Art direction | Always include. Describe the ideal image: subject, mood, composition, setting. This is what the asset team uses to source or generate the image. |
-| `Image-File` | Production filename | Add once the asset is ready. Mirrors the Slide-ID: `1S03.webp` (single image) or `1S03a.webp`, `1S03b.webp` (multiple). See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md). |
+| `Image-File` | Production filename | Add once the asset is ready. Mirrors the Slide-ID: `1S03.jpg` (single image) or `1S03a.jpg`, `1S03b.jpg` (multiple). See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md). |
 
 **Placeholder rule:** When `Image-File` is not yet provided, the HTML must render an `.img-placeholder` element — a styled dark-striped block occupying the image slot — so the slide layout is complete and no area is left visually empty. Every template HTML file should include this element by default, swapped out for the real `<img>` once the asset arrives.
 
@@ -73,7 +73,7 @@ Full-bleed background image with dark gradient overlay. Left-aligned: small modu
 | Field | Format | Notes |
 |-------|--------|-------|
 | `Slide-Title` | Module title text | Main hero heading |
-| `Image-File` | `1SNN.webp` | Full-bleed background — premium, aspirational |
+| `Image-File` | `1SNN.jpg` | Full-bleed background — premium, aspirational |
 | `Hero-Subtitle` | e.g. `Module 3 of 12` | Caption line below the title |
 | `Voiceover-INTRO` | 3–5 sentences | Welcome + module purpose + what learner will gain |
 | `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
@@ -98,7 +98,7 @@ Open with the module name and number. State what the learner will gain. End with
 Slide-ID: 1S01
 Template-ID: hero-title
 Slide-Title: The Art of Communication
-Image-File: porsche_advisor_greeting_CC00.webp
+Image-File: porsche_advisor_greeting_CC00.jpg
 Hero-Subtitle: Module 3 of 12
 >> On slide load → 1S01-INTRO.mp3
 Voiceover-INTRO: Welcome to Module 3 — The Art of Communication. In every service interaction, the words you choose, the way you listen, and the energy you bring determine whether a customer leaves satisfied — or simply leaves. In this module, you'll learn the communication skills that set Porsche service professionals apart from the rest.
@@ -127,7 +127,7 @@ Two-column layout: section heading on the left, numbered learning objectives on 
 | `Objective-1` through `Objective-N` | Verb-first: `Identify…`, `Explain…`, `Apply…` | **Required.** One complete objective per field. Parser stops at first missing number. Max 10. If no `Objective-N` fields exist, the generator outputs placeholder comments — treat this as a build error and fix the storyboard before publishing. |
 | `Voiceover-INTRO` | 1 intro + 1 sentence per objective | VO names each objective aloud so animation timing aligns |
 | `Caption-Text` | ≤120 chars | e.g. `By the end of this module, you will be able to do four things.` |
-| `Image-File` | `1SNN.webp` | Right-side contextual image — a scene that represents the module's subject matter |
+| `Image-File` | `1SNN.jpg` | Right-side contextual image — a scene that represents the module's subject matter |
 | `Image` | Art direction | Include if `Image-File` is not yet sourced. Renders as `.img-placeholder` until asset is ready. |
 
 **Optional fields (post-production):**
@@ -158,7 +158,7 @@ Objective-1: Explain why communication breaks down in service interactions
 Objective-2: Identify the four active listening techniques used by top advisors
 Objective-3: Apply the FACE framework to your next customer conversation
 Objective-4: Recognize common barriers to listening and how to overcome them
-Image-File: learning_objectives_CC00.webp
+Image-File: learning_objectives_CC00.jpg
 Image: A Porsche service advisor in a clean, professional environment. Attentive and approachable.
 Voiceover-INTRO: By the end of this module, you will be able to do four things. First — explain why communication breaks down even when both parties are trying. Second — identify the four active listening techniques used by the most effective Porsche service advisors. Third — apply the FACE framework in your next customer conversation. And fourth — recognize the most common barriers to listening and know what to do about them.
 Status: Draft
@@ -182,7 +182,7 @@ Two-column layout: text on the left (heading, red accent bar, body paragraph OR 
 |-------|--------|-------|
 | `Slide-Title` | Section heading | Displayed above body copy |
 | `On-Screen-Text` | 1–3 sentence paragraph | Body copy. Do not combine with `Pull-Quote`. |
-| `Image-File` | `1SNN.webp` | Right-column image |
+| `Image-File` | `1SNN.jpg` | Right-column image |
 | `Voiceover-INTRO` | 4–7 sentences | Expand on the on-screen content — never repeat it verbatim |
 | `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
 
@@ -207,7 +207,7 @@ Slide-ID: 1S04
 Template-ID: content-split
 Slide-Title: Why Communication Fails
 On-Screen-Text: Communication breaks down not because people aren't trying — but because most conversations are built on assumptions about what the other person already understands.
-Image-File: crossed_signals_CC00.webp
+Image-File: crossed_signals_CC00.jpg
 >> On slide load → 1S04-INTRO.mp3
 Voiceover-INTRO: Here's the paradox of communication failures — they almost never happen because people stop trying. They happen because both parties assume they're already aligned. In a service context, you might assume the customer knows what a specific repair involves. They assume you know exactly what they mean by "it feels off." Those assumptions stack, and suddenly a simple service appointment becomes a complaint. Closing that gap is what this module is about.
 Caption-Text: Communication breaks down not because people aren't trying.
@@ -224,7 +224,7 @@ Slide-ID: 1S05
 Template-ID: content-split
 Slide-Title: The First Impression Window
 Pull-Quote: You have about seven seconds to establish trust — after that, the customer has already decided how they feel about you.
-Image-File: advisor_greeting_CC00.webp
+Image-File: advisor_greeting_CC00.jpg
 >> On slide load → 1S05-INTRO.mp3
 Voiceover-INTRO: Research on first impressions consistently points to a seven-second window. In those seven seconds, a customer has already formed a judgment about whether you're trustworthy, whether you listen, and whether they'll be comfortable with you managing their vehicle. You can recover from a weak first impression — but it takes the rest of the appointment to do it. Getting it right from the start is always worth the effort.
 Caption-Text: You have about seven seconds to establish trust.
@@ -256,7 +256,7 @@ Parser splits on the first space. Everything before the first space becomes the 
 |-------|--------|-------|
 | `Slide-Title` | Section heading | |
 | `On-Screen-Text` | `VALUE Label` | First token = large stat; remainder = label |
-| `Image-File` | `1SNN.webp` | Supporting image — reinforces the context of the statistic |
+| `Image-File` | `1SNN.jpg` | Supporting image — reinforces the context of the statistic |
 | `Voiceover-INTRO` | 4–6 sentences | State the number, then contextualize — what it means, why it matters in practice |
 | `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
 
@@ -305,7 +305,7 @@ Split layout: brief intro paragraph above a bulleted list on the left, image on 
 | `Slide-Title` | Section heading | |
 | `On-Screen-Text` | 1–2 sentence intro | Sets up the list |
 | `Bullet-1` through `Bullet-N` | One bullet per field | 3–6 bullets. Parser reads consecutive Bullet-N fields until a number is missing. Write each bullet as a complete short phrase — no leading dash or asterisk. |
-| `Image-File` | `1SNN.webp` | Right-column image |
+| `Image-File` | `1SNN.jpg` | Right-column image |
 | `Voiceover-INTRO` | 4–7 sentences | Walk through each bullet with one sentence each |
 | `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
 
@@ -320,7 +320,7 @@ Slide-ID: 1S08
 Template-ID: content-bullets
 Slide-Title: The FACE Framework
 On-Screen-Text: Top Porsche service advisors structure every intake conversation using four steps.
-Image-File: face_framework_overview_CC00.webp
+Image-File: face_framework_overview_CC00.jpg
 Bullet-1: Focus — begin every intake with your full, undivided attention on the customer
 Bullet-2: Acknowledge — confirm what the customer said before moving forward
 Bullet-3: Clarify — ask the one follow-up question that fills in the biggest gap
@@ -350,7 +350,7 @@ Full-bleed atmospheric image as background. Large quote text on the left with a 
 | `Quote` | The quoted text | Keep ≤25 words for visual impact |
 | `Quote-Attribution` | Speaker name | First and last name |
 | `Quote-Title` | Role or context | e.g. `Director of Customer Experience, Porsche Cars North America` |
-| `Image-File` | `1SNN.webp` | Full-bleed background — cinematic, atmospheric |
+| `Image-File` | `1SNN.jpg` | Full-bleed background — cinematic, atmospheric |
 | `Voiceover-INTRO` | 4–6 sentences | Read the quote first, then contextualize it |
 | `Caption-Text` | ≤120 chars | The quote text itself (first sentence) |
 
@@ -369,7 +369,7 @@ Template-ID: content-quote
 Quote: The customer doesn't remember what you fixed — they remember how you made them feel.
 Quote-Attribution: Tara Reyes
 Quote-Title: Director of Customer Experience, Porsche Cars North America
-Image-File: porsche_mountain_road_CC00.webp
+Image-File: porsche_mountain_road_CC00.jpg
 >> On slide load → 1S09-INTRO.mp3
 Voiceover-INTRO: "The customer doesn't remember what you fixed — they remember how you made them feel." This insight captures something essential about the Porsche service experience. The technical work is the baseline — it's expected. What separates great Porsche advisors is the human layer on top of it. The tone of voice, the follow-up call, the way you delivered difficult news — that's what the customer carries with them.
 Caption-Text: The customer doesn't remember what you fixed — they remember how you made them feel.
@@ -402,8 +402,8 @@ Section heading above a grid of 3–6 cards. Cards are locked (grayed out with a
 | `Card-Title-Label` | Short phrase | Heading displayed on the card tile. One per card. Label matches the `Voiceover-CLICK-Label` key. |
 | `Card-Sig-Label` | 1–3 words | Signature word shown with the card number mark (e.g., "01 · Feature"). Usually the plain-English label. |
 | `Card-Bullets-Label` | Pipe-separated list | 2–4 bullet points for the card body. One per card. Separate items with ` | `. |
-| `Card-Image-Label` | `filename.webp` | Poster image for the card tile. Optional — falls back to a rotating placeholder from available assets. |
-| `Image-File` | `1SNN.webp` | Background image behind the card grid |
+| `Card-Image-Label` | `filename.jpg` | Poster image for the card tile. Optional — falls back to a rotating placeholder from available assets. |
+| `Image-File` | `1SNN.jpg` | Background image behind the card grid |
 | `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
 
 > **Rule:** Every `Voiceover-CLICK-Label` key requires a matching `Card-Title-Label`, `Card-Sig-Label`, and `Card-Bullets-Label` field. Missing content fields produce placeholder text. A slide should be considered incomplete if any of these are absent.
@@ -435,7 +435,7 @@ Template-ID: card-explore
 Slide-Title: The Three Channels of Communication
 On-Screen-Text: Every message you send travels through three channels at once. Click each card to explore them.
 Caption-Text: Every message you send travels through three channels simultaneously.
-Image-File: communication_channels_CC00.webp
+Image-File: communication_channels_CC00.jpg
 Voiceover-INTRO: Every message you send travels through three channels simultaneously. Understanding each one gives you more control over how you're perceived. Click each card to explore the three channels.
 Voiceover-CLICK-BodyLanguage: Body language carries more of your message than most people realize — posture, eye contact, facial expression, and proximity all communicate before you speak. In a service interaction, an open stance and steady eye contact signal confidence and engagement. A glance at your screen or crossed arms signal the opposite, even when that's not your intent.
 Card-Title-BodyLanguage: What Your Body Says
@@ -601,7 +601,7 @@ Module wrap-up layout with heading, brief summary message, optional accent image
 |-------|--------|-------|
 | `Slide-Title` | e.g. `Module Complete` or `Well Done` | Closing heading |
 | `On-Screen-Text` | 1–2 sentence summary | What the learner has accomplished |
-| `Image-File` | `1SNN.webp` | Accent image — aspirational, forward-momentum scene |
+| `Image-File` | `1SNN.jpg` | Accent image — aspirational, forward-momentum scene |
 | `Voiceover-INTRO` | 3–5 sentences | Brief summary + clear transition to the assessment |
 | `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
 
@@ -622,7 +622,7 @@ Slide-ID: 1S16
 Template-ID: closing
 Slide-Title: Module Complete
 On-Screen-Text: You've explored the communication skills that separate good service from great service — and learned how to apply them in every customer interaction.
-Image-File: porsche_handshake_closing_CC00.webp
+Image-File: porsche_handshake_closing_CC00.jpg
 >> On slide load → 1S16-INTRO.mp3
 Voiceover-INTRO: You've covered a lot of ground in this module. You now understand why communication breaks down, how the three channels shape every message you send, and how to use the FACE framework to structure every intake conversation. In the next section, you'll complete a short assessment to confirm your understanding. Take your time and trust what you've learned.
 Caption-Text: You've explored the communication skills that separate good service from great service.
@@ -663,7 +663,7 @@ Horizontal row of 3–5 tiles. Each tile shows a full-bleed poster image at rest
 | `Tile-Title-Label` | One per tile — full display title | e.g. `Tile-Title-AccurateDiagnosis: Accurate Diagnosis Starts Here` |
 | `Tile-Sig-Label` | One per tile — short keyword | e.g. `Tile-Sig-AccurateDiagnosis: Accuracy` — sequence number auto-prepended by order |
 | `Tile-Bullets-Label` | One per tile — exactly 3 bullets, pipe-separated | e.g. `Tile-Bullets-AccurateDiagnosis: First bullet \| Second bullet \| Third bullet` |
-| `Image-Label` | One per tile — filename or art direction | e.g. `Image-AccurateDiagnosis: technician_listening_CC00.webp` |
+| `Image-Label` | One per tile — filename or art direction | e.g. `Image-AccurateDiagnosis: technician_listening_CC00.jpg` |
 | `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
 
 **Audio file naming:** `{Slide-ID}-CLICK-{Label}.mp3`
@@ -694,19 +694,19 @@ Voiceover-CLICK-AccurateDiagnosis: Customers describe what they experience — a
 Tile-Title-AccurateDiagnosis: Accurate Diagnosis Starts Here
 Tile-Sig-AccurateDiagnosis: Accuracy
 Tile-Bullets-AccurateDiagnosis: Customers bring a feeling, a sound, or a behavior — not a diagnosis | Descriptions are often imprecise, but they're your starting point | Careful listening to that description is what gets you to the real problem efficiently
-Image-AccurateDiagnosis: technician_listening_01_CC00.webp
+Image-AccurateDiagnosis: technician_listening_01_CC00.jpg
 >> User clicks TrustBuilding tile → 1S04-CLICK-TrustBuilding.mp3
 Voiceover-CLICK-TrustBuilding: Trust forms fast — customers decide within the first few moments of your intake whether you're genuinely engaged or just going through the motions. They may not be able to evaluate your technical skills, but they can absolutely tell whether you're listening. That perception shapes every conversation that follows, including how willing they are to approve your recommendations.
 Tile-Title-TrustBuilding: Trust Is Built in the Listening
 Tile-Sig-TrustBuilding: Trust
 Tile-Bullets-TrustBuilding: Trust forms fast — customers can tell within moments whether you're genuinely engaged | Going through the motions is easy to detect | That perception shapes how willing they are to approve your recommendations
-Image-TrustBuilding: technician_listening_02_CC00.webp
+Image-TrustBuilding: technician_listening_02_CC00.jpg
 >> User clicks ApprovedWork tile → 1S04-CLICK-ApprovedWork.mp3
 Voiceover-CLICK-ApprovedWork: There's a direct line between listening and approved work. When a customer feels heard, they trust your judgment — and when they trust your judgment, they say yes to recommended services. This isn't about sales technique. It's about the natural outcome of a conversation where the customer feels respected and understood.
 Tile-Title-ApprovedWork: Listening Leads to More Approved Work
 Tile-Sig-ApprovedWork: Approval
 Tile-Bullets-ApprovedWork: The connection between listening and approved work is direct | Customers who feel heard are far more likely to approve recommended repairs | Listening is a business skill as much as it is a communication skill
-Image-ApprovedWork: technician_listening_03_CC00.webp
+Image-ApprovedWork: technician_listening_03_CC00.jpg
 Status: Draft
 Notes: tile-explore chosen — three parallel concepts with distinct visual identities and substantive per-tile content. Reference implementation: 1S04.html.
 ```
@@ -732,7 +732,7 @@ Left panel with stacked tab navigation buttons. Right side shows an image that u
 | `Voiceover-INTRO` | 2–3 sentences | Name the topic and tab count; invite exploration |
 | `Voiceover-TAB-Label` | One per tab, 2–4 sentences | Plays when tab is opened. Label = tab name in PascalCase. **Must be followed immediately by `Tab-Body-Label`.** |
 | `Tab-Body-Label` | 1–3 sentences | On-screen text displayed in the tab content panel. Concise summary — not the full VO script. One field per tab, Label matches `Voiceover-TAB-Label`. |
-| `Image-File` | `1SNN.webp` | Default/first-tab image |
+| `Image-File` | `1SNN.jpg` | Default/first-tab image |
 | `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
 
 **Field ordering:** Write each `Voiceover-TAB-Label` immediately followed by its `Tab-Body-Label` on the next line. Parser uses the VO text as fallback if Tab-Body is absent, but the VO is too long for display — always include Tab-Body.
@@ -758,7 +758,7 @@ Slide-Title: Active Listening Techniques
 >> On slide load → 1S13-INTRO.mp3
 Voiceover-INTRO: There are four active listening techniques that top Porsche service advisors use consistently. Explore each tab to understand how and when to apply it.
 Caption-Text: There are four active listening techniques top Porsche advisors use consistently.
-Image-File: advisor_listening_CC00.webp
+Image-File: advisor_listening_CC00.jpg
 >> User opens Paraphrase tab → 1S13-TAB-Paraphrase.mp3
 Voiceover-TAB-Paraphrase: Paraphrasing is restating what the customer said in your own words — "So what I'm hearing is that the noise happens mostly at highway speeds, especially when you accelerate. Is that right?" It confirms understanding, gives the customer a chance to correct anything, and signals that you were fully listening. Use it before you start writing the work order.
 Tab-Body-Paraphrase: Restate what the customer said in your own words. It confirms understanding and signals you were fully listening. Use it before writing the work order.
@@ -792,7 +792,7 @@ Step cards presented in sequence. Each step has a number, title, description, an
 | `Slide-Title` | Section heading | |
 | `Voiceover-INTRO` | 2–3 sentences | Set up the sequence; name the framework and step count; tell learner to use the button to advance |
 | `Voiceover-STEP-01` through `Voiceover-STEP-N` | One per step, 2–4 sentences | Zero-padded. Plays when that step card activates. |
-| `Image-File` | `1SNN.webp` | Hero or panel image that sets the scene for the sequence |
+| `Image-File` | `1SNN.jpg` | Hero or panel image that sets the scene for the sequence |
 | `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
 
 **Optional fields:**
@@ -910,7 +910,7 @@ Photo panel on the left. Right panel with animated bar chart — each bar fills 
 | `On-Screen-Text` | Brief intro above chart | Context for the data |
 | `Voiceover-INTRO` | 3–4 sentences | Introduce the data; tell learner to click each bar |
 | `Voiceover-CLICK-Label` | One per bar, 2–4 sentences | Plays when modal opens. Label = category name in PascalCase |
-| `Image-File` | `1SNN.webp` | Left photo panel image |
+| `Image-File` | `1SNN.jpg` | Left photo panel image |
 | `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
 
 **In `Notes` field:** Always specify bar values so the developer knows what percentages to set in the HTML.
@@ -931,7 +931,7 @@ Slide-ID: 1S07
 Template-ID: bar-chart-modal
 Slide-Title: How Communication Really Works
 On-Screen-Text: Research shows that how we say something matters far more than what we say.
-Image-File: communication_research_CC00.webp
+Image-File: communication_research_CC00.jpg
 >> On slide load → 1S07-INTRO.mp3
 Voiceover-INTRO: Here's a striking breakdown of how communication actually works. Most people assume the words carry the message — but the data tells a very different story. Click each bar to understand what that channel really means in a service conversation.
 Caption-Text: Research shows that how we say something matters far more than what we say.
@@ -964,7 +964,7 @@ Left column of draggable chips (items); right column of labeled drop zones (targ
 | `On-Screen-Text` | 1 sentence instruction | Always an action: "Drag each [term] to its matching [definition]." |
 | `Match-Col-Left` | Short label | Column header for draggable items — e.g. "Steps", "What You Say", "Terms" |
 | `Match-Col-Right` | Short label | Column header for drop targets — e.g. "Descriptions", "What They Hear", "Definitions" |
-| `Image-File` | `1SNN.webp` | Right-panel image. Required — layout has a dedicated image slot. |
+| `Image-File` | `1SNN.jpg` | Right-panel image. Required — layout has a dedicated image slot. |
 | `Image` | Art direction | Describe scene; used as art direction note until asset is ready. |
 | `Voiceover-INTRO` | 2–3 sentences | Frames what's being matched and ends with the action instruction. |
 | `Match-N-Item` | ≤5 words | Short draggable label. Supports Match-1 through Match-10. |
@@ -994,7 +994,7 @@ Caption-Text: Every strong technical explanation follows the same seven steps.
 On-Screen-Text: Every strong technical explanation follows the same seven steps. Drag each step name to its matching description.
 Match-Col-Left: Steps
 Match-Col-Right: Descriptions
-Image-File: technician_explaining_CC08.webp
+Image-File: technician_explaining_CC08.jpg
 Image: A Porsche technician at a service counter, gesturing calmly toward a printed inspection sheet as the customer listens.
 Voiceover-INTRO: Every strong technical explanation follows the same structure. On the left — seven step names. On the right — what each step actually does. Drag each step to its matching description.
 Match-1-Item: Name the Part
@@ -1023,7 +1023,7 @@ Full-bleed background image. Numbered circular markers positioned over specific 
 |-------|--------|-------|
 | `Slide-Title` | Section heading | Displayed top-left over the image |
 | `On-Screen-Text` | 1 instruction sentence | Always: "Select each marker to explore [topic]." |
-| `Image-File` | `1SNN.webp` | Full-bleed background image. Markers are positioned over it. |
+| `Image-File` | `1SNN.jpg` | Full-bleed background image. Markers are positioned over it. |
 | `Image` | Art direction | Describe what's in each region — the artist must place visual detail near each marker's position. |
 | `Voiceover-INTRO` | 2–3 sentences | Name the topic, count the hotspots, end: "Select each marker to explore." |
 | `Hotspot-N-X` | 0–100 (% of image width) | Horizontal position. 0 = left edge, 100 = right edge. |
@@ -1048,7 +1048,7 @@ Slide-ID: 1S09
 Template-ID: hotspot
 Slide-Title: Reading the Moment
 On-Screen-Text: Select each marker to explore a signal that tells you how to frame your recommendation.
-Image-File: service_counter_CC08.webp
+Image-File: service_counter_CC08.jpg
 Image: Wide shot of a Porsche service counter. Customer standing at the left, technician facing them on the right. Four clearly distinct zones: customer's face/body language (upper left), the printed inspection sheet on the counter (center), the technician's hands (lower right), the service bay visible through the glass behind (background center).
 Voiceover-INTRO: Reading the moment means knowing which framing your customer needs before you speak. There are four signals that tell you. Select each marker to explore them.
 Hotspot-1-X: 22
@@ -1090,7 +1090,7 @@ These IDs appear in the system's field reference but have no implementation or d
 | `Quote` | `content-quote` | ≤25 words for visual impact |
 | `Quote-Attribution` | `content-quote` | Speaker first and last name |
 | `Quote-Title` | `content-quote` | Speaker role or context |
-| `Image-File` | All templates except `knowledge-check`, `final-quiz`, `quiz-score` | Mirrors Slide-ID: `1S03.webp` (single image) or `1S03a.webp`, `1S03b.webp` (multiple). See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md). |
+| `Image-File` | All templates except `knowledge-check`, `final-quiz`, `quiz-score` | Mirrors Slide-ID: `1S03.jpg` (single image) or `1S03a.jpg`, `1S03b.jpg` (multiple). See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md). |
 | `Image` | All templates except `knowledge-check`, `final-quiz`, `quiz-score` | Art direction: subject, mood, composition, setting. **Always include.** Renders as `.img-placeholder` until `Image-File` is provided. |
 | `Video-File` | `video-scenario` | `filename_CCxx.mp4` — dual-clip: two filenames comma-separated |
 | `Voiceover-INTRO` | All slides with audio | Full VO script — see per-template length guidance below |
@@ -1107,7 +1107,7 @@ These IDs appear in the system's field reference but have no implementation or d
 | `Tile-Title-Label` | `tile-explore` | Per-tile full display title: `Tile-Title-AccurateDiagnosis: Accurate Diagnosis Starts Here` |
 | `Tile-Sig-Label` | `tile-explore` | Per-tile short keyword for badge: `Tile-Sig-AccurateDiagnosis: Accuracy` — sequence number auto-prepended |
 | `Tile-Bullets-Label` | `tile-explore` | Exactly 3 bullets pipe-separated: `Tile-Bullets-AccurateDiagnosis: Bullet 1 \| Bullet 2 \| Bullet 3` |
-| `Image-Label` | `tile-explore` | Per-tile image: `Image-AccurateDiagnosis: technician_CC00.webp` |
+| `Image-Label` | `tile-explore` | Per-tile image: `Image-AccurateDiagnosis: technician_CC00.jpg` |
 | `Voiceover-TAB-Label` | `tab-panel` | PascalCase label: `Paraphrase` — follow immediately with `Tab-Body-Label` |
 | `Tab-Body-Label` | `tab-panel` | On-screen display text for each tab. 1–3 sentences. Must match the Label in `Voiceover-TAB-Label`. |
 | `Voiceover-STEP-NN` | `step-sequence` | Zero-padded: `01`, `02`, `03` |

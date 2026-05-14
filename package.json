@@ -8,7 +8,8 @@
     "generate-vo": "node scripts/generate-vo.js",
     "generate-vtt": "node scripts/generate-vtt.js",
     "export-tts": "node scripts/export-tts.js",
-    "generate-slides": "node scripts/generate-slides.js"
+    "generate-slides": "node scripts/generate-slides.js",
+    "sync-from-template": "node scripts/sync-from-template.js"
   },
   "devDependencies": {
     "browser-sync": "^3.0.4",

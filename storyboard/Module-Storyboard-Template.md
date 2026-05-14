@@ -140,7 +140,7 @@ Voiceover-STEP-N: VO triggered at step N in a sequence (N is zero-padded: 01, 02
 On-Screen-Text: Main headline or key text displayed visually on the slide
 Caption-Text: Closed-caption text (VTT overlay) — usually matches or summarizes Voiceover-INTRO
 Image: Art direction for the slide image. Describe subject, mood, composition, setting.
-Image-File: (Production) Actual filename once the image has been sourced — e.g. technician-with-customer.webp
+Image-File: (Production) Actual filename once the image has been sourced — e.g. technician-with-customer.jpg
 Video: Art direction for the background video. Describe subject, camera movement, tone.
 Video-File: (Production) Actual filename once the video has been sourced — e.g. service-bay-walkthrough.webm
 Question: (KC / FQ only) The question text

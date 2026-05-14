@@ -245,7 +245,7 @@ source or produce the actual assets.
    `Image` and `Video` description in one readable file
 2. Media team sources/shoots/creates the assets
 3. Once an asset is ready, update the storyboard:
-   - Replace `Image: description...` with `Image-File: actual-filename.webp`
+   - Replace `Image: description...` with `Image-File: actual-filename.jpg`
 4. Place finished assets in `course/assets/images/` or `course/assets/video/`
 
 ---
@@ -282,10 +282,10 @@ property. Set it as an inline style on the `<img>` tag (or any parent element)
 
 ```html
 <!-- x% y%  — most precise; 0% = left/top edge, 100% = right/bottom edge -->
-<img src="../assets/images/my-photo.webp" style="--img-pos: 75% 30%">
+<img src="../assets/images/my-photo.jpg" style="--img-pos: 75% 30%">
 
 <!-- keyword + percent mix -->
-<img src="../assets/images/my-photo.webp" style="--img-pos: right 20%">
+<img src="../assets/images/my-photo.jpg" style="--img-pos: right 20%">
 
 <!-- override from a parent container -->
 <div class="col-image" style="--img-pos: 60% top">

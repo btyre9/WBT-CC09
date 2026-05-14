@@ -40,7 +40,7 @@ Every module follows this exact sequence:
 All slide IDs, HTML files, audio MP3s, captions, and image filenames follow [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md) — that doc is the canonical source. The summary you need while authoring:
 
 - **Slide IDs**: `1S01` (standard), `2KC01` (knowledge check), `3FQ01` (final quiz), `3FQ-SCORE` (score). 2-digit zero-padded, fixed sort prefix. **No course code in filenames** — the project folder carries the module identity.
-- **Image-File field**: mirror the slide ID with `.webp` → `1S01.webp`. For multiple images on one slide, append a lowercase variant letter: `1S01a.webp`, `1S01b.webp`. Omit the variant when there is only one image.
+- **Image-File field**: mirror the slide ID with `.jpg` → `1S01.jpg`. For multiple images on one slide, append a lowercase variant letter: `1S01a.jpg`, `1S01b.jpg`. Omit the variant when there is only one image.
 - **Audio files** are auto-generated — do not write filenames into the storyboard. The generator produces `1S01-INTRO.mp3`, `1S01-CLICK-Feature.mp3`, etc.
 
 ## Document header — required fields before Slide 01
@@ -68,13 +68,13 @@ Example for CC08:
 
 Wrong — Image-File is lost:
 ```
-On-Screen-Text: Your customer thinks in outcomes. Image-File: 1S03.webp
+On-Screen-Text: Your customer thinks in outcomes. Image-File: 1S03.jpg
 ```
 
 Correct:
 ```
 On-Screen-Text: Your customer thinks in outcomes.
-Image-File: 1S03.webp
+Image-File: 1S03.jpg
 ```
 
 This is the most common failure mode. Every field on its own line, every time. No exceptions.
@@ -129,7 +129,7 @@ Slide-ID: 1S01
 Template-ID: hero-title
 Slide-Title: [Module title]
 Hero-Subtitle: Module X of 12
-Image-File: 1S01.webp
+Image-File: 1S01.jpg
 Image: [Art direction — subject, mood, setting, composition]
 Voiceover-INTRO: [3–5 sentences. Welcome + module purpose + what learner will gain. Do not list objectives here.]
 Caption-Text: [≤120 chars — first sentence of INTRO VO]
@@ -158,7 +158,7 @@ VO-Cue-3: [seconds]
 VO-Cue-4: [seconds]
 VO-Cue-5: [seconds — if applicable]
 VO-Clear-Time: [seconds — when the last objective finishes being read]
-Image-File: 1S02.webp
+Image-File: 1S02.jpg
 Image: [Art direction]
 Voiceover-INTRO: [1 intro sentence + 1 sentence per objective. Each objective sentence closely mirrors the Objective-N field text.]
 Status: Draft
@@ -178,7 +178,7 @@ On-Screen-Text: [1–3 sentence paragraph. Use this OR Pull-Quote, not both.]
 Pull-Quote: [Optional. Use instead of On-Screen-Text when the slide IS a highlighted quote. Max 1–2 impactful sentences.]
 Callout-Text: [Required. 1 sentence — the single most important takeaway from this slide. Displayed as a bottom callout.]
 Callout-Label: [Optional. 1–3 word label shown bold before the callout — e.g., "Remember" or "Key Point".]
-Image-File: 1SNN.webp
+Image-File: 1SNN.jpg
 Image: [Art direction]
 Voiceover-INTRO: [4–7 sentences. Expand on on-screen text — never repeat it verbatim. End with a bridge to the next slide.]
 Status: Draft
@@ -203,7 +203,7 @@ Bullet-3: [Plain text]
 Bullet-4: [Plain text — up to Bullet-6 maximum]
 Callout-Text: [Recommended. 1 sentence that unifies all the bullets — the "so what" principle behind the list.]
 Callout-Label: [Optional. 1–3 word label — e.g., "The Pattern" or "Why It Works".]
-Image-File: 1SNN.webp
+Image-File: 1SNN.jpg
 Image: [Art direction]
 Voiceover-INTRO: [4–7 sentences. One sentence per bullet. Don't repeat bullets verbatim.]
 Status: Draft
@@ -220,7 +220,7 @@ Template-ID: content-stat
 Slide-Title: [Section heading — displayed top-left, above the stat]
 Caption-Text: [≤120 chars]
 On-Screen-Text: [VALUE Label — first token becomes the large stat, rest becomes the label. E.g.: "94% Customer Satisfaction Score"]
-Image-File: 1SNN.webp
+Image-File: 1SNN.jpg
 Image: [Art direction]
 Voiceover-INTRO: [4–6 sentences. State the number first, then contextualize — what it means in practice.]
 Status: Draft
@@ -236,7 +236,7 @@ Caption-Text: [The quote text, ≤120 chars]
 Quote: [≤25 words for visual impact]
 Quote-Attribution: [First Last name]
 Quote-Title: [Role or context]
-Image-File: 1SNN.webp
+Image-File: 1SNN.jpg
 Image: [Art direction — cinematic, atmospheric]
 Voiceover-INTRO: [4–6 sentences. Read the quote first, then contextualize for the learner's daily work.]
 Status: Draft
@@ -250,7 +250,7 @@ Template-ID: card-explore
 Slide-Title: [Section heading]
 Caption-Text: [≤120 chars — first sentence of INTRO VO]
 On-Screen-Text: [1–2 sentences. Instruction: "Click each card to explore."]
-Image-File: 1SNN.webp
+Image-File: 1SNN.jpg
 Image: [Art direction]
 Voiceover-INTRO: [2–3 sentences. Name topic + card count + instruction to click each one.]
 Voiceover-CLICK-Label1: [2–4 sentences covering this concept directly.]
@@ -284,12 +284,12 @@ Voiceover-CLICK-Label1: [2–4 sentences covering this tile's concept. Expands b
 Tile-Title-Label1: [Full display title shown when tile expands]
 Tile-Sig-Label1: [1–3 words — short keyword shown in badge, e.g. "Accuracy"]
 Tile-Bullets-Label1: [Bullet 1 | Bullet 2 | Bullet 3 — exactly 3, pipe-separated]
-Image-Label1: [filename.webp — per-tile poster image]
+Image-Label1: [filename.jpg — per-tile poster image]
 Voiceover-CLICK-Label2: [2–4 sentences]
 Tile-Title-Label2: [Full display title]
 Tile-Sig-Label2: [1–3 words]
 Tile-Bullets-Label2: [Bullet 1 | Bullet 2 | Bullet 3]
-Image-Label2: [filename.webp]
+Image-Label2: [filename.jpg]
 [...repeat for each tile — 3 to 5 tiles total...]
 Status: Draft
 Notes: tile-explore chosen — [reason]. [N] tiles.
@@ -306,7 +306,7 @@ Template-ID: tab-panel
 Slide-Title: [Section heading]
 Caption-Text: [≤120 chars]
 On-Screen-Text: [1 sentence intro — optional but recommended]
-Image-File: 1SNN.webp
+Image-File: 1SNN.jpg
 Image: [Art direction]
 Voiceover-INTRO: [2–3 sentences. Name concept + tab count + invite exploration.]
 Voiceover-TAB-Label1: [2–4 sentences covering this tab's topic.]
@@ -331,7 +331,7 @@ Caption-Text: [≤120 chars — first sentence of INTRO VO]
 On-Screen-Text: [1 sentence instruction — "Drag each [term/step] to its matching [definition/description]."]
 Match-Col-Left: [Column header for the draggable items — e.g. "Steps", "What You Say", "Terms"]
 Match-Col-Right: [Column header for the drop targets — e.g. "Descriptions", "What They Hear", "Definitions"]
-Image-File: 1SNN.webp
+Image-File: 1SNN.jpg
 Image: [Art direction — scene relevant to the content being matched]
 Voiceover-INTRO: [2–3 sentences. Frame what's being matched and why it matters. End with the action: "Drag each step to its description."]
 Match-1-Item: [Short draggable label — ≤5 words]
@@ -363,7 +363,7 @@ Slide-ID: 1SNN
 Template-ID: hotspot
 Slide-Title: [Section heading — displayed top-left over the image]
 On-Screen-Text: [1 sentence. Always an instruction, e.g.: "Select each marker to explore [topic]."]
-Image-File: 1SNN.webp
+Image-File: 1SNN.jpg
 Image: [Art direction — the scene should have distinct zones or areas relevant to each hotspot location. Describe what's happening in each region so the artist can place the right visual detail near each marker.]
 Voiceover-INTRO: [2–3 sentences. Name the topic + hotspot count + call to action. End: "Select each marker to explore."]
 Hotspot-1-X: [0–100 — horizontal position as % of image width. 0 = left edge, 100 = right edge.]
@@ -449,7 +449,7 @@ Template-ID: closing
 Slide-Title: Module [N] Complete
 Caption-Text: [≤120 chars — first sentence of INTRO VO]
 On-Screen-Text: [1–2 sentence summary of what the learner accomplished]
-Image-File: 1SNN.webp
+Image-File: 1SNN.jpg
 Image: [Art direction — aspirational, forward-momentum scene]
 Voiceover-INTRO: [3–5 sentences. Acknowledge what was covered. State the single most important takeaway. End exactly with: "When you're ready, click the next button to start the Quiz. You will need to score 80% or more to pass."]
 Status: Draft
@@ -476,11 +476,11 @@ Notes: quiz-score chosen — required final slide. Pass threshold 80%. SCORM rep
 Every slide with an image slot requires **both** fields, even before assets are sourced:
 
 ```
-Image-File: 1SNN.webp
+Image-File: 1SNN.jpg
 Image: [Subject, mood, composition, setting — one sentence art direction]
 ```
 
-Image filenames mirror the slide ID with `.webp` appended (e.g., `1S03.webp`). For multiple images on one slide, append a lowercase variant: `1S03a.webp`, `1S03b.webp`. Full rules: [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md).
+Image filenames mirror the slide ID with `.jpg` appended (e.g., `1S03.jpg`). For multiple images on one slide, append a lowercase variant: `1S03a.jpg`, `1S03b.jpg`. Full rules: [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md).
 
 When `Image-File` is specified and the file doesn't exist yet, the slide shows a striped placeholder with the intended filename displayed — the author drops the correctly-named image into `course/assets/images/` and refreshes the browser to see it appear.
 

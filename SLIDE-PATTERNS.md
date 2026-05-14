@@ -539,7 +539,7 @@ All paths are **relative to the slide file** (`course/slides/1SNN.html`):
 | Asset type | Path |
 |---|---|
 | Fonts | `../assets/fonts/porsche-next-tt.ttf` |
-| Images | `../assets/images/My-Image.webp` |
+| Images | `../assets/images/My-Image.jpg` |
 | Icons | `../assets/icons/my-icon.svg` |
 | GSAP | `../assets/vendor/gsap/gsap.min.js` |
 | Porsche Components | `../assets/vendor/porsche-components.js` |
@@ -562,8 +562,8 @@ window.parent.postMessage({
 Asset filenames are **case-sensitive on Linux / SCORM Cloud servers** even though Windows is case-insensitive. Always match case exactly.
 
 ```
-Wrong:  Ptech-customer14.webp
-Correct: PTech-customer14.webp
+Wrong:  Ptech-customer14.jpg
+Correct: PTech-customer14.jpg
 ```
 
 ---

@@ -359,15 +359,20 @@
     }
     .ctrl-btn.active svg { fill: #d5001c; }
 
+    /* Audio progress — full-width strip at the top edge of .slide-area,
+       sitting against the bottom of the top bar. */
     .audio-progress {
-      width: min(520px, 58vw);
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(235, 235, 235, 0.24);
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.10);
       overflow: hidden;
       pointer-events: none;
+      z-index: 11;
     }
-    .audio-progress.disabled { opacity: 0.4; }
+    .audio-progress.disabled { opacity: 0.6; }
     .audio-progress-fill {
       width: 0%;
       height: 100%;
@@ -675,6 +680,10 @@
 
   <!-- Slide area -->
   <div class="slide-area" id="slide-area">
+    <!-- Audio progress — moved out of bottom bar; full-width strip at top edge of slide area -->
+    <div class="audio-progress disabled" id="audio-progress" title="Audio progress (visual only)">
+      <div class="audio-progress-fill" id="audio-progress-fill"></div>
+    </div>
     <div class="slide-scaler" id="slide-scaler">
       <iframe id="slide-frame" title="Slide content"></iframe>
     </div>
@@ -694,10 +703,6 @@
     </div>
 
     <div class="bottom-center">
-      <!-- Audio Progress (visual only) -->
-      <div class="audio-progress disabled" id="audio-progress" title="Audio progress (visual only)">
-        <div class="audio-progress-fill" id="audio-progress-fill"></div>
-      </div>
       <span class="audio-timer" id="audio-timer">0:00</span>
     </div>
 

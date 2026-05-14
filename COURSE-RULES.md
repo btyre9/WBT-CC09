@@ -41,11 +41,11 @@ The parser reads line by line. Every `Key: Value` pair must be on its own line. 
 
 ```
 # Wrong — Image-File is silently lost:
-On-Screen-Text: Your customer thinks in outcomes. Image-File: 1S04.webp
+On-Screen-Text: Your customer thinks in outcomes. Image-File: 1S04.jpg
 
 # Correct:
 On-Screen-Text: Your customer thinks in outcomes.
-Image-File: 1S04.webp
+Image-File: 1S04.jpg
 ```
 
 ### S2 — Always specify Template-ID explicitly
@@ -83,10 +83,11 @@ Every image assigned to a slide must have a corresponding storyboard field. The 
 
 | Template | Field format | Example |
 |---|---|---|
-| card-explore | `Card-Image-{Label}` | `Card-Image-Feature: 1S03a.webp` |
-| tab-panel | `Tab-Image-{Label}` | `Tab-Image-Feature: 1S05a.webp` |
-| tile-explore | `Image-{Label}` | `Image-Enthusiast: 1S07.webp` |
-| all others | `Image-File` | `Image-File: 1S04.webp` |
+| card-explore | `Card-Image-{Label}` | `Card-Image-Feature: 1S03a.jpg` |
+| tab-panel | `Item-<Label>-Image` | `Item-Feature-Image: 1S05a.jpg` |
+| accordion-content | `Image-File` | `Image-File: 1S05.jpg` (single right-rail image, not per-item) |
+| tile-explore | `Image-{Label}` | `Image-Enthusiast: 1S07.jpg` |
+| all others | `Image-File` | `Image-File: 1S04.jpg` |
 
 The generator prints a `WARN` line for every image that falls back to a placeholder, so missing fields are visible at generation time. Treat any `WARN` line about an image as an authoring gap to fill before the module ships.
 
@@ -112,13 +113,12 @@ Only `1S*` content slides receive slide numbers in the menu / table of contents.
 Audio files are named by the generator — never name them by hand. All separators are hyphens; labels are PascalCase with no spaces.
 ```
 1S01-INTRO.mp3              ← slide narration
-1S01-CLICK-Feature.mp3      ← card-explore click audio
-1S01-TAB-Paraphrase.mp3     ← tab-panel tab audio
+1S01-CLICK-Feature.mp3      ← card-explore, tab-panel, and accordion-content click audio
 1S01-STEP-3.mp3             ← step-sequence step audio
 2KC01-INTRO.mp3             ← first KC of each pair only (Rule Q0a)
 3FQ-SCORE-INTRO.mp3         ← quiz score narration
 ```
-Captions mirror the MP3 filename with `.vtt`. See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md).
+Tab-panel and accordion-content reuse the `Voiceover-CLICK-<Label>` trigger pattern from card-explore, so their per-tab / per-item audio files are named `1SNN-CLICK-<Label>.mp3`. Captions mirror the MP3 filename with `.vtt`. See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md).
 
 ---
 

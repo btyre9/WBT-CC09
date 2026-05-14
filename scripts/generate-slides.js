@@ -38,6 +38,96 @@ function parseArgs(argv) {
 }
 
 // ---------------------------------------------------------------------------
+// Image catalog — reads the JPEG library and exposes aspect ratios so the
+// parser can pick a contextually appropriate fallback image when a slide
+// doesn't specify Image-File. Deterministic by Slide-ID so the same slide
+// gets the same image across regenerations.
+// ---------------------------------------------------------------------------
+
+// Read width/height from a JPEG file by walking SOF markers in the header.
+// Returns { width, height, ratio } or null if the file isn't a parseable JPEG.
+function getJpegDimensions(filePath) {
+  try {
+    const buf = fs.readFileSync(filePath);
+    if (buf.length < 4 || buf[0] !== 0xFF || buf[1] !== 0xD8) return null;
+    let i = 2;
+    while (i < buf.length - 8) {
+      if (buf[i] !== 0xFF) return null;
+      const marker = buf[i + 1];
+      // SOF markers (0xC0–0xCF), excluding DHT (0xC4), JPG (0xC8), DAC (0xCC)
+      if (marker >= 0xC0 && marker <= 0xCF && marker !== 0xC4 && marker !== 0xC8 && marker !== 0xCC) {
+        const height = buf.readUInt16BE(i + 5);
+        const width  = buf.readUInt16BE(i + 7);
+        return { width, height, ratio: width / height };
+      }
+      const segLen = buf.readUInt16BE(i + 2);
+      i += 2 + segLen;
+    }
+    return null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function loadImageCatalog(imagesDir) {
+  if (!fs.existsSync(imagesDir)) return [];
+  const files = fs.readdirSync(imagesDir).filter(f => /\.jpe?g$/i.test(f) && !/^placeholder\./i.test(f));
+  return files
+    .map(filename => {
+      const dim = getJpegDimensions(path.join(imagesDir, filename));
+      return dim ? { filename, ...dim } : null;
+    })
+    .filter(Boolean);
+}
+
+// Preferred aspect ratio per template. Templates not listed default to 4:3.
+//   16:9 ≈ 1.78  wide hero/background
+//   4:3  ≈ 1.33  default content/inline
+//   3:4  ≈ 0.75  portrait rail
+const TEMPLATE_PREFERRED_RATIO = {
+  'hero-title':                     16/9,
+  'hotspot':                        16/9,
+  'video-scenario':                 16/9,
+  'content-stat':                   16/9,
+  'closing':                        16/9,
+  'accordion-content':              4/5,
+  'accordion-content-image-left':   4/5,
+  'tab-panel':                      4/3,
+  'card-explore':                   4/3,
+  'tile-explore':                   4/3,
+  'content-split':                  4/3,
+  'content-bullets':                4/3,
+  'content-quote':                  4/3,
+  'objectives':                     4/3,
+  'step-sequence':                  4/3,
+  'bar-chart-modal':                4/3,
+};
+
+// Deterministic non-crypto hash — same Slide-ID always maps to same index.
+function hashStr(s) {
+  let h = 0;
+  for (let i = 0; i < (s || '').length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+// Pick an image from the catalog whose ratio is closest to the template's
+// preferred ratio, breaking ties by Slide-ID hash so different slides using
+// the same template get different images.
+function pickImageForTemplate(catalog, templateId, slideId) {
+  if (!catalog.length) return null;
+  const preferred = TEMPLATE_PREFERRED_RATIO[templateId] || (4 / 3);
+  // Sort by closeness to preferred ratio
+  const sorted = catalog.slice().sort((a, b) =>
+    Math.abs(a.ratio - preferred) - Math.abs(b.ratio - preferred)
+  );
+  // Take the top-3 closest matches (or all if fewer) and pick one deterministically.
+  // The pool of 3 gives variety while still respecting aspect ratio.
+  const poolSize = Math.min(3, sorted.length);
+  const pool     = sorted.slice(0, poolSize);
+  return pool[hashStr(slideId) % pool.length];
+}
+
+// ---------------------------------------------------------------------------
 // Parse storyboard/course.md
 // ---------------------------------------------------------------------------
 
@@ -194,6 +284,188 @@ function buildCardAudioMap(triggers) {
 }
 
 // ---------------------------------------------------------------------------
+// Accordion items (accordion-content template)
+// Per-item body comes from `Item-<Label>-Body` storyboard fields; if absent,
+// emits a placeholder comment so the author can fill in by editing the slide.
+// Inline HTML is allowed in the body field (e.g. <ul class="acc-bullets">).
+// ---------------------------------------------------------------------------
+
+function buildAccordionItemsHtml(triggers, slide) {
+  if (!triggers.length) return '<!-- No Voiceover-CLICK-<Label> fields found in storyboard for this slide. -->';
+  return triggers.map((t, idx) => {
+    const num   = String(idx + 1).padStart(2, '0');
+    const label = camelToWords(t.label);
+    const bodyField = slide[`Item-${t.label}-Body`];
+    const body = bodyField
+      ? bodyField
+      : `<p><!-- Body for ${label}: add Item-${t.label}-Body to course.md, or edit this slide directly. --></p>`;
+    return (
+      `    <article class="acc-item" data-item="${escAttr(t.label)}" role="listitem">\n` +
+      `      <button class="acc-header" type="button" aria-expanded="false" aria-controls="body-${escAttr(t.label)}">\n` +
+      `        <span class="acc-number">${num}</span>\n` +
+      `        <span class="acc-label">${escHtml(label)}</span>\n` +
+      `        <span class="acc-chev" aria-hidden="true">\n` +
+      `          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>\n` +
+      `        </span>\n` +
+      `      </button>\n` +
+      `      <div class="acc-body-wrap">\n` +
+      `        <div class="acc-body" id="body-${escAttr(t.label)}" role="region">\n` +
+      `          <div class="acc-body-inner">\n` +
+      `            ${body}\n` +
+      `          </div>\n` +
+      `        </div>\n` +
+      `      </div>\n` +
+      `    </article>`
+    );
+  }).join('\n');
+}
+
+// ---------------------------------------------------------------------------
+// Hotspot markers + popovers (hotspot template)
+// Generates two HTML chunks from the same Voiceover-CLICK-<Label> triggers:
+//   - markers: <button class="hotspot"> elements positioned via Item-<Label>-Pos
+//   - popovers: <aside class="popover"> blocks with body content
+// Per-hotspot storyboard fields:
+//   Voiceover-CLICK-<Label>   (required — VO trigger + audio path)
+//   Item-<Label>-Body         (required — popover body HTML)
+//   Item-<Label>-Pos          (required — "X%,Y%" marker position on background)
+//   Item-<Label>-Title        (optional — popover heading; falls back to camelToWords(label))
+//   Item-<Label>-Eyebrow      (optional — small red category label above title)
+//   Item-<Label>-Side         (optional — "left"|"right"; auto-derived from X%
+//                              when omitted: X > 50% → popover opens left,
+//                              X ≤ 50% → popover opens right)
+// ---------------------------------------------------------------------------
+
+function parseHotspotPos(posStr) {
+  // Accepts "30%,42%" or "30,42" or "30% , 42%" — returns { x: "30%", y: "42%", xNum: 30 }
+  if (!posStr) return { x: '50%', y: '50%', xNum: 50 };
+  const parts = String(posStr).split(',').map(s => s.trim());
+  const x = parts[0] || '50%';
+  const y = parts[1] || '50%';
+  const xNum = parseFloat(String(x).replace('%', '')) || 50;
+  return {
+    x: /%$/.test(x) ? x : (x + '%'),
+    y: /%$/.test(y) ? y : (y + '%'),
+    xNum,
+  };
+}
+
+function buildHotspotMarkersHtml(triggers, slide) {
+  if (!triggers.length) return '      <!-- No Voiceover-CLICK-<Label> fields found in storyboard for this slide. -->';
+  const checkSvg =
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"></polyline></svg>`;
+  return triggers.map((t, idx) => {
+    const num   = String(idx + 1).padStart(2, '0');
+    const label = camelToWords(t.label);
+    const pos   = parseHotspotPos(slide[`Item-${t.label}-Pos`]);
+    return (
+      `      <button class="hotspot" type="button" data-hs="${escAttr(t.label)}" aria-label="${escAttr(label)} — open detail" style="--hs-x: ${pos.x}; --hs-y: ${pos.y};">\n` +
+      `        <span class="hotspot-dot">\n` +
+      `          <span class="hotspot-number">${num}</span>\n` +
+      `          <span class="hotspot-check" aria-hidden="true">${checkSvg}</span>\n` +
+      `        </span>\n` +
+      `      </button>`
+    );
+  }).join('\n');
+}
+
+function buildHotspotPopoversHtml(triggers, slide) {
+  if (!triggers.length) return '';
+  return triggers.map((t, idx) => {
+    const num     = String(idx + 1).padStart(2, '0');
+    const label   = camelToWords(t.label);
+    const pos     = parseHotspotPos(slide[`Item-${t.label}-Pos`]);
+    const bodyField = slide[`Item-${t.label}-Body`];
+    const body = bodyField
+      ? bodyField
+      : `<p><!-- Body for ${label}: add Item-${t.label}-Body to course.md, or edit this slide directly. --></p>`;
+    const titleOverride = slide[`Item-${t.label}-Title`];
+    const title    = titleOverride ? titleOverride : label;
+    const eyebrow  = slide[`Item-${t.label}-Eyebrow`] || '';
+    const sideOverride = slide[`Item-${t.label}-Side`];
+    // Auto-derive side from X position if not specified
+    const side = sideOverride
+      ? sideOverride
+      : (pos.xNum > 50 ? 'left' : 'right');
+    const eyebrowMarkup = eyebrow
+      ? `        <div class="popover-eyebrow">${num} &middot; ${escHtml(eyebrow)}</div>\n`
+      : `        <div class="popover-eyebrow">${num}</div>\n`;
+    return (
+      `      <aside class="popover" data-popover="${escAttr(t.label)}" data-side="${side}" role="dialog" aria-label="${escAttr(label)} — detail" style="--hs-x: ${pos.x}; --hs-y: ${pos.y};" hidden>\n` +
+      `        <button class="popover-close" type="button" aria-label="Close">\n` +
+      `          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>\n` +
+      `        </button>\n` +
+      eyebrowMarkup +
+      `        <h2 class="popover-title">${escHtml(title)}</h2>\n` +
+      `        <div class="popover-body">\n` +
+      `          ${body}\n` +
+      `        </div>\n` +
+      `      </aside>`
+    );
+  }).join('\n');
+}
+
+// ---------------------------------------------------------------------------
+// Tab-panel items (tab-panel template)
+// Generates two HTML chunks from the same Voiceover-CLICK-<Label> triggers:
+//   - tabs: <button class="tab"> elements with number, label, visited check
+//   - panels: <section class="panel"> elements with body content
+// First tab/panel is pre-marked `is-active visited` so the slide loads with
+// one tab already showing — visited count starts at 1.
+// Panel body comes from `Item-<Label>-Body` storyboard field (same convention
+// as accordion-content); HTML is allowed.
+// ---------------------------------------------------------------------------
+
+function buildTabPanelTabsHtml(triggers) {
+  if (!triggers.length) return '<!-- No Voiceover-CLICK-<Label> fields found in storyboard for this slide. -->';
+  const checkSvg =
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"></polyline></svg>`;
+  return triggers.map((t, idx) => {
+    const num    = String(idx + 1).padStart(2, '0');
+    const label  = camelToWords(t.label);
+    const isFirst = idx === 0;
+    const cls    = isFirst ? 'tab is-active visited' : 'tab';
+    const ariaSelected = isFirst ? 'true' : 'false';
+    return (
+      `      <button class="${cls}" type="button" role="tab" aria-selected="${ariaSelected}" data-tab="${escAttr(t.label)}" aria-controls="panel-${escAttr(t.label)}">\n` +
+      `        <span class="tab-number">${num}</span>\n` +
+      `        <span class="tab-label">${escHtml(label)}</span>\n` +
+      `        <span class="tab-check" aria-hidden="true">${checkSvg}</span>\n` +
+      `      </button>`
+    );
+  }).join('\n');
+}
+
+function buildTabPanelPanelsHtml(triggers, slide) {
+  if (!triggers.length) return '';
+  return triggers.map((t, idx) => {
+    const label = camelToWords(t.label);
+    const isFirst = idx === 0;
+    const cls    = isFirst ? 'panel is-active' : 'panel';
+    const hidden = isFirst ? '' : ' hidden=""';
+    const bodyField = slide[`Item-${t.label}-Body`];
+    const body = bodyField
+      ? bodyField
+      : `<p><!-- Body for ${label}: add Item-${t.label}-Body to course.md, or edit this slide directly. --></p>`;
+    // Optional per-panel image — Item-<Label>-Image: <filename in assets/images/>
+    const imageFile = slide[`Item-${t.label}-Image`];
+    const gridClass = imageFile ? 'panel-grid has-media' : 'panel-grid';
+    const mediaHtml = imageFile
+      ? `\n          <figure class="panel-media">\n            <img src="../assets/images/${escAttr(imageFile)}" alt="">\n          </figure>`
+      : '';
+    return (
+      `      <section class="${cls}" id="panel-${escAttr(t.label)}" data-panel="${escAttr(t.label)}" role="tabpanel"${hidden}>\n` +
+      `        <div class="${gridClass}">\n` +
+      `          <div class="panel-text">\n` +
+      `            ${body}\n` +
+      `          </div>${mediaHtml}\n` +
+      `        </div>\n` +
+      `      </section>`
+    );
+  }).join('\n');
+}
+
+// ---------------------------------------------------------------------------
 // Choice items (KC / FQ templates)
 // ---------------------------------------------------------------------------
 
@@ -283,15 +555,32 @@ function renderTemplate(html, tokens) {
 // Build token map for a slide
 // ---------------------------------------------------------------------------
 
-function buildTokens(slide, allSlides, courseTitle, templateHtml) {
+function buildTokens(slide, allSlides, courseTitle, templateHtml, imageCatalog) {
   const slideId     = slide['Slide-ID'];
   const templateId  = slide['Template-ID'];
   const slideTitle  = slide['Slide-Title'] || slideId;
   const onScreen    = slide['On-Screen-Text'] || slideTitle;
   const imageFile   = slide['Image-File'];
-  const imagePath   = imageFile
-    ? `../assets/images/${imageFile}`
-    : '../assets/images/placeholder.webp';
+
+  // Image fallback: when no Image-File is specified, pick a random image
+  // from the catalog whose aspect ratio matches what this template prefers.
+  // Deterministic by Slide-ID so the same slide picks the same image on every
+  // regeneration. Caller stashes the auto-pick on slide._autoPickedImage so
+  // main() can log it.
+  let imagePath;
+  if (imageFile) {
+    imagePath = `../assets/images/${imageFile}`;
+  } else {
+    const picked = imageCatalog && imageCatalog.length
+      ? pickImageForTemplate(imageCatalog, templateId, slideId)
+      : null;
+    if (picked) {
+      slide._autoPickedImage = picked;
+      imagePath = `../assets/images/${picked.filename}`;
+    } else {
+      imagePath = '../assets/images/placeholder.jpg';
+    }
+  }
 
   const { value: statValue, label: statLabel } = splitStat(onScreen, slideTitle);
   const clicks = extractClickTriggers(slide, slideId);
@@ -334,6 +623,14 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml) {
     CARDS_HTML:      buildCardsHtml(clicks),
     CARD_AUDIO_MAP:  buildCardAudioMap(clicks),
     TOTAL_CARDS:     String(clicks.length || 3),
+    // Accordion-content template (reuses CARD_AUDIO_MAP + TOTAL_CARDS for VO)
+    ACCORDION_ITEMS_HTML: buildAccordionItemsHtml(clicks, slide),
+    // Tab-panel template (also reuses CARD_AUDIO_MAP + TOTAL_CARDS)
+    TAB_PANEL_TABS_HTML:   buildTabPanelTabsHtml(clicks),
+    TAB_PANEL_PANELS_HTML: buildTabPanelPanelsHtml(clicks, slide),
+    // Hotspot template (also reuses CARD_AUDIO_MAP + TOTAL_CARDS)
+    HOTSPOT_MARKERS_HTML:  buildHotspotMarkersHtml(clicks, slide),
+    HOTSPOT_POPOVERS_HTML: buildHotspotPopoversHtml(clicks, slide),
     // content-split body — pull quote or plain body copy
     BODY_CONTENT_HTML: bodyContentHtml,
     // KC / FQ templates
@@ -391,6 +688,16 @@ async function main() {
 
   const { courseTitle, slides } = parseCourseMd(sbPath);
   console.log(`Course: ${courseTitle}  |  Slides: ${slides.length}\n`);
+
+  // Load image catalog once — used to auto-pick aspect-ratio-appropriate
+  // images for slides that don't specify Image-File.
+  const imagesDir = path.resolve('course', 'assets', 'images');
+  const imageCatalog = loadImageCatalog(imagesDir);
+  if (imageCatalog.length) {
+    console.log(`Image catalog: ${imageCatalog.length} images indexed from ${path.relative('.', imagesDir)}\n`);
+  } else {
+    console.log(`Image catalog: empty — slides without Image-File will reference placeholder.jpg\n`);
+  }
 
   // Ensure output directories exist
   fs.mkdirSync(path.resolve(args.slidesDir), { recursive: true });
@@ -451,7 +758,7 @@ async function main() {
     }
 
     // Build tokens and render
-    const tokens   = buildTokens(slide, slides, courseTitle, templateHtml);
+    const tokens   = buildTokens(slide, slides, courseTitle, templateHtml, imageCatalog);
     const rendered = renderTemplate(templateHtml, tokens);
 
     // Write slide file
@@ -459,6 +766,11 @@ async function main() {
       fs.writeFileSync(outPath, rendered, 'utf8');
       const tplLabel = templateId.padEnd(18);
       console.log(`  WRITE  ${tplLabel}  →  ${slideId}.html`);
+      if (slide._autoPickedImage) {
+        const pick = slide._autoPickedImage;
+        const r = pick.ratio.toFixed(2);
+        console.log(`         auto-image: ${pick.filename} (${pick.width}×${pick.height}, ratio ${r})`);
+      }
       written++;
     } catch (err) {
       console.error(`  ERROR  ${slideId} — write failed: ${err.message}`);
