@@ -136,7 +136,7 @@ Voiceover-CLICK-Communication: Clear, jargon-free communication builds trust...
 | Template-ID | Description |
 |---|---|
 | `hero-title` | Full-bleed opening slide — large title, background image |
-| `objectives` | Sequential learning objectives reveal |
+| `learning-objectives` | Sequential learning objectives reveal with per-objective VO-cued emphasis |
 | `content-bullets` | Standard content slide with bullet points |
 | `content-stat` | Text slide with a highlighted statistic or pull quote |
 | `content-quote` | Prominent quote with supporting content |
@@ -341,12 +341,12 @@ to find the exact second each objective is first mentioned. Update the array val
 
 ---
 
-### Transition Sound Cue (Click_Next)
+### Next Button Readiness
 
-`Click_Next.mp3` plays automatically at the end of every `SLD_` slide's VO,
-except the last slide in the module. This is handled in `runtime.js` — no per-
-slide configuration is needed. KC and FQ slides are excluded by their filename
-prefix.
+The course no longer uses a spoken "click Next" transition cue. On interactive
+slides, the player unlocks and pulses the Next button after the learner completes
+all required interactions. Non-interactive slides simply unlock Next when INTRO
+VO ends.
 
 ---
 

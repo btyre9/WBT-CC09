@@ -7,8 +7,12 @@
     "import-storyboard": "node scripts/import-storyboard.js",
     "generate-vo": "node scripts/generate-vo.js",
     "generate-vtt": "node scripts/generate-vtt.js",
+    "extract-vo-cues": "node scripts/extract-vo-cues.js",
     "export-tts": "node scripts/export-tts.js",
     "generate-slides": "node scripts/generate-slides.js",
+    "clean-generated": "node scripts/clean-generated.js",
+    "init-module": "node scripts/init-module.js",
+    "init-repo": "node scripts/init-repo.js",
     "sync-from-template": "node scripts/sync-from-template.js"
   },
   "devDependencies": {

@@ -204,7 +204,7 @@
     captionLoadToken: 0,
     playbackRates: [1, 1.25, 1.5, 2],
     playbackRateIndex: 0,
-    sfx: { correct: null, incorrect: null, clickNext: null },
+    sfx: { correct: null, incorrect: null },
     // Knowledge check
     kcQuestions: [],
     kcIndex: 0,
@@ -255,6 +255,14 @@
     var locked = state.nextLockedByAudio || state.nextLockedByInteraction;
     $("btn-next").disabled = atEnd || locked;
     $("btn-next").style.opacity = locked ? "0.35" : "";
+  }
+
+  function pulseNextButton() {
+    var btn = $("btn-next");
+    if (!btn || btn.disabled) return;
+    btn.classList.remove("pulse-unlock");
+    void btn.offsetWidth;
+    btn.classList.add("pulse-unlock");
   }
 
   function resolveSlideAudioSrc(slide) {
@@ -441,10 +449,8 @@
   }
 
   function syncAudioProgress() {
-    var timerEl = $("audio-timer");
     if (!state.audio) {
       setAudioProgressRatio(0);
-      if (timerEl) timerEl.textContent = "0:00";
       return;
     }
 
@@ -452,14 +458,9 @@
     var cur = Number(state.audio.currentTime);
     if (!Number.isFinite(dur) || dur <= 0 || !Number.isFinite(cur) || cur < 0) {
       setAudioProgressRatio(0);
-      if (timerEl) timerEl.textContent = "0:00";
       return;
     }
     setAudioProgressRatio(cur / dur);
-    if (timerEl) {
-      var s = Math.floor(cur);
-      timerEl.textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
-    }
   }
 
   function setPlayPauseVisual(isPlaying) {
@@ -515,13 +516,6 @@
     if (state.cueEditor.open) updateCueCurrentTimeLabel();
     state.nextLockedByAudio = false;
     updateNavButtons();
-    // Play transition cue on SLD slides that are not the last slide
-    var slides = state.data && state.data.slides || [];
-    var curSlide = slides[state.slideIndex];
-    var isLastSlide = state.slideIndex >= slides.length - 1;
-    if (curSlide && /^1S/.test(curSlide.id) && !isLastSlide) {
-      playSfx("clickNext");
-    }
   }
 
   function onAudioMeta() {
@@ -1680,7 +1674,6 @@
     var sfxCfg = state.data.quiz && state.data.quiz.runtime && state.data.quiz.runtime.sfx;
     if (sfxCfg && sfxCfg.correct) state.sfx.correct = new Audio("./" + sfxCfg.correct);
     if (sfxCfg && sfxCfg.incorrect) state.sfx.incorrect = new Audio("./" + sfxCfg.incorrect);
-    state.sfx.clickNext = new Audio("./assets/audio/vo/Click_Next.mp3");
 
     initFinalQuiz();
 
@@ -1698,8 +1691,10 @@
           updateNavButtons();
           break;
         case "sandbox-unlock-next":
+          var wasInteractionLocked = state.nextLockedByInteraction;
           state.nextLockedByInteraction = false;
           updateNavButtons();
+          if (wasInteractionLocked && !state.nextLockedByAudio) pulseNextButton();
           break;
         case "sandbox-swap-audio":
           // Slide requests a mid-slide audio swap (e.g. a split-explore slide part 2).
@@ -1728,14 +1723,13 @@
             state.audio.addEventListener("ended",           onAudioEnded);
             // Lock Next for swapped audio and release both locks when it ends.
             // This is belt-and-suspenders alongside the slide's sandbox-unlock-next message.
-            // endCue: play a closing audio clip after the swapped audio ends (e.g. "Click Next").
-            var swapEndCue = e.data.endCue || null;
             state.nextLockedByAudio = true;
             state.audio.addEventListener("ended", function onSwapEnded() {
+              var wasInteractionLocked = state.nextLockedByInteraction;
               state.nextLockedByInteraction = false;
               state.nextLockedByAudio = false;
               updateNavButtons();
-              if (swapEndCue) playInteractionAudio({ src: swapEndCue, pauseNarration: false });
+              if (wasInteractionLocked) pulseNextButton();
             }, { once: true });
             updateNavButtons();
             updateAudioUi();

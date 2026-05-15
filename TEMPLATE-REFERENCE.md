@@ -2,10 +2,10 @@
 
 > **When to open this doc:** You're choosing a template for a new slide, or building/editing a template HTML file in `scripts/templates/`.
 > **It answers:** Every template name, the fields each one accepts, design patterns baked in, and stable-vs-emerging status.
-> **Does NOT cover:** How to write storyboard content for those fields (see [STORYBOARD-AUTHOR-PROMPT.md](STORYBOARD-AUTHOR-PROMPT.md)) or workflow/QA discipline (see [COURSE-RULES.md](COURSE-RULES.md)).
+> **Does NOT cover:** How to write storyboard content for those fields (see [STORYBOARD-AUTHORING-KIT.md](STORYBOARD-AUTHORING-KIT.md)) or workflow/QA discipline (see [COURSE-RULES.md](COURSE-RULES.md)).
 
 **How to use:**
-Give this document to Claude alongside `STORYBOARD-AUTHOR-PROMPT.md` and the course learning materials. Claude selects the best template for each slide, writes all required fields, and outputs a complete, parser-ready storyboard. Every example in this document can be used as a direct model.
+Give this document to Claude alongside [STORYBOARD-AUTHORING-KIT.md](STORYBOARD-AUTHORING-KIT.md) and the course learning materials. Claude selects the best template for each slide, writes all required fields, and outputs a complete, parser-ready storyboard. Every example in this document can be used as a direct model.
 
 **Two template types:**
 - **Standard** — fully implemented in `generate-slides.js`. Storyboard fields populate the HTML automatically via the pipeline.
@@ -22,9 +22,9 @@ Every slide should carry an image wherever the template supports one. Never leav
 | Field | Purpose | When to use |
 |-------|---------|-------------|
 | `Image` | Art direction | Always include. Describe the ideal image: subject, mood, composition, setting. This is what the asset team uses to source or generate the image. |
-| `Image-File` | Production filename | Add once the asset is ready. Mirrors the Slide-ID: `1S03.jpg` (single image) or `1S03a.jpg`, `1S03b.jpg` (multiple). See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md). |
+| `Image-File` | Production filename or existing catalog asset | Use the intended final name (`1S03.jpg`, `1S03a.jpg`) even before the asset exists, or use an existing descriptive file from `course/assets/images/`. See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md). |
 
-**Placeholder rule:** When `Image-File` is not yet provided, the HTML must render an `.img-placeholder` element — a styled dark-striped block occupying the image slot — so the slide layout is complete and no area is left visually empty. Every template HTML file should include this element by default, swapped out for the real `<img>` once the asset arrives.
+**Draft placeholder rule:** When `Image-File` is absent or points to a production file that does not exist yet, `generate-slides` picks a real image from `course/assets/images/` whose aspect ratio fits the template. The console prints an `auto-image` line so the temporary asset is visible during review.
 
 **`quiz-score`, `knowledge-check`, and `final-quiz`** are the only templates where no image slot exists in the current HTML. All other templates require an image.
 
@@ -35,7 +35,7 @@ Every slide should carry an image wherever the template supports one. Never leav
 | Template ID | Type | Purpose |
 |-------------|------|---------|
 | `hero-title` | Standard | Module opener — full-bleed hero image with title |
-| `objectives` | Standard | Learning objectives — animated numbered list |
+| `learning-objectives` | Standard | Learning objectives — per-objective emphasis cued to VO |
 | `content-split` | Standard | Core instructional content — text + image |
 | `content-stat` | Standard | Single statistic highlight |
 | `content-bullets` | Standard | Principles or steps list with image |
@@ -110,7 +110,7 @@ Notes: hero-title chosen — standard module opener. Hero image should reinforce
 
 ---
 
-### `objectives`
+### `learning-objectives`
 
 **Status:** Standard — parser-generated
 **Use when:** Slide 02 of every module. Always second. No exceptions.
@@ -128,7 +128,7 @@ Two-column layout: section heading on the left, numbered learning objectives on 
 | `Voiceover-INTRO` | 1 intro + 1 sentence per objective | VO names each objective aloud so animation timing aligns |
 | `Caption-Text` | ≤120 chars | e.g. `By the end of this module, you will be able to do four things.` |
 | `Image-File` | `1SNN.jpg` | Right-side contextual image — a scene that represents the module's subject matter |
-| `Image` | Art direction | Include if `Image-File` is not yet sourced. Renders as `.img-placeholder` until asset is ready. |
+| `Image` | Art direction | Include the ideal final image description. Missing/not-yet-sourced image files fall back to catalog assets during generation. |
 
 **Optional fields (post-production):**
 
@@ -150,7 +150,7 @@ One sentence stating the total count ("By the end of this module, you will be ab
 ## Slide 02 — Learning Objectives
 
 Slide-ID: 1S02
-Template-ID: objectives
+Template-ID: learning-objectives
 Slide-Title: What You'll Learn
 Caption-Text: By the end of this module, you will be able to do four things.
 On-Screen-Text: By the end of this module, you will be able to do four things.
@@ -264,7 +264,7 @@ Parser splits on the first space. Everything before the first space becomes the 
 
 | Field | Notes |
 |-------|-------|
-| `Image` | Art direction if `Image-File` is not yet sourced. Renders as `.img-placeholder` until asset is ready. |
+| `Image` | Art direction for the ideal final image. If `Image-File` is missing or not yet sourced, the generator uses an aspect-ratio-appropriate catalog image and prints `auto-image`. |
 
 **Interaction model:**
 - No interaction locks. Stat animates in on load.
@@ -413,7 +413,7 @@ Section heading above a grid of 3–6 cards. Cards are locked (grayed out with a
 | Field | Notes |
 |-------|-------|
 | `Card-Image-Label` | Poster image per card. If omitted, the generator cycles through available Porsche images as placeholders. |
-| `Image` | Art direction if `Image-File` is not yet sourced. Renders as `.img-placeholder` until asset is ready. |
+| `Image` | Art direction for the ideal final image. Missing/not-yet-sourced image files fall back to catalog assets during generation. |
 
 **Audio file naming (auto-generated):** `{Slide-ID}-CLICK-{Label}.mp3`
 
@@ -609,7 +609,7 @@ Module wrap-up layout with heading, brief summary message, optional accent image
 
 | Field | Notes |
 |-------|-------|
-| `Image` | Art direction if `Image-File` is not yet sourced. Renders as `.img-placeholder` until asset is ready. |
+| `Image` | Art direction for the ideal final image. Missing/not-yet-sourced image files fall back to catalog assets during generation. |
 
 **VO guidance:**
 Acknowledge what was covered in the module. Reinforce the single most important takeaway. Transition clearly to the assessment: "In the next section, you'll complete a short assessment to confirm your understanding."
@@ -799,7 +799,7 @@ Step cards presented in sequence. Each step has a number, title, description, an
 
 | Field | Notes |
 |-------|-------|
-| `Image` | Art direction if `Image-File` is not yet sourced. Renders as `.img-placeholder` until asset is ready. |
+| `Image` | Art direction for the ideal final image. Missing/not-yet-sourced image files fall back to catalog assets during generation. |
 
 **Audio file naming:** `{Slide-ID}-STEP-{N}.mp3` (e.g. `1S14-STEP-1.mp3`)
 
@@ -1083,15 +1083,16 @@ These IDs appear in the system's field reference but have no implementation or d
 | `Slide-Title` | All | Display title shown in course menu |
 | `Slide-Subtitle` | `tile-explore` | 1–2 sentence instructional intro displayed below the heading |
 | `Hero-Subtitle` | `hero-title` | e.g. `Module 3 of 12` |
-| `Objective-N` | `objectives` | Verb-first format. Parser stops at first missing number. Max 10. Missing fields produce placeholder HTML — treat as build error. |
-| `VO-Cue-N` | `objectives` | Seconds from INTRO audio start for per-objective emphasis animation. Set after VO recording. |
+| `Objective-N` | `learning-objectives` | Verb-first format. Parser stops at first missing number. Max 10. Missing fields produce placeholder HTML — treat as build error. |
+| `VO-Cue-N` | `learning-objectives` | Seconds from INTRO audio start for per-objective emphasis animation. Set after VO recording. |
+| `Intro-Text` | `learning-objectives` (optional) | Paragraph above the objectives list. Defaults to `On-Screen-Text` if absent. |
 | `On-Screen-Text` | Most content templates | See per-template format notes — `content-stat` requires `VALUE Label` format |
 | `Pull-Quote` | `content-split` (optional) | Replaces `On-Screen-Text`. One sentence. Never use both. |
 | `Quote` | `content-quote` | ≤25 words for visual impact |
 | `Quote-Attribution` | `content-quote` | Speaker first and last name |
 | `Quote-Title` | `content-quote` | Speaker role or context |
-| `Image-File` | All templates except `knowledge-check`, `final-quiz`, `quiz-score` | Mirrors Slide-ID: `1S03.jpg` (single image) or `1S03a.jpg`, `1S03b.jpg` (multiple). See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md). |
-| `Image` | All templates except `knowledge-check`, `final-quiz`, `quiz-score` | Art direction: subject, mood, composition, setting. **Always include.** Renders as `.img-placeholder` until `Image-File` is provided. |
+| `Image-File` | All image-slot templates except `final-quiz`, `quiz-score` | Intended final name (`1S03.jpg`, `1S03a.jpg`) or an existing descriptive file from `course/assets/images/`. See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md). |
+| `Image` | All image-slot templates except `final-quiz`, `quiz-score` | Art direction: subject, mood, composition, setting. **Always include.** Missing/not-yet-sourced image files fall back to catalog assets during generation. |
 | `Video-File` | `video-scenario` | `filename_CCxx.mp4` — dual-clip: two filenames comma-separated |
 | `Voiceover-INTRO` | All slides with audio | Full VO script — see per-template length guidance below |
 | `Voiceover-CLICK-Label` | `card-explore`, `tile-explore`, `bar-chart-modal` | PascalCase label: `ServiceQuality` |
@@ -1128,7 +1129,7 @@ These IDs appear in the system's field reference but have no implementation or d
 | Template | INTRO | CLICK / TAB / STEP |
 |----------|-------|---------------------|
 | `hero-title` | 3–5 sentences | — |
-| `objectives` | 1 intro sentence + 1 per objective | — |
+| `learning-objectives` | 1 intro sentence + 1 per objective | — |
 | `content-split` | 4–7 sentences | — |
 | `content-stat` | 4–6 sentences | — |
 | `content-bullets` | 4–7 sentences | — |

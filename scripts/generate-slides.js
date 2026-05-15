@@ -40,8 +40,7 @@ function parseArgs(argv) {
 // ---------------------------------------------------------------------------
 // Image catalog — reads the JPEG library and exposes aspect ratios so the
 // parser can pick a contextually appropriate fallback image when a slide
-// doesn't specify Image-File. Deterministic by Slide-ID so the same slide
-// gets the same image across regenerations.
+// doesn't specify Image-File or specifies a not-yet-created production image.
 // ---------------------------------------------------------------------------
 
 // Read width/height from a JPEG file by walking SOF markers in the header.
@@ -71,7 +70,13 @@ function getJpegDimensions(filePath) {
 
 function loadImageCatalog(imagesDir) {
   if (!fs.existsSync(imagesDir)) return [];
-  const files = fs.readdirSync(imagesDir).filter(f => /\.jpe?g$/i.test(f) && !/^placeholder\./i.test(f));
+  const files = fs.readdirSync(imagesDir).filter(f => {
+    if (!/\.jpe?g$/i.test(f) || /^placeholder\./i.test(f)) return false;
+    // Draft placeholders should come from descriptive catalog assets, not
+    // from final production slide names like 1S03.jpg or 1S03a.jpg.
+    if (/^(?:1S\d{2}[a-z]?|2KC\d{2}|3FQ\d{2}|3FQ-SCORE)\.jpe?g$/i.test(f)) return false;
+    return true;
+  });
   return files
     .map(filename => {
       const dim = getJpegDimensions(path.join(imagesDir, filename));
@@ -86,6 +91,7 @@ function loadImageCatalog(imagesDir) {
 //   3:4  ≈ 0.75  portrait rail
 const TEMPLATE_PREFERRED_RATIO = {
   'hero-title':                     16/9,
+  'hero-title-left':                16/9,
   'hotspot':                        16/9,
   'video-scenario':                 16/9,
   'content-stat':                   16/9,
@@ -98,33 +104,81 @@ const TEMPLATE_PREFERRED_RATIO = {
   'content-split':                  4/3,
   'content-bullets':                4/3,
   'content-quote':                  4/3,
-  'objectives':                     4/3,
+  'learning-objectives':            3/4,
   'step-sequence':                  4/3,
   'bar-chart-modal':                4/3,
 };
 
-// Deterministic non-crypto hash — same Slide-ID always maps to same index.
-function hashStr(s) {
-  let h = 0;
-  for (let i = 0; i < (s || '').length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
-  return Math.abs(h);
-}
+const MAIN_IMAGE_TEMPLATES = new Set([
+  'hero-title',
+  'hero-title-left',
+  'hotspot',
+  'video-scenario',
+  'content-stat',
+  'closing',
+  'accordion-content',
+  'accordion-content-image-left',
+  'content-split',
+  'content-bullets',
+  'content-quote',
+  'learning-objectives',
+  'knowledge-check',
+  'step-sequence',
+  'bar-chart-modal',
+]);
+
+const IMAGE_SLOT_RATIO = {
+  'card-explore:card': 1,
+  'tab-panel:item': 4/3,
+};
 
 // Pick an image from the catalog whose ratio is closest to the template's
-// preferred ratio, breaking ties by Slide-ID hash so different slides using
-// the same template get different images.
-function pickImageForTemplate(catalog, templateId, slideId) {
+// preferred ratio. The choice is intentionally random within the closest
+// matches so regenerated draft slides get visual variety while staying close
+// to the shape the template needs.
+function pickImageForTemplate(catalog, templateId, slotKey) {
   if (!catalog.length) return null;
-  const preferred = TEMPLATE_PREFERRED_RATIO[templateId] || (4 / 3);
+  const preferred = IMAGE_SLOT_RATIO[slotKey] || TEMPLATE_PREFERRED_RATIO[templateId] || (4 / 3);
   // Sort by closeness to preferred ratio
   const sorted = catalog.slice().sort((a, b) =>
     Math.abs(a.ratio - preferred) - Math.abs(b.ratio - preferred)
   );
-  // Take the top-3 closest matches (or all if fewer) and pick one deterministically.
+  // Take the top-3 closest matches (or all if fewer) and pick one randomly.
   // The pool of 3 gives variety while still respecting aspect ratio.
   const poolSize = Math.min(3, sorted.length);
   const pool     = sorted.slice(0, poolSize);
-  return pool[hashStr(slideId) % pool.length];
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function resolveImagePath(slide, imageField, templateId, imageCatalog, options = {}) {
+  const imageFile = slide[imageField];
+  const imagesDir = path.resolve('course', 'assets', 'images');
+
+  if (imageFile && fs.existsSync(path.join(imagesDir, imageFile))) {
+    return `../assets/images/${imageFile}`;
+  }
+
+  const picked = imageCatalog && imageCatalog.length
+    ? pickImageForTemplate(imageCatalog, templateId, options.slotKey)
+    : null;
+
+  if (picked) {
+    slide._autoPickedImages = slide._autoPickedImages || [];
+    slide._autoPickedImages.push({
+      field: imageField,
+      requested: imageFile || null,
+      ...picked,
+    });
+    return `../assets/images/${picked.filename}`;
+  }
+
+  if (imageFile) {
+    slide._missingImages = slide._missingImages || [];
+    slide._missingImages.push({ field: imageField, requested: imageFile });
+    return `../assets/images/${imageFile}`;
+  }
+
+  return '../assets/images/placeholder.jpg';
 }
 
 // ---------------------------------------------------------------------------
@@ -227,48 +281,81 @@ function extractClickTriggers(slide, slideId) {
 }
 
 // ---------------------------------------------------------------------------
-// Objective items
+// Learning-objectives items (learning-objectives template — Slide 02 of every module)
+//   - Each objective is a <div> with a unique element id so the script can
+//     animate them individually via GSAP and time-based emphasis cues.
+//   - OBJECTIVES_IDS_JS emits a JS array literal of those element ids.
+//   - VO_CUE_TIMES_JS emits a JS array of per-objective cue times (seconds
+//     from INTRO audio start). Missing cues become Infinity so the
+//     animation never fires for that objective until VO-Cue-N is written
+//     (by `npm run extract-vo-cues`).
 // ---------------------------------------------------------------------------
-
-function buildObjectivesHtml(slide) {
+function collectObjectives(slide) {
   const items = [];
   for (let i = 1; i <= 10; i++) {
     const text = slide[`Objective-${i}`];
     if (!text) break;
-    const num = String(i).padStart(2, '0');
-    items.push(
-      `      <li class="obj-item">\n` +
-      `        <span class="obj-number">${num}</span>\n` +
-      `        <span class="obj-text">${escHtml(text)}</span>\n` +
-      `      </li>`
+    items.push({ n: i, text });
+  }
+  return items;
+}
+
+function objectiveElementId(slideId, n) {
+  return `obj-${slideId}-${String(n).padStart(2, '0')}`;
+}
+
+function buildLearningObjectivesHtml(slide, slideId) {
+  const items = collectObjectives(slide);
+  if (!items.length) {
+    return '        <!-- No Objective-N fields found in storyboard for this slide. -->';
+  }
+  return items.map(({ n, text }) => {
+    const id  = objectiveElementId(slideId, n);
+    const num = String(n).padStart(2, '0');
+    return (
+      `        <div class="anim-scale-up" id="${id}"\n` +
+      `          style="display: flex; align-items: flex-start; gap: 20px; color: white;">\n` +
+      `          <span style="flex-shrink: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #D5001C; font-size: 18px; font-weight: 700; color: #D5001C;">${num}</span>\n` +
+      `          <span style="font-size: 22px; line-height: 32px; font-weight: 400;">${escHtml(text)}</span>\n` +
+      `        </div>`
     );
-  }
-  if (items.length === 0) {
-    // Placeholder items for authoring
-    for (let i = 1; i <= 3; i++) {
-      const num = String(i).padStart(2, '0');
-      items.push(
-        `      <li class="obj-item">\n` +
-        `        <span class="obj-number">${num}</span>\n` +
-        `        <span class="obj-text"><!-- Objective ${i}: replace with actual objective --></span>\n` +
-        `      </li>`
-      );
-    }
-  }
-  return items.join('\n');
+  }).join('\n');
+}
+
+function buildObjectivesIdsJs(slide, slideId) {
+  const items = collectObjectives(slide);
+  if (!items.length) return '[]';
+  return '[' + items.map(({ n }) => `'${objectiveElementId(slideId, n)}'`).join(', ') + ']';
+}
+
+function buildVoCueTimesJs(slide) {
+  const items = collectObjectives(slide);
+  if (!items.length) return '[]';
+  // Missing cues become Infinity so the cue never fires (rather than 0,
+  // which would fire immediately on slide load).
+  const values = items.map(({ n }) => {
+    const raw = slide[`VO-Cue-${n}`];
+    if (raw === undefined || raw === '' || raw === 'null') return 'Infinity';
+    const num = parseFloat(raw);
+    return Number.isFinite(num) ? num.toFixed(2) : 'Infinity';
+  });
+  return '[' + values.join(', ') + ']';
 }
 
 // ---------------------------------------------------------------------------
 // Card items (card-explore template)
 // ---------------------------------------------------------------------------
 
-function buildCardsHtml(triggers) {
+function buildCardsHtml(triggers, slide, imageCatalog) {
   const letters = ['01', '02', '03', '04', '05', '06'];
   return triggers.map((t, idx) => {
     const num   = letters[idx] || String(idx + 1).padStart(2, '0');
     const title = camelToWords(t.label);
+    const imageField = `Card-Image-${t.label}`;
+    const imagePath = resolveImagePath(slide, imageField, 'card-explore', imageCatalog, { slotKey: 'card-explore:card' });
     return (
       `      <div class="explore-card pds-card" data-card="${escAttr(t.label)}" id="card-${escAttr(t.label)}" tabindex="0" role="button" aria-label="Explore ${escAttr(title)}">\n` +
+      `        <figure class="card-media"><img src="${escAttr(imagePath)}" alt=""></figure>\n` +
       `        <div class="card-number">${num}</div>\n` +
       `        <div class="card-title">${escHtml(title)}</div>\n` +
       `        <div class="card-body"><!-- Add card detail content here --></div>\n` +
@@ -436,7 +523,7 @@ function buildTabPanelTabsHtml(triggers) {
   }).join('\n');
 }
 
-function buildTabPanelPanelsHtml(triggers, slide) {
+function buildTabPanelPanelsHtml(triggers, slide, imageCatalog) {
   if (!triggers.length) return '';
   return triggers.map((t, idx) => {
     const label = camelToWords(t.label);
@@ -450,8 +537,11 @@ function buildTabPanelPanelsHtml(triggers, slide) {
     // Optional per-panel image — Item-<Label>-Image: <filename in assets/images/>
     const imageFile = slide[`Item-${t.label}-Image`];
     const gridClass = imageFile ? 'panel-grid has-media' : 'panel-grid';
+    const imagePath = imageFile
+      ? resolveImagePath(slide, `Item-${t.label}-Image`, 'tab-panel', imageCatalog, { slotKey: 'tab-panel:item' })
+      : null;
     const mediaHtml = imageFile
-      ? `\n          <figure class="panel-media">\n            <img src="../assets/images/${escAttr(imageFile)}" alt="">\n          </figure>`
+      ? `\n          <figure class="panel-media">\n            <img src="${escAttr(imagePath)}" alt="">\n          </figure>`
       : '';
     return (
       `      <section class="${cls}" id="panel-${escAttr(t.label)}" data-panel="${escAttr(t.label)}" role="tabpanel"${hidden}>\n` +
@@ -560,27 +650,14 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml, imageCatalog) 
   const templateId  = slide['Template-ID'];
   const slideTitle  = slide['Slide-Title'] || slideId;
   const onScreen    = slide['On-Screen-Text'] || slideTitle;
-  const imageFile   = slide['Image-File'];
 
-  // Image fallback: when no Image-File is specified, pick a random image
-  // from the catalog whose aspect ratio matches what this template prefers.
-  // Deterministic by Slide-ID so the same slide picks the same image on every
-  // regeneration. Caller stashes the auto-pick on slide._autoPickedImage so
-  // main() can log it.
-  let imagePath;
-  if (imageFile) {
-    imagePath = `../assets/images/${imageFile}`;
-  } else {
-    const picked = imageCatalog && imageCatalog.length
-      ? pickImageForTemplate(imageCatalog, templateId, slideId)
-      : null;
-    if (picked) {
-      slide._autoPickedImage = picked;
-      imagePath = `../assets/images/${picked.filename}`;
-    } else {
-      imagePath = '../assets/images/placeholder.jpg';
-    }
-  }
+  // Image fallback: for templates with a main image slot, use an existing
+  // Image-File when it exists; otherwise choose a catalog image whose aspect
+  // ratio fits the template. This lets draft storyboards use production-style
+  // names like 1S01.jpg before those final assets exist.
+  const imagePath = MAIN_IMAGE_TEMPLATES.has(templateId)
+    ? resolveImagePath(slide, 'Image-File', templateId, imageCatalog)
+    : '';
 
   const { value: statValue, label: statLabel } = splitStat(onScreen, slideTitle);
   const clicks = extractClickTriggers(slide, slideId);
@@ -603,6 +680,11 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml, imageCatalog) 
     bodyContentHtml = `<p class="pds-body anim-fade-right" style="--anim-delay: 0.35s;">${escHtml(onScreen)}</p>`;
   }
 
+  // Intro paragraph above the objectives list. Falls back to On-Screen-Text
+  // (matches the doc example which uses On-Screen-Text for the
+  // "By the end of this module..." sentence).
+  const introText = slide['Intro-Text'] || onScreen;
+
   const tokens = {
     SLIDE_ID:       slideId,
     SLIDE_TITLE:    escHtml(slideTitle),
@@ -617,17 +699,20 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml, imageCatalog) 
     QUOTE_TEXT:               escHtml(quoteText),
     QUOTE_ATTRIBUTION_NAME:   escHtml(quoteAttributionName),
     QUOTE_ATTRIBUTION_TITLE:  escHtml(quoteAttributionTitle),
-    // Objectives template
-    OBJECTIVES_HTML: buildObjectivesHtml(slide),
+    // learning-objectives template
+    OBJECTIVES_HTML:    buildLearningObjectivesHtml(slide, slideId),
+    INTRO_TEXT:         escHtml(introText),
+    OBJECTIVES_IDS_JS:  buildObjectivesIdsJs(slide, slideId),
+    VO_CUE_TIMES_JS:    buildVoCueTimesJs(slide),
     // Card-explore template
-    CARDS_HTML:      buildCardsHtml(clicks),
+    CARDS_HTML:      templateId === 'card-explore' ? buildCardsHtml(clicks, slide, imageCatalog) : '',
     CARD_AUDIO_MAP:  buildCardAudioMap(clicks),
     TOTAL_CARDS:     String(clicks.length || 3),
     // Accordion-content template (reuses CARD_AUDIO_MAP + TOTAL_CARDS for VO)
     ACCORDION_ITEMS_HTML: buildAccordionItemsHtml(clicks, slide),
     // Tab-panel template (also reuses CARD_AUDIO_MAP + TOTAL_CARDS)
     TAB_PANEL_TABS_HTML:   buildTabPanelTabsHtml(clicks),
-    TAB_PANEL_PANELS_HTML: buildTabPanelPanelsHtml(clicks, slide),
+    TAB_PANEL_PANELS_HTML: templateId === 'tab-panel' ? buildTabPanelPanelsHtml(clicks, slide, imageCatalog) : '',
     // Hotspot template (also reuses CARD_AUDIO_MAP + TOTAL_CARDS)
     HOTSPOT_MARKERS_HTML:  buildHotspotMarkersHtml(clicks, slide),
     HOTSPOT_POPOVERS_HTML: buildHotspotPopoversHtml(clicks, slide),
@@ -766,10 +851,17 @@ async function main() {
       fs.writeFileSync(outPath, rendered, 'utf8');
       const tplLabel = templateId.padEnd(18);
       console.log(`  WRITE  ${tplLabel}  →  ${slideId}.html`);
-      if (slide._autoPickedImage) {
-        const pick = slide._autoPickedImage;
-        const r = pick.ratio.toFixed(2);
-        console.log(`         auto-image: ${pick.filename} (${pick.width}×${pick.height}, ratio ${r})`);
+      if (slide._autoPickedImages) {
+        for (const pick of slide._autoPickedImages) {
+          const r = pick.ratio.toFixed(2);
+          const requested = pick.requested ? ` for missing ${pick.field}=${pick.requested}` : ` for ${pick.field}`;
+          console.log(`         auto-image: ${pick.filename} (${pick.width}×${pick.height}, ratio ${r})${requested}`);
+        }
+      }
+      if (slide._missingImages) {
+        for (const missing of slide._missingImages) {
+          console.warn(`         WARN image missing and no catalog fallback available: ${missing.field}=${missing.requested}`);
+        }
       }
       written++;
     } catch (err) {

@@ -2,7 +2,7 @@
 
 > **When to open this doc:** You're naming a new slide, image, audio clip, or caption file — or auditing existing names for compliance.
 > **It answers:** The exact filename format for every asset class.
-> **Authoritative source:** This file is canonical. Other docs (COURSE-RULES, TEMPLATE-REFERENCE, STORYBOARD-AUTHOR-PROMPT, NEW-MODULE-WORKFLOW) defer to it.
+> **Authoritative source:** This file is canonical. Other docs (COURSE-RULES, TEMPLATE-REFERENCE, STORYBOARD-AUTHORING-KIT, NEW-MODULE-WORKFLOW) defer to it.
 
 When referencing, generating, or labeling any slide or image asset, you MUST follow these naming conventions exactly. Do not deviate from these formats. **Course and module identity is carried by the project folder — do not include course codes or module numbers in filenames.**
 
@@ -114,7 +114,7 @@ course/assets/captions/2KC01-INTRO.vtt
 course/assets/captions/3FQ-SCORE-INTRO.vtt
 ```
 
-**Player-chrome captions** (shared across modules) keep their existing names: `Click_Next.vtt`, `Click_Start_Quiz.vtt`, `Congratulations.vtt`, `FailResponse.vtt`, `KC_correct_response.vtt`, `KC_Incorrect_response.vtt`. These are not slide-tied and are not regenerated per module.
+**Player-chrome captions** (shared across modules) keep their existing names: `Click_Start_Quiz.vtt`, `Congratulations.vtt`, `FailResponse.vtt`, `KC_correct_response.vtt`, `KC_Incorrect_response.vtt`. These are not slide-tied and are not regenerated per module.
 
 ---
 

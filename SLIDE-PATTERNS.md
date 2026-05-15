@@ -79,38 +79,25 @@ When a slide sends `sandbox-swap-audio` (mid-slide audio change), the runtime re
 
 **Result:** Any code inside `SandboxRuntime.voAudio.addEventListener('ended', ...)` that runs AFTER a `sandbox-swap-audio` is unreliable — it may never execute.
 
-**Solution — use `endCue` instead:**
+**Current rule — no spoken Next cue:**
 
 ```javascript
-// In the slide — add endCue to the swap message:
+// In the slide — swap audio only. Do not add a follow-up cue that tells the
+// learner to click Next.
 window.parent.postMessage({
   type:   'sandbox-swap-audio',
-  src:    'assets/audio/vo/1S08-2.mp3',
-  endCue: '../assets/audio/vo/Click_The_Next_Button_To_Continue.mp3'
+  src:    'assets/audio/vo/1S08-2.mp3'
 }, '*');
-
-// The runtime's onSwapEnded DOM listener handles it directly — no shim involved.
-// (Already wired in both runtimes — nothing else needed in the slide.)
 ```
 
-The runtime reads `e.data.endCue` and calls `playInteractionAudio({ src: swapEndCue })` from the native DOM `ended` listener. This bypasses the shim entirely.
+The runtime unlocks Next when the relevant audio/interaction lock clears. On
+interactive slides, Next pulses after the final required interaction is complete.
 
 ---
 
 ## 3. Audio Patterns
 
-### 3a. Standard VO-triggered end-of-slide cue
-
-Works reliably on slides that do NOT use `sandbox-swap-audio`.
-
-```javascript
-SandboxRuntime.voAudio.addEventListener('ended', function () {
-  SandboxRuntime.interactionAudio.src = '../assets/audio/vo/Click_The_Next_Button_To_Continue.mp3';
-  SandboxRuntime.interactionAudio.play().catch(function () {});
-});
-```
-
-### 3b. Mid-slide audio swap (two-part VO slides)
+### 3a. Mid-slide audio swap (two-part VO slides)
 
 Used on slides like 1S08 where part 2 audio starts only after a user interaction.
 
@@ -118,8 +105,7 @@ Used on slides like 1S08 where part 2 audio starts only after a user interaction
 window.parent.postMessage({ type: 'sandbox-lock-next' }, '*');
 window.parent.postMessage({
   type:   'sandbox-swap-audio',
-  src:    'assets/audio/vo/1S08-2.mp3',   // relative to player page
-  endCue: '../assets/audio/vo/Click_The_Next_Button_To_Continue.mp3'
+  src:    'assets/audio/vo/1S08-2.mp3'   // relative to player page
 }, '*');
 
 // Track part 2 timeline via timeupdate (this DOES work for swapped audio):
@@ -128,12 +114,11 @@ SandboxRuntime.voAudio.addEventListener('timeupdate', function () {
   // reveal detail panels, etc.
 });
 // Do NOT rely on SandboxRuntime.voAudio.addEventListener('ended') for post-swap logic.
-// Use endCue instead (see §2).
+// Keep post-swap completion visual: unlock Next when the required interaction is done.
 ```
 
-**Note on path format for `src` vs `endCue`:**
+**Note on path format for `src`:**
 - `src` in `sandbox-swap-audio`: relative to the **player page** (e.g., `assets/audio/vo/...` — no `../`)
-- `endCue`: relative to the **player page**, starting with `../` (e.g., `../assets/audio/vo/...`)
 - `interactionAudio.src`: relative to the **player page**, starting with `../`
 
 ### 3c. Interaction audio (click-triggered clips)
@@ -552,8 +537,7 @@ All paths are **relative to the slide file** (`course/slides/1SNN.html`):
 ```javascript
 window.parent.postMessage({
   type: 'sandbox-swap-audio',
-  src:  'assets/audio/vo/1S08-2.mp3',  // no leading ../
-  endCue: '../assets/audio/vo/Click_The_Next_Button_To_Continue.mp3' // with ../
+  src:  'assets/audio/vo/1S08-2.mp3'  // no leading ../
 }, '*');
 ```
 
@@ -648,8 +632,8 @@ Use this for every new slide.
 
 - [ ] If slide has VO audio: does it need Next locked until VO ends? (If yes: runtime handles `nextLockedByAudio` automatically — no extra code needed)
 - [ ] If slide has user interactions required before Next: add `sandbox-lock-next` on load, `sandbox-unlock-next` when complete
-- [ ] If slide needs a "Click Next to continue" audio cue at the end: use `SandboxRuntime.voAudio.addEventListener('ended', ...)` for standard single-VO slides, or `endCue` parameter on `sandbox-swap-audio` for two-part VO slides
-- [ ] If slide uses `sandbox-swap-audio`: do NOT rely on `SandboxRuntime.voAudio.addEventListener('ended', ...)` for post-swap logic — it won't fire reliably. Use `endCue` instead.
+- [ ] Do not add spoken "Click Next to continue" audio cues; Next readiness is visual.
+- [ ] If slide uses `sandbox-swap-audio`: do NOT rely on `SandboxRuntime.voAudio.addEventListener('ended')` for post-swap logic — it won't fire reliably. Use explicit interaction completion state to unlock Next.
 
 ### Interactions
 

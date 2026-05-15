@@ -1,7 +1,7 @@
 {
   "meta": {
-    "id": "module-id-here",
-    "title": "[Module Title Here]",
+    "id": "porsche-cc09-001",
+    "title": "Addressing Customer Concerns and Objectives",
     "version": "1.0.0",
     "language": "en-US",
     "pass_threshold": 80,
@@ -27,6 +27,11 @@
       "id": "SLD_TEST_004",
       "title": "Content split",
       "audio_vo": "assets/audio/vo/SLD_TEST_004_INTRO.mp3"
+    },
+    {
+      "id": "SLD_TEST_005",
+      "title": "What you'll learn",
+      "audio_vo": "assets/audio/vo/SLD_TEST_005_INTRO.mp3"
     }
   ],
   "quiz": {

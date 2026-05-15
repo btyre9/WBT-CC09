@@ -2,7 +2,7 @@
 
 > **When to open this doc:** You're about to run `generate-slides` (especially with `--force`), debating whether regeneration is safe, or signing off a finished module for delivery.
 > **It answers:** Regeneration safety (PL5), new-module delivery checklist (Part 9), interaction-lock rules (I1–I6), audio rules (A1–A7), quiz counts and structure (Q0–Q4), template-build rules (T1–T4).
-> **Does NOT cover:** How to write storyboard content (see [STORYBOARD-AUTHOR-PROMPT.md](STORYBOARD-AUTHOR-PROMPT.md)) or template field schemas (see [TEMPLATE-REFERENCE.md](TEMPLATE-REFERENCE.md)).
+> **Does NOT cover:** How to write storyboard content (see [STORYBOARD-AUTHORING-KIT.md](STORYBOARD-AUTHORING-KIT.md)) or template field schemas (see [TEMPLATE-REFERENCE.md](TEMPLATE-REFERENCE.md)).
 
 The complete rule set for this system. Applies to every module built on this pipeline. When in doubt about any decision — storyboard content, template selection, audio behavior, player UI — check this file first.
 
@@ -89,7 +89,7 @@ Every image assigned to a slide must have a corresponding storyboard field. The 
 | tile-explore | `Image-{Label}` | `Image-Enthusiast: 1S07.jpg` |
 | all others | `Image-File` | `Image-File: 1S04.jpg` |
 
-The generator prints a `WARN` line for every image that falls back to a placeholder, so missing fields are visible at generation time. Treat any `WARN` line about an image as an authoring gap to fill before the module ships.
+When a requested image file does not exist yet, the generator prints an `auto-image` line and uses a real file from `course/assets/images/` whose aspect ratio fits the template. Treat each `auto-image` line as a draft placeholder to replace before shipping. A `WARN` line means no catalog fallback was available.
 
 ---
 
@@ -187,7 +187,7 @@ The only exception is `modal-audio-progress`, which has a documented mirror-audi
 
 **How to generate them:** always run `npm run generate-vtt -- --whisper-local` (or `--whisper` for the API version). The default `npm run generate-vtt` mode emits one-cue placeholders that span the full clip with no word-level timing — those are not deliverable.
 
-**Coverage check before packaging:** the number of `.vtt` files in `course/assets/captions/` should equal the number of `.mp3` files in `course/assets/audio/vo/` (excluding shared player-chrome clips like `Click_Next`, `Congratulations`, `FailResponse`, which have their own captions). If a click/tab/step audio clip exists but its caption doesn't, the SCORM build is incomplete.
+**Coverage check before packaging:** the number of `.vtt` files in `course/assets/captions/` should equal the number of `.mp3` files in `course/assets/audio/vo/` (excluding shared player-chrome clips like `Click_Start_Quiz`, `Congratulations`, `FailResponse`, and KC response audio, which have their own captions). If a click/tab/step audio clip exists but its caption doesn't, the SCORM build is incomplete.
 
 ### A6 — Submit-answer SFX on knowledge-check and final-quiz slides
 
@@ -244,11 +244,11 @@ The Next button is disabled for the duration of INTRO audio playback.
 ### I3 — Next button locked until all interactions complete
 On interactive slides, Next stays locked until the learner has visited every required interaction element. Required IDs are declared via `sandbox-configure-interactions`.
 
-### I4 — 2-second pause before Click_Next.mp3 plays
-When the last required interaction is visited, the Next button enables immediately. `Click_Next.mp3` plays 2 seconds later. This gives the learner a brief breath after the last interaction audio ends before the navigation prompt sounds. The delay is implemented centrally in `runtime.js → maybePlayFinalNextCue()` and applies to all interactive templates automatically.
+### I4 — No spoken Next prompt
+Do not play a VO cue that tells the learner to click Next. The old spoken prompt behavior has been retired; Next readiness is visual only.
 
-### I5 — Next button pulses on unlock
-When Next transitions from disabled to enabled, it plays a brief red-ring pulse animation to draw attention.
+### I5 — Next button pulses after required interactions complete
+When the learner completes the final required interaction on an interactive slide, the player unlocks Next and plays a brief red-ring pulse animation on the Next button. Non-interactive slide VO ending does not play a Next prompt.
 
 ### I6 — Player controls always active
 These four controls are never disabled by any lock state — not during INTRO, not while interactions are incomplete:
@@ -344,7 +344,6 @@ element.addEventListener('click', function () {
 window.parent.postMessage({
   type: 'sandbox-configure-interactions',
   requiredIds: ['CardA', 'CardB', 'CardC'],
-  finalCueSrc: 'assets/audio/vo/Click_Next.mp3',
   lockNextUntilComplete: true
 }, '*');
 ```
@@ -393,7 +392,7 @@ Use this checklist when starting from scratch on a new module.
 - [ ] INTRO audio plays on each slide load
 - [ ] Interaction elements locked during INTRO on **every** interactive slide — cards, tabs, tiles, drag items, hotspots, KC options, FQ options
 - [ ] Next locks during INTRO and while interactions are incomplete
-- [ ] Next unlocks and pulses simultaneously with `Click_Next.mp3`
+- [ ] Next unlocks and pulses after all required interactions are complete
 - [ ] Mute button silences all audio including interaction clips
 - [ ] Progress bar is thin red line at bottom of top bar, resets on each new clip
 - [ ] Captions, mute, replay, speed all work at all times

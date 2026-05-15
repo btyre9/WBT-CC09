@@ -16,14 +16,26 @@
       justify-content: center;
     }
 
-    /* ── Dimmed backdrop ──────────────────────────────────────────── */
-    .kc-backdrop {
+    /* ── Set-level background image (per Image-File on the slide) ──── */
+    .kc-bg-image {
       position: absolute;
       inset: 0;
       z-index: 0;
-      background:
-        radial-gradient(1400px 700px at 10% -10%, var(--pds-bg-surface) 0%, transparent 60%),
-        var(--pds-bg-base);
+      overflow: hidden;
+    }
+    .kc-bg-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    /* ── Dimmed backdrop overlays the image to keep the modal readable ── */
+    .kc-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: rgba(0,0,0,0.55);
     }
 
     .kc-backdrop::before {
@@ -36,13 +48,7 @@
       background-size: 48px 48px;
       transform: rotate(45deg);
       pointer-events: none;
-    }
-
-    .kc-backdrop::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.48);
+      opacity: 0.5;
     }
 
     /* ── Modal card ───────────────────────────────────────────────── */
@@ -293,6 +299,11 @@
 <body>
 
 <div class="slide" data-slide-id="{{SLIDE_ID}}" data-review-slide="{{REVIEW_SLIDE}}">
+
+  <!-- Set-level background image (sits behind the dimmed backdrop) -->
+  <div class="kc-bg-image">
+    <img src="{{IMAGE_PATH}}" alt="" onerror="this.style.display='none'">
+  </div>
 
   <!-- Dimmed backdrop -->
   <div class="kc-backdrop"></div>

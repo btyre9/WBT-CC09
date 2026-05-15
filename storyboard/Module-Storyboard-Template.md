@@ -30,7 +30,7 @@ Notes: Full-bleed hero image. Title fades in at 0.5s.
 ## Slide 02 — Learning Objectives
 
 Slide-ID: 02
-Template-ID: objectives
+Template-ID: learning-objectives
 Slide-Title: Learning Objectives
 On-Screen-Text: Module [N] Learning Objectives
 >> On slide load → 1S02-INTRO.mp3

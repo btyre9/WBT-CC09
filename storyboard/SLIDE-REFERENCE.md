@@ -88,7 +88,7 @@ Build every module in this order unless the outline specifies otherwise:
 | Position | Template | Slide-ID pattern | Purpose |
 |---|---|---|---|
 | 1 | `hero-title` | `01` | Module opening — full-bleed hero image |
-| 2 | `objectives` | `02` | Learning objectives list |
+| 2 | `learning-objectives` | `02` | Learning objectives list |
 | 3–N | Content templates + `knowledge-check` | mixed | Core content with KCs woven in throughout |
 | Last content | `closing` | `1SNN` | Module wrap-up |
 | N+1+ | `final-quiz` | `01`+ | One question per learning objective |
@@ -143,9 +143,11 @@ Notes: hero-title chosen — standard module opener. Hero image should evoke asp
 
 ---
 
-### `objectives`
+### `learning-objectives`
 **Use for:** The learning objectives slide — always the second slide. Two-column layout:
 section heading on the left, numbered objectives that animate in sequentially on the right.
+Per-objective emphasis fires in sync with VO cue times (`VO-Cue-N` fields, written by
+`npm run extract-vo-cues` after VO is recorded).
 
 **Required fields:**
 | Field | Notes |
@@ -159,7 +161,7 @@ section heading on the left, numbered objectives that animate in sequentially on
 ## Slide 02 — Learning Objectives
 
 Slide-ID: 1S02
-Template-ID: objectives
+Template-ID: learning-objectives
 Slide-Title: In this module, you will:
 Objective-1: Identify the key characteristics of today's Porsche customer
 Objective-2: Explain how CSI scores are calculated and what drives them

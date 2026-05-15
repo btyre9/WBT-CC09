@@ -80,7 +80,7 @@
   <div class="slide-root" data-slide-id="{{SLIDE_ID}}"
     style="width: 1920px; height: 920px; position: relative; background: radial-gradient(1400px 700px at 10% -10%, #343a48 0%, transparent 60%), linear-gradient(140deg, #111317 0%, #1e2128 48%, #2a2f39 100%); overflow: hidden">
 
-    <div class="anim-fade slide-image" id="slide-image" style="background-image: url('../assets/images/{{IMAGE_FILE}}');"></div>
+    <div class="anim-fade slide-image" id="slide-image" style="background-image: url('{{IMAGE_PATH}}');"></div>
 
     <div style="width: 1320px; height: 920px; left: 0; top: 0; position: absolute">
 
@@ -210,7 +210,6 @@
         delay: 0.65
       });
 
-      // TODO: set cue times (seconds) after VO is recorded
       var voTimes = {{VO_CUE_TIMES_JS}};
       var voFired = voTimes.map(function () { return false; });
       var activeIdx = -1;

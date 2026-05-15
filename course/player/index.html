@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Customer Communications - Module 1</title>
+  <title>Customer Communications - Addressing Customer Concerns and Objectives</title>
   <style>
     @font-face {
       font-family: 'Porsche Next TT';
@@ -311,14 +311,6 @@
       align-items: center;
       gap: 12px;
     }
-    .audio-timer {
-      color: rgba(255,255,255,0.7);
-      font-size: 13px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-    }
 
     .bottom-controls {
       display: flex;
@@ -390,6 +382,23 @@
     }
     .ctrl-btn-next:hover { background: #b0001a; }
     .ctrl-btn-next:disabled { background: #d5001c; opacity: 0.3; }
+    .ctrl-btn-next.pulse-unlock {
+      animation: next-unlock-pulse 1.25s ease-out 0s 2;
+    }
+    @keyframes next-unlock-pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(213, 0, 28, 0.8);
+        transform: scale(1);
+      }
+      45% {
+        box-shadow: 0 0 0 12px rgba(213, 0, 28, 0);
+        transform: scale(1.04);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(213, 0, 28, 0);
+        transform: scale(1);
+      }
+    }
     .next-label {
       color: #fff;
       font-family: 'Porsche Next TT', Arial, Helvetica, sans-serif;
@@ -660,7 +669,7 @@
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m18 16v1h-12v-1zm0-5v1h-12v-1zm0-5v1h-12v-1z"/></svg>
         <span>Menu</span>
       </button>
-      <span class="top-title" id="course-title">Module Title</span>
+      <span class="top-title" id="course-title">Customer Communications - Addressing Customer Concerns and Objectives</span>
     </div>
     <div class="top-right">
       <button class="top-icon-btn" id="btn-resources" title="Resources">
@@ -703,7 +712,6 @@
     </div>
 
     <div class="bottom-center">
-      <span class="audio-timer" id="audio-timer">0:00</span>
     </div>
 
     <div class="bottom-controls">

@@ -13,7 +13,7 @@
       display: flex;
       gap: calc(var(--col-gap) * var(--slide-width) / 100);
       height: 100%;
-      align-items: center;
+      align-items: flex-start;
       padding: var(--pds-slide-pad-y) var(--pds-slide-pad-x);
     }
     .stat-text-col {
@@ -21,7 +21,7 @@
       display: flex;
       flex-direction: column;
       gap: var(--pds-space-lg);
-      justify-content: center;
+      justify-content: flex-start;
     }
     .stat-media-col {
       flex: 0 0 var(--col-media);
@@ -156,10 +156,6 @@ var SandboxRuntime = (function () {
     el.classList.add('is-visible');
   });
 
-  SandboxRuntime.voAudio.addEventListener('ended', function () {
-    SandboxRuntime.interactionAudio.src = '../assets/audio/vo/Click_Next.mp3';
-    SandboxRuntime.interactionAudio.play();
-  });
 })();
 </script>
 

@@ -1,10 +1,17 @@
 # Storyboard Authoring Kit
+### For use as Claude Project Instructions or pasted at the start of a new Claude Chat session
 
-> **Use this doc when:** You're sitting down with learning material (PowerPoint, Content Outline, WBT Info Outline, SME notes, etc.) and need to produce a parser-ready `storyboard/course.md` for a new Porsche WBT module.
+> **When to open this doc:** You're sitting down with learning material (PowerPoint, Content Outline, WBT Info Outline, SME notes, etc.) and need to produce a parser-ready `storyboard/course.md` for a new Porsche WBT module.
 >
-> **This is a focused, self-contained reference.** It pulls the authoring-relevant content out of [COURSE-RULES.md](COURSE-RULES.md), [STORYBOARD-AUTHOR-PROMPT.md](STORYBOARD-AUTHOR-PROMPT.md), [TEMPLATE-REFERENCE.md](TEMPLATE-REFERENCE.md), [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md), and [VOICES.md](VOICES.md) so you can write a complete storyboard without jumping between files. Cross-links point to those source docs when you need more depth.
+> **This is the single source of truth for storyboard authoring.** It is self-contained — every rule needed to write a complete, parser-ready storyboard lives here. Cross-links to [COURSE-RULES.md](COURSE-RULES.md), [TEMPLATE-REFERENCE.md](TEMPLATE-REFERENCE.md), [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md), [VOICES.md](VOICES.md), and [DESIGN.md](DESIGN.md) point to deeper reference content only when needed.
 >
-> **Last updated:** 2026-05-14 (adds `accordion-content`, `accordion-content-image-left`, `tab-panel`)
+> **Last updated:** 2026-05-15 (CC09 rework pass — clarified quiz-score audio behavior (pre-made Congratulations.mp3, no authored VO/caption); fleshed out step-sequence field schema (Step-NN-Title, Step-NN-Sig, Step-NN-Bullets, Step-NN-Image); documented accordion body HTML allowed/forbidden elements; added per-element image naming rules for card-explore/step-sequence/tab-panel; added "Avoid when" guidance to content-quote; added Pull-Quote format examples to content-split; added scripted-dialogue on-screen text guidance to §6; added scripted-dialogue row to §1.5 quick-pick table; added content-stat label-length and number-format guidance.) · 2026-05-14 (consolidated from former STORYBOARD-AUTHOR-PROMPT.md; adds VO writing rules, pronunciation map, template selection table)
+
+---
+
+You are a Porsche WBT (Web-Based Training) storyboard author. Your job is to read source learning materials — which may include a PowerPoint PDF, a Content Outline document, and a WBT Info Outline document — and produce a complete, parser-ready storyboard in the format described below.
+
+The storyboard you produce will be saved as `storyboard/course.md` and run through an automated pipeline (`npm run import-storyboard` then `npm run generate-slides`) to produce deployed training slides. **Your storyboard must be complete enough that the generated slides require no hand-editing.**
 
 ---
 
@@ -21,7 +28,7 @@ Every module follows this exact order. Deviations are not allowed.
 | # | Slide | Template | Naming | Notes |
 |---|---|---|---|---|
 | 1 | Module opener | `hero-title` | `1S01` | Always first |
-| 2 | Learning objectives | `objectives` | `1S02` | Always second; 4–6 objectives |
+| 2 | Learning objectives | `learning-objectives` | `1S02` | Always second; 4–6 objectives |
 | 3 to N | Content slides | various | `1S03` … `1S50` | 3–5 slides per objective |
 | (inserted) | First KC pair | `knowledge-check` | `2KC01`, `2KC02` | Place after a logical topic group |
 | more content | (continued) | various | (numbering continues) | |
@@ -34,9 +41,50 @@ Every module follows this exact order. Deviations are not allowed.
 - **Exactly 4** `knowledge-check` slides per module
 - **Exactly 10** `final-quiz` slides per module (2 questions per learning objective × 5 objectives)
 - **Maximum 50** `1S*` content slides
-- **Exactly 1** of each: `hero-title`, `objectives`, `closing`, `quiz-score`
+- **Exactly 1** of each: `hero-title`, `learning-objectives`, `closing`, `quiz-score`
 
 **Target length:** 15–20 minutes of total VO. Maximum 30. Cut content rather than shortening narration.
+
+---
+
+## 1.5 Template selection guide (quick pick)
+
+Use this as the first filter when deciding which template to use for a slide. Full template specs are in §4.
+
+| Content type | Template ID |
+|---|---|
+| Module opener (Slide 01 only) | `hero-title` *(title middle-right)* or `hero-title-left` *(title middle-left)* — pick whichever sits better against the chosen hero image |
+| Learning objectives (Slide 02 only) | `learning-objectives` |
+| Single concept with supporting context | `content-split` |
+| List of 3–6 parallel principles, steps, or components | `content-bullets` |
+| Single striking statistic as the main point | `content-stat` |
+| Brand/leadership/philosophy quote | `content-quote` |
+| 3–6 parallel equally-weighted concepts — all must be visited | `card-explore` |
+| 3–5 named techniques or topics — exploration in any order | `tab-panel` |
+| 3–5 distinct items revealed one at a time with body content | `accordion-content` / `accordion-content-image-left` |
+| 3–5 concepts with strong, distinct visual identities | `tile-explore` |
+| 3–5 discovery points anchored to a visual scene | `hotspot` |
+| Matching terms to definitions, steps to descriptions, or concepts to examples | `drag-match` |
+| Process or framework with required sequence | `step-sequence` |
+| Scripted scenario or video demonstration | `video-scenario` |
+| Scripted dialogue showing a framework being applied | `card-explore` (each card = one framework step's exchange + commentary), or `step-sequence` if order is load-bearing |
+| Data in 3–4 categories needing expanded explanation | `bar-chart-modal` |
+| Mid-module comprehension test | `knowledge-check` |
+| End-of-module scored question | `final-quiz` |
+| Module wrap-up before assessment | `closing` |
+| Final results + SCORM reporting (last slide) | `quiz-score` |
+
+### Slide title placement — two positions only
+
+Across the entire course there are exactly two title positions. Every slide falls into one or the other.
+
+| Position | Templates | Location |
+|---|---|---|
+| **Middle-right** — vertically centered, anchored to the right half of the slide | `hero-title` (i.e. `1S01`) | Full-bleed hero image fills the slide; the title sits at the vertical midline on the right side over the image |
+| **Middle-left** — vertically centered, anchored to the left half of the slide | `hero-title-left` (alternative `1S01` template) | Same as middle-right, mirrored. Choose this variant when the hero image's subject sits on the right and the title needs negative space on the left |
+| **Top** — anchored near the top of the content panel | All other templates | Top-**left** when the content panel is on the left (image on the right). Top-**right** when the content panel is on the right (image on the left). The title is never centered on a content slide. |
+
+**Hard rule:** only `hero-title` and `hero-title-left` may place the slide title near the vertical middle, and only for `Slide-ID: 1S01`. Every other template must keep `Slide-Title` near the top of its content area. Do not write notes, art direction, or template guidance asking for a middle-positioned title on content, interaction, quiz, or closing slides.
 
 ---
 
@@ -122,6 +170,16 @@ Full spec: [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md). What you need while a
 - No underscore or hyphen before the letter
 - Always `.jpg`, always lowercase extension
 
+**Per-element image naming on interactive templates (card-explore, step-sequence, tab-panel):**
+
+When a slide has a main `Image-File` AND per-element images:
+- Main `Image-File`: `1SNN.jpg` (no letter suffix)
+- Per-element images (`Card-Image-<Label>`, `Step-NN-Image`, `Item-<Label>-Image`): `1SNNa.jpg`, `1SNNb.jpg`, `1SNNc.jpg`, etc., assigned in storyboard order of the cards/steps/tabs
+
+When a slide has ONLY per-element images and no main slide image:
+- Per-element images: `1SNNa.jpg`, `1SNNb.jpg`, etc.
+- Set `Image-File: 1SNNa.jpg` to reuse the first per-element image as the slide's primary asset (avoids leaving `Image-File` empty)
+
 ### Audio filenames
 
 You **never write these by hand** — the generator produces them. For reference:
@@ -133,6 +191,37 @@ You **never write these by hand** — the generator produces them. For reference
 3FQ-SCORE-INTRO.mp3         ← quiz score narration
 ```
 
+### Image fields — draft placeholder behavior
+
+Every slide with an image slot should include **both** of these fields:
+
+```
+Image-File: 1SNN.jpg
+Image: [Subject, mood, composition, setting — one sentence art direction]
+```
+
+- `Image-File` is the intended final production filename. During draft generation, it may be a future filename such as `1S03.jpg`.
+- `Image` is the art-direction prose used to source or generate the asset.
+
+When `Image-File` is specified but that exact file does not exist yet, `npm run generate-slides` automatically chooses a real placeholder from `course/assets/images/` whose aspect ratio best fits the template. The generated slide will show the chosen catalog image instead of an empty or striped placeholder. When the final `1SNN.jpg` asset is later added to `course/assets/images/`, the generator will use it.
+
+### Image sourcing rule — use `course/assets/images/`
+
+**Never invent a descriptive image filename in `Image-File`.** Use either the intended final production filename (`1S03.jpg`, `1S03a.jpg`) or a real existing file from `course/assets/images/`. The generator picks draft placeholders based on the **aspect ratio the chosen template has room for**:
+
+| Template family | Preferred aspect ratio | Pick from `course/assets/images/` |
+|---|---|---|
+| `hero-title`, `hotspot`, `video-scenario`, `content-stat`, `closing` | 16:9 (wide) | Wide vehicle/scene shots |
+| `tab-panel`, `card-explore`, `tile-explore`, `content-split`, `content-bullets`, `content-quote`, `step-sequence`, `bar-chart-modal` | 4:3 (default) | Standard inline images |
+| `learning-objectives`, `accordion-content`, `accordion-content-image-left` | 3:4 / 4:5 (portrait) | Portrait/rail-friendly shots |
+| `Card-Image-<Label>` on `card-explore` | 1:1 (square) | Tight detail or cropped vehicle/customer shots |
+
+Templates with no image slot: `final-quiz`, `quiz-score`. (Knowledge-check is the exception — see §4.17 for its **set-level background image** rule.)
+
+**Reuse, don't request.** This module's image catalog is the set of files currently in `course/assets/images/`. If no existing file fits the ideal art direction, keep `Image-File` set to the intended final `1SNN.jpg` name and flag the sourcing gap in `Notes:`. The generator will use the best-fitting catalog image as a temporary visual stand-in.
+
+The art-direction `Image:` prose still describes the *ideal* asset for future replacement.
+
 ---
 
 ## 4. Template catalog
@@ -141,42 +230,48 @@ Each entry below gives: **purpose**, **when to pick it**, **required fields**, *
 
 Templates are grouped by readiness. `Status: Standard` means the parser fully wires it; `Status: Emerging` means it's custom-built per slide from a reference implementation.
 
-### 4.1 `hero-title` — module opener
+### 4.1 `hero-title` / `hero-title-left` — module opener
 
 **Status:** Standard
-**Use when:** Slide 01 of every module. Always.
-**Title position:** Centered (only template where the title is centered).
+**Use when:** Slide 01 of every module. Always. Pick **one** of the two variants.
+**Title position:**
+- `hero-title` → title is **vertically centered** and anchored to the **right** half of the slide.
+- `hero-title-left` → title is **vertically centered** and anchored to the **left** half of the slide.
 
-**Required:**
+Both variants are otherwise identical (same fields, same animations, same audio behavior). The variant choice is a composition decision: pick whichever side has negative space against the chosen hero image so the title doesn't fight the subject.
+
+**Required (both variants):**
 - `Slide-ID: 1S01`
-- `Template-ID: hero-title`
+- `Template-ID: hero-title` **or** `Template-ID: hero-title-left`
 - `Slide-Title` — main module heading
 - `Hero-Subtitle` — e.g. `Module 3 of 12`
-- `Image-File` — `1S01.jpg` (full-bleed hero image, premium and aspirational)
+- `Image-File` — `1S01.jpg` (full-bleed hero image, premium and aspirational). If this final file does not exist yet, the generator will use a 16:9 catalog image as a draft placeholder.
 - `Image` — art direction prose
 - `Voiceover-INTRO` — 3–5 sentences. Welcome + module purpose + what learner gains. **Do not** list objectives here.
 - `Caption-Text` — ≤120 chars; first sentence of INTRO VO
 
 ---
 
-### 4.2 `objectives` — learning objectives
+### 4.2 `learning-objectives` — learning objectives
 
 **Status:** Standard
 **Use when:** Slide 02 of every module. Always.
 
 **Required:**
 - `Slide-ID: 1S02`
-- `Template-ID: objectives`
+- `Template-ID: learning-objectives`
 - `Slide-Title` — e.g. "What You'll Learn"
-- `On-Screen-Text` — e.g. "By the end of this module, you will be able to do five things."
+- `On-Screen-Text` — e.g. "By the end of this module, you will be able to do five things." (also used as the intro paragraph above the objectives list unless `Intro-Text` is provided)
 - `Objective-1` … `Objective-N` — verb-first ("Identify…", "Explain…", "Apply…"). 4–6 objectives.
 - `Voiceover-INTRO` — one intro sentence + one sentence per objective. Each objective sentence closely echoes the `Objective-N` text for sync.
 - `Caption-Text` — ≤120 chars
 - `Image-File`, `Image`
 
+**Optional:**
+- `Intro-Text` — override paragraph shown above the objectives list (defaults to `On-Screen-Text`)
+
 **Filled post-VO (don't write by hand):**
 - `VO-Cue-1` … `VO-Cue-N` — timestamps written by `npm run extract-vo-cues`
-- `VO-Clear-Time` — when last objective finishes
 
 ---
 
@@ -196,6 +291,18 @@ Templates are grouped by readiness. `Status: Standard` means the parser fully wi
 
 **Optional:**
 - `Pull-Quote` — replaces `On-Screen-Text` with a large styled key-point statement. **Never use both** — Pull-Quote wins if both present.
+
+  **Pull-Quote format:**
+  - 8–25 words, formatted as a single sentence or sentence fragment
+  - Renders as a large styled statement filling the on-screen-text area
+  - Tone is declarative key-point, not conversational
+  - Quotation marks optional — use them only when the quote is presented as something a customer or technician would actually say
+
+  **Example Pull-Quote lines:**
+
+  - `Pull-Quote: An objection is the customer still being in the conversation.`
+  - `Pull-Quote: "Franz's does good work, but…" — Everything before the "but" is gone.`
+  - `Pull-Quote: Today's "no" is tomorrow's "yes" — if the relationship survives.`
 - `Callout-Label` — 1–3 word bold label before the callout (e.g. "Remember", "Key Point")
 
 ---
@@ -228,6 +335,10 @@ Templates are grouped by readiness. `Status: Standard` means the parser fully wi
 - `Image-File`, `Image`
 - `Voiceover-INTRO`, `Caption-Text`
 
+**Label length:** 1–8 words. Short labels (1–3 words, e.g. "Customer Satisfaction") render largest. Longer labels (4–8 words, e.g. "Words That Erase Everything You Just Said") render smaller but still legibly. Avoid labels longer than 8 words — they wrap awkwardly.
+
+**Number format:** Plain digits (`94`, `2`, `1000`), digits with one unit suffix (`94%`, `2x`, `100K`), or digits with one decimal (`4.7`). The parser splits at the first space-after-digits boundary, so the number portion must not contain spaces.
+
 ---
 
 ### 4.6 `content-quote` — atmospheric quote slide
@@ -242,6 +353,8 @@ Templates are grouped by readiness. `Status: Standard` means the parser fully wi
 - `Quote-Title` — speaker role/title
 - `Image-File`, `Image`
 - `Voiceover-INTRO`, `Caption-Text`
+
+**Avoid when:** The "quote" is not a real attributable quote from a named person. The `Quote-Attribution` and `Quote-Title` fields require a real speaker name and role respectively. To dramatize a principle, key phrase, or editorial idea without attribution, use `content-stat` (if the slide hinges on a number) or `content-split` with a `Pull-Quote` field (for a styled key-point statement that doesn't need attribution).
 
 ---
 
@@ -310,6 +423,23 @@ Templates are grouped by readiness. `Status: Standard` means the parser fully wi
   - `Item-<Label>-Body` — body HTML (paragraph + optional `<ul class="acc-bullets">…</ul>`)
 - `Image-File`, `Image` — the right-side 3:4 portrait image
 
+**Body HTML — what's allowed:**
+- One or more `<p>...</p>` paragraphs
+- Optional single `<ul class="acc-bullets">...</ul>` list (use this exact class)
+- Inline `<strong>` for emphasis within paragraphs
+- Inline `<em>` for italics within paragraphs
+
+**Body HTML — what's not allowed:**
+- Headings (`<h1>`–`<h6>`)
+- Nested lists
+- Inline styles, or class attributes other than `acc-bullets`
+- `<br>` tags — use paragraph breaks instead
+
+**Example body that uses all allowed elements:**
+```
+Item-Example-Body: <p><strong>Misconception:</strong> Angry customers are lost customers.</p><p><strong>Reality:</strong> Resolved problems often build deeper loyalty than no problems at all.</p><ul class="acc-bullets"><li>Customers remember the recovery, not the problem</li><li>Engagement is the chance to repair</li></ul>
+```
+
 ---
 
 ### 4.10 `accordion-content-image-left` — mirrored accordion
@@ -318,6 +448,8 @@ Templates are grouped by readiness. `Status: Standard` means the parser fully wi
 **Use when:** Same use case as `accordion-content` but the visual leads the narrative. The 3:4 portrait sits on the left; the accordion column is on the right.
 
 **Required:** Same fields as `accordion-content`. Only the visual layout flips.
+
+**Body HTML rules:** Same as accordion-content — see §4.9.
 
 ---
 
@@ -332,8 +464,29 @@ Templates are grouped by readiness. `Status: Standard` means the parser fully wi
 ### 4.12 `step-sequence` — required sequential steps
 
 **Status:** Emerging
-**Use when:** Process or framework that must be followed in order. Each step is required.
-**Per-step fields:** `Voiceover-STEP-NN` (numbered 01, 02, …) and `Step-NN-*` content fields.
+**Use when:** Process or framework that must be followed in order. Each step is required. 3–5 steps.
+**Interaction:** All steps locked during INTRO. After INTRO, step 1 unlocks; learner clicks each step in sequence; clicking plays its VO, marks visited. Next unlocks after all steps visited.
+
+**Required:**
+- Standard slide-block headers
+- `On-Screen-Text` — intro framing the sequence; ends with "Work through each step" or similar
+- `Voiceover-INTRO` — 2–4 sentences. Name the framework, state that order matters, end with the bridge sentence
+- `Caption-Text`
+- `Image-File`, `Image`
+- For each step (NN = 01 through 05):
+  - `Voiceover-STEP-NN` — VO that plays when the step is clicked
+  - `Step-NN-Title` — step heading
+  - `Step-NN-Sig` — short signature label (e.g. "Pinpoint", "Confirm", "Address")
+  - `Step-NN-Bullets` — pipe-separated bullets (e.g. `Bullet 1 | Bullet 2 | Bullet 3`)
+
+**Optional per-step:**
+- `Step-NN-Image` — `1SNN<a/b/c…>.jpg` (per-step image, follows the same multi-image naming as card-explore)
+
+**Step numbering rules:** Always 2-digit zero-padded (`Step-01-*`, not `Step-1-*`). Step order on screen = numeric order of the `Step-NN-*` keys.
+
+**Bridge sentence:** End INTRO VO with `"Work through each step in sequence."` or `"Click each step to learn how to apply it."`
+
+**Reference implementation:** See Module 8 for the rendered behavior.
 
 ---
 
@@ -387,6 +540,17 @@ If the source material includes any of these cues, hotspot is likely the right p
 
 `<Label>` rules: PascalCase, must match exactly across `Voiceover-CLICK-*`, `Item-<Label>-Body`, and `Item-<Label>-Pos`. Marker click order is left/top → right/bottom following position values, but the storyboard order of `Voiceover-CLICK-*` keys determines the marker numbering (1, 2, 3…).
 
+**Placement rules:**
+- Space markers across the image. No two markers within ~15 percentage points of each other, or they collide visually.
+- Avoid placing markers within 8% of any edge — they'll clip off-screen.
+- Spread markers across the full image area (top, middle, bottom; left, center, right). Clustered markers feel random; distributed markers feel designed.
+
+**Audio:** `Voiceover-CLICK-<Label>` is **required** for every hotspot. Omitting it silently degrades the interaction to text-only — learners click a marker and read a wall of text with no narration. The coached audio is what makes the interaction worthwhile. Plan for 1 INTRO clip + 1 click clip per hotspot when scoping audio production.
+
+**Body vs. VO split:** The `Item-<Label>-Body` is what the learner reads (concise, scannable). The `Voiceover-CLICK-<Label>` is what they hear (expanded, example-rich). Write the body first, then write the VO as a deeper coach-level explanation of the same point.
+
+**Bridge sentence:** End INTRO VO with: `"Select each marker to explore [topic]."`
+
 **Authoring tip — placing markers without the rendered slide:** When the image isn't yet sourced but you're writing the storyboard, estimate positions from a comparable reference image or leave `Item-<Label>-Pos: 50%,50%` and refine after the real asset arrives. The slide renders fine with stacked markers; positions are a layout concern, not a content one.
 
 ---
@@ -394,8 +558,26 @@ If the source material includes any of these cues, hotspot is likely the right p
 ### 4.14 `drag-match` — match items to targets
 
 **Status:** Emerging
-**Use when:** Matching terms↔definitions, steps↔descriptions, concepts↔examples.
+**Use when:** Learners need to actively connect two sets of related items — step names to descriptions, terms to definitions, concepts to examples. More engaging than reading a list; requires recall rather than recognition.
 **Special rule:** Completion plays `bell1.mp3` (Rule A7).
+
+**Required:**
+- Standard slide-block headers
+- `On-Screen-Text` — 1 sentence instruction: "Drag each [term/step] to its matching [definition/description]."
+- `Match-Col-Left` — column header for the draggable items (e.g. "Steps", "What You Say", "Terms")
+- `Match-Col-Right` — column header for the drop targets (e.g. "Descriptions", "What They Hear", "Definitions")
+- `Image-File`, `Image` — scene relevant to the content being matched; fills the right side of the slide
+- `Voiceover-INTRO` — 2–3 sentences. Frame what's being matched and why it matters. End with the action: "Drag each step to its description."
+- `Caption-Text`
+- For each pair (4–7 pairs):
+  - `Match-N-Item` — short draggable label, ≤5 words
+  - `Match-N-Target` — matching definition or description, 1 sentence
+
+**Pair count:** 4–7 pairs is the sweet spot. Fewer than 4 feels trivial; more than 7 gets visually crowded.
+**Item labels:** Keep draggable items short — ≤5 words. They appear as chips. Long labels wrap awkwardly.
+**Target descriptions:** 1 sentence each. Clear, distinct — no two definitions should feel interchangeable.
+**Column labels:** `Match-Col-Left` and `Match-Col-Right` must each be on their own line (Rule S1). If omitted, the slide defaults to "Terms" / "Definitions". Always provide them — generic defaults read as placeholder content.
+**Audio:** Drag-match uses only a single `Voiceover-INTRO` clip. No per-pair click audio needed.
 
 ---
 
@@ -425,10 +607,45 @@ If the source material includes any of these cues, hotspot is likely the right p
 - `Choice-1` … `Choice-4` — exactly 4 options
 - `Correct-Answer` — the index (1, 2, 3, or 4) of the correct choice
 - `Review-Slide` — the `1SNN` slide ID to route to on incorrect answer
+- `Image-File` — the **set-level background image** that sits behind the modal (see below)
 - **First KC of each pair only:**
   - `Voiceover-INTRO: Knowledge Check. Select the correct answer.` (exact wording — do not paraphrase)
   - `Caption-Text: Knowledge Check. Select the correct answer.`
 - **Second KC of each pair:** Omit both `Voiceover-INTRO` and `Caption-Text`. The player loads it silent.
+
+**KC background image rule — one image per KC set, used only once per module:**
+
+KC slides ship in two pairs (set 1 = `2KC01`+`2KC02`, set 2 = `2KC03`+`2KC04`). Each *set* uses a single background image that sits behind the modal card. Both slides in a set use the same `Image-File`; the two sets use **different** images so no image repeats in the module.
+
+The dedicated KC background assets live in `course/assets/images/` as `KC_set1.jpg` and `KC_set2.jpg`. Either may be assigned to the first set; the other must be assigned to the second. Never use the same file for both sets.
+
+```
+## Slide NN — Knowledge Check 1
+Slide-ID: 2KC01
+Template-ID: knowledge-check
+Image-File: KC_set1.jpg           ← set 1 background (either KC_set1 or KC_set2)
+…
+
+## Slide NN+1 — Knowledge Check 2
+Slide-ID: 2KC02
+Template-ID: knowledge-check
+Image-File: KC_set1.jpg           ← same file as 2KC01 (both halves of the pair share)
+…
+
+## Slide MM — Knowledge Check 3
+Slide-ID: 2KC03
+Template-ID: knowledge-check
+Image-File: KC_set2.jpg           ← set 2 background (whichever wasn't used for set 1)
+…
+
+## Slide MM+1 — Knowledge Check 4
+Slide-ID: 2KC04
+Template-ID: knowledge-check
+Image-File: KC_set2.jpg
+…
+```
+
+`Image:` art-direction prose is not required for KC slides — the background is a shared environmental shot, not bespoke per slide. Reference: see CC08's KC implementation for the rendered behavior.
 
 ---
 
@@ -456,6 +673,14 @@ If the source material includes any of these cues, hotspot is likely the right p
 
 **Required:** Same as `content-split`: `Slide-Title`, `On-Screen-Text`, `Callout-Text`, `Image-File`, `Image`, `Voiceover-INTRO`, `Caption-Text`.
 
+**Closing VO transition rule:** The closing slide is the only slide that introduces the final quiz. Its final sentence must be exactly:
+
+> `"When you're ready, click the next button to start the Quiz. You will need to score 80% or more to pass."`
+
+**Next-module wording rule:** When any slide references continuation beyond the current module, use only the phrase `"In the next module..."`. Do not name the next module, its number, or its topic — modules may be reordered.
+
+**Voiceover-INTRO structure:** 3–5 sentences. Acknowledge what was covered. State the single most important takeaway. Use "You now…" framing for objectives. End exactly with the transition sentence above.
+
 ---
 
 ### 4.20 `quiz-score` — final results, SCORM reporting
@@ -467,8 +692,12 @@ If the source material includes any of these cues, hotspot is likely the right p
 - `Slide-ID: 3FQ-SCORE`
 - `Template-ID: quiz-score`
 - `Slide-Title`
-- `Voiceover-INTRO` — celebratory wrap-up message
-- `Caption-Text`
+
+**Do NOT author:**
+- `Voiceover-INTRO` — the slide plays the shared pre-made `course/assets/audio/Congratulations.mp3` asset automatically.
+- `Caption-Text` — no per-module caption; the shared audio has no associated VTT.
+
+**Special rule:** This is the only standard slide with no authored VO and no caption — the pre-made celebration audio is wired into the template.
 
 ---
 
@@ -517,7 +746,129 @@ When a fix is needed after build, **edit the slide HTML directly.** Regenerate o
 
 ---
 
-## 6. Voiceover speaker reference
+## 6. VO writing rules
+
+### Style and voice
+
+This is a professional voice that speaks directly to the technician as a peer. The style is:
+
+- **Short sentences. Often fragments. For emphasis.** Then a longer sentence to develop the idea.
+- **Direct "you" address throughout** — never "the learner" or "participants."
+- **Concrete examples in quotes** — show what the customer says, what the technician says: `"your brake pads have reached the wear indicator"`, `"it just feels weird"`.
+- **Rhetorical questions, then the answer** — "Are they thinking 'minor issue' or 'my car is about to fail'? You don't know until you listen carefully."
+- **Em-dashes for elaboration** — "Not repeating it back word-for-word — genuinely restating it."
+- **Never corporate, never preachy.** No throat-clearing ("In this module we will explore..."). Start with the idea.
+
+### Content rules
+
+- **Never read the on-screen text verbatim.** VO expands, contextualizes, and adds examples. If the slide says it, the VO goes deeper.
+- **INTRO VO structure for content slides:** Open with the central idea → develop with a supporting detail or real-world example → close with a bridge sentence toward the next slide or action.
+- **INTRO VO for interactive slides (`card-explore`, `tab-panel`, `tile-explore`, `accordion-content*`):** 2–3 sentences only. Name the topic, optionally state what the learner will find, end with a clear call to action.
+  - `"Before we dive into techniques, let's establish why listening matters so much for someone at your level. Click each panel to explore."`
+  - `"The second tier of listening is active listening — and it goes well beyond just staying quiet while the customer talks. Explore each one."`
+- **CLICK/TAB VO (per card or tab):** 2–4 sentences. Cover that specific concept only — no new concepts introduced. Expand on the on-screen bullets; do not repeat them.
+- **STEP VO:** Very compact — 1–3 sentences per step. Action-oriented, specific.
+- **Closing VO:** Acknowledge every objective covered. Use "You now…" framing. If referencing a future module, say only `"In the next module..."` without naming it. End exactly with: `"When you're ready, click the next button to start the Quiz. You will need to score 80% or more to pass."`
+- **Caption-Text:** Always the first sentence (or a 120-char trim) of the INTRO VO — not a separate thought. Final quiz question slides are the exception: they have no `Caption-Text` because they have no VO.
+
+### Bridge sentences for interactive slides
+
+End INTRO VO for interactive slides with one of these patterns (not verbatim — adapt to context):
+
+- `"Click each card to explore."`
+- `"Click each panel to explore."`
+- `"Explore each one."`
+- `"Select each [tab/tile] to [find out/learn/see] [what/how/why]."`
+- `"Select each marker to explore [topic]."` (hotspot only)
+
+### Scripted-dialogue on-screen text
+
+When a slide's on-screen content is a scripted exchange (customer/technician dialogue), format the dialogue inline within `On-Screen-Text` using attribution prefixes:
+
+- `Customer: "..."` for customer lines
+- `Technician (StepName): "..."` for technician lines that are part of a framework step
+- `Technician: "..."` for ungrouped technician lines
+
+Keep the entire dialogue in a single `On-Screen-Text` field — line breaks and visual separation are handled by the template's CSS. Use plain straight quotes (`"..."`) — the template auto-styles them.
+
+**Better template alternatives:** Long dialogues (more than 4–5 exchanges) are usually better as `card-explore` or `step-sequence`, where each card or step holds one exchange and per-element VO commentary unpacks it. Use scripted dialogue inside `content-split` only for short exchanges where the whole point lands in 2–3 turns.
+
+### VO reference examples — real approved scripts
+
+Match this style, sentence length, and register.
+
+**Content slide INTRO (4–6 sentences):**
+> "Communication rarely works the way the textbook describes. Every customer filters what you say through their own experiences, assumptions, and beliefs. Technical terms you use every day carry different meaning to someone who's never opened a hood. The same word means something different to everyone in the room. Now imagine saying 'your brake pads have reached the wear indicator.' Are they thinking 'minor issue' or 'my car is about to fail'? You don't know until you listen carefully and confirm you're understanding each other the same way."
+
+**Interactive slide INTRO (2–3 sentences):**
+> "Before we dive into techniques, let's establish why listening matters so much for someone at your level. Click each panel to explore."
+
+**CLICK VO (2–4 sentences, concept-specific):**
+> "Trust forms fast in customer interactions. Customers can tell within moments whether you're genuinely engaged or just going through the motions. That perception shapes everything that follows — including how willing they are to approve your recommendations."
+
+**TAB VO (2–4 sentences, technique-specific):**
+> "Clarifying is how you turn imprecise descriptions into diagnostic data. When a customer says 'it just feels weird,' that's not something you can work with yet. A well-placed clarifying question helps them find more specific language — and gets you what you need to diagnose accurately."
+
+**STEP VO (1–3 sentences, action-focused):**
+> "Lean forward slightly. Not invading their space — but showing genuine interest. This small physical signal communicates engagement."
+
+**Closing INTRO:**
+> "Real listening is rare. And in a premium service environment, it sets you apart. You now understand why communication breaks down and how perception filters shape every interaction. In the next module, you will keep building on that foundation. When you're ready, click the next button to start the Quiz. You will need to score 80% or more to pass."
+
+---
+
+## 7. Pronunciation — WellSaid TTS phonetic rules
+
+The VO scripts are sent to WellSaid TTS for audio generation. Certain words are mispronounced unless written phonetically. **Always use the phonetic form in every VO field** — never write the standard spelling for the words below.
+
+| Write this in the storyboard | Instead of |
+|---|---|
+| `Porsha` | Porsche |
+| `Kai-yen` | Cayenne |
+| `Mah-kahn` | Macan |
+| `Tie-kahn` | Taycan |
+| `Pan-uh-mare-uh` | Panamera |
+| `Kay-men` | Cayman |
+| `Kuh-rair-uh` | Carrera |
+| `Tar-guh` | Targa |
+| `Box-ter` | Boxster |
+| `P D K` | PDK |
+| `P A S M` | PASM |
+| `P C M` | PCM |
+| `P D C C` | PDCC |
+| `P T V` | PTV |
+| `F F B` | FFB |
+| `score-m` | SCORM |
+| `high voltage` | HV |
+| `kilopascals` | kPa |
+
+This applies to **all** `Voiceover-INTRO`, `Voiceover-CLICK-*`, `Voiceover-TAB-*`, `Voiceover-STEP-*`, and per-hotspot VO fields. The pipeline substitutes these phonetic forms automatically using a pronunciation map — write them this way so the storyboard is already human-readable in its intended pronunciation.
+
+---
+
+## 8. Notes field guidance
+
+Every slide's `Notes:` line must explain:
+
+1. **Why this template was chosen** (not just the template name)
+2. Any special production notes (bar values for `bar-chart-modal`, reference implementation for Emerging templates, hotspot count, tab count, etc.)
+3. For KC/FQ: which objective is tested and why the distractors are plausible
+
+Example: `Notes: card-explore chosen — 4 parallel equally-weighted techniques. All cards must be visited to advance.`
+
+---
+
+## 9. What NOT to include in the storyboard
+
+- Do **not** include `>> On slide load →` or `>> User clicks →` comment lines — the parser ignores them and they add noise. (Plain `>>` section dividers like `>> ── Section: Active Listening ──` are fine.)
+- Do **not** use the legacy `[After Card1]` marker format inside a single `Voiceover:` field.
+- Do **not** use bare `Voiceover:` — always use `Voiceover-INTRO:`, `Voiceover-CLICK-<Label>:`, `Voiceover-TAB-<Label>:`, `Voiceover-STEP-NN:`. Final quiz question slides have no VO at all.
+- Do **not** write `Screen-Type:` or `Interaction-Logic:` — these are not valid fields.
+- Do **not** include the course/module code in any filename or slide ID (`CC08_1S01.jpg` is wrong; use `1S01.jpg`). The project folder carries the module identity.
+
+---
+
+## 10. Voiceover speaker reference
 
 Full speaker list: [VOICES.md](VOICES.md). Configured at runtime via `WELLSAID_API_KEY` env var and `--speaker <id>` override on `generate-vo`.
 
@@ -534,7 +885,7 @@ Use Lee M. (122) unless there's a deliberate reason to differ. The interaction-c
 
 ---
 
-## 7. Quick-reference checklist (per-slide, while writing)
+## 11. Quick-reference checklist (per-slide, while writing)
 
 Before moving to the next slide block, every entry should pass these:
 
@@ -544,29 +895,30 @@ Before moving to the next slide block, every entry should pass these:
 - [ ] Every field is on its own line (no `Field-A: foo Field-B: bar`)
 - [ ] `Voiceover-INTRO` is on its own line; matches template length guidance
 - [ ] `Caption-Text` is ≤120 chars and is the first sentence of `Voiceover-INTRO`
-- [ ] `Image-File` mirrors the Slide-ID (`1S03.jpg`, or `1S03a.jpg` if multiple)
+- [ ] `Image-File` uses the intended final production name (`1S03.jpg`, or `1S03a.jpg` if multiple) or an existing catalog file from `course/assets/images/`
 - [ ] `Image` art direction is filled (always — even if `Image-File` will arrive later)
 - [ ] For interactive templates (`card-explore`, `tab-panel`, `accordion-content*`, `step-sequence`): every `<Label>` is PascalCase and matches **exactly** across every field that references it
 - [ ] For KC slides: first of pair has the exact intro VO; second of pair omits intro + caption
 - [ ] For FQ slides: no `Voiceover-INTRO`, no `Caption-Text` (silent assessment flow)
+- [ ] For the `quiz-score` slide (`3FQ-SCORE`): no `Voiceover-INTRO`, no `Caption-Text` — the shared pre-made `Congratulations.mp3` is wired into the template (§4.20). The "Required fields present" check does **not** flag these as missing.
 
 ---
 
-## 8. Module-level checklist (before handing off the storyboard)
+## 12. Module-level checklist (before handing off the storyboard)
 
 - [ ] Document header has both `# Course:` and `# Player-Title:`
-- [ ] Slide 01 is `hero-title`, Slide 02 is `objectives`
+- [ ] Slide 01 is `hero-title`, Slide 02 is `learning-objectives`
 - [ ] Exactly 4 `knowledge-check` slides, named `2KC01`–`2KC04`, arranged in two pairs at logical points
 - [ ] Exactly 10 `final-quiz` slides, named `3FQ01`–`3FQ10` — 2 per objective
 - [ ] One `closing` slide before the final quiz
-- [ ] One `quiz-score` slide as the last entry (`3FQ-SCORE`)
+- [ ] One `quiz-score` slide as the last entry (`3FQ-SCORE`) — should NOT carry `Voiceover-INTRO` or `Caption-Text` (shared pre-made `Congratulations.mp3` is wired into the template; see §4.20)
 - [ ] Total VO target: 15–20 minutes (max 30)
 - [ ] `Status: Draft` appears on every slide that hasn't been reviewed
 - [ ] `Notes:` line on every slide explains *why* that template was chosen
 
 ---
 
-## 9. Where to look when this kit isn't enough
+## 13. Where to look when this kit isn't enough
 
 | Question | Source doc |
 |---|---|

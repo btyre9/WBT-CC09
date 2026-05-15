@@ -9,11 +9,14 @@
   <link rel="stylesheet" href="../assets/css/animations.css">
   <script>(function(){function s(){document.documentElement.style.setProperty('--scale',Math.min(window.innerWidth/1920,window.innerHeight/920));}s();window.addEventListener('resize',s);})();</script>
   <style>
+    /* Title block sits vertically centered on the right half of the slide. */
     .hero-content {
       display: flex;
       flex-direction: column;
       gap: var(--pds-space-lg);
-      max-width: 960px;
+      max-width: 820px;
+      margin-left: auto;       /* push to the right side of the slide */
+      text-align: left;
     }
     .hero-meta {
       display: flex;
@@ -36,12 +39,12 @@
 
   <!-- Background -->
   <div class="slide__bg">
-    <img src="../assets/images/911-GT3-90FAPorsche.jpg" alt="" onerror="this.style.display='none'">
+    <img src="../assets/images/Cayenne-Electric.jpg" alt="" onerror="this.style.display='none'">
     <div class="pds-overlay"></div>
   </div>
 
-  <!-- Content — anchored to bottom-left -->
-  <div class="slide__content" style="justify-content: flex-end; padding-bottom: 140px;">
+  <!-- Content — vertically centered, anchored to the right half -->
+  <div class="slide__content" style="justify-content: center;">
     <div class="hero-content">
       <span class="pds-eyebrow anim-fade-up">Auto-Image-Picker Smoke Test</span>
       <div class="pds-accent-bar anim-bar-grow" style="--anim-delay: 0.15s;"></div>
@@ -125,11 +128,6 @@ var SandboxRuntime = (function () {
     el.classList.add('is-visible');
   });
 
-  // Play "Click Next" cue when VO ends
-  SandboxRuntime.voAudio.addEventListener('ended', function () {
-    SandboxRuntime.interactionAudio.src = '../assets/audio/vo/Click_Next.mp3';
-    SandboxRuntime.interactionAudio.play();
-  });
 })();
 </script>
 
