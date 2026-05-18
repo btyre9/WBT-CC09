@@ -339,7 +339,7 @@ body {
 
 /* ─── Background texture — intentionally removed ─────────────────────── */
 /*
- * The 992_targa_bg.webp texture overlay has been removed.
+ * The 992_targa_bg.jpg texture overlay has been removed.
  * Slides use a clean dark canvas from --pds-bg-base (#0E0E12).
  * Individual templates add their own decorative elements as needed.
  */

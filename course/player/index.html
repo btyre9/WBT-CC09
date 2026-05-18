@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Customer Communications - Module 1</title>
+  <title>Customer Communications - Addressing Customer Concerns and Objectives</title>
   <style>
     @font-face {
       font-family: 'Porsche Next TT';
@@ -56,7 +56,6 @@
       justify-content: space-between;
       padding: 0 16px;
       z-index: 10;
-      position: relative;
     }
     .top-left {
       display: flex;
@@ -312,6 +311,7 @@
       align-items: center;
       gap: 12px;
     }
+
     .bottom-controls {
       display: flex;
       align-items: center;
@@ -351,18 +351,20 @@
     }
     .ctrl-btn.active svg { fill: #d5001c; }
 
-    /* Thin clip-progress bar — bottom edge of top bar */
+    /* Audio progress — full-width strip at the top edge of .slide-area,
+       sitting against the bottom of the top bar. */
     .audio-progress {
       position: absolute;
-      bottom: 0;
+      top: 0;
       left: 0;
       right: 0;
-      height: 3px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 0;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.10);
       overflow: hidden;
       pointer-events: none;
+      z-index: 11;
     }
+    .audio-progress.disabled { opacity: 0.6; }
     .audio-progress-fill {
       width: 0%;
       height: 100%;
@@ -380,13 +382,23 @@
     }
     .ctrl-btn-next:hover { background: #b0001a; }
     .ctrl-btn-next:disabled { background: #d5001c; opacity: 0.3; }
-    @keyframes pulseUnlock {
-      0%   { box-shadow: 0 0 0 0 rgba(213,0,28,0.7); }
-      50%  { box-shadow: 0 0 0 10px rgba(213,0,28,0); }
-      100% { box-shadow: 0 0 0 0 rgba(213,0,28,0); }
-    }
     .ctrl-btn-next.pulse-unlock {
-      animation: pulseUnlock 1.2s ease-out infinite;
+      animation: next-unlock-pulse 1.4s ease-out infinite;
+      transform-origin: center;
+    }
+    @keyframes next-unlock-pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(213, 0, 28, 0.9);
+        transform: scale(1);
+      }
+      42% {
+        box-shadow: 0 0 0 18px rgba(213, 0, 28, 0);
+        transform: scale(1.18);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(213, 0, 28, 0);
+        transform: scale(1);
+      }
     }
     .next-label {
       color: #fff;
@@ -653,16 +665,12 @@
 
   <!-- Top bar -->
   <div class="top-bar">
-    <!-- Clip progress — thin red line at bottom edge, tracks active audio clip -->
-    <div class="audio-progress" id="audio-progress">
-      <div class="audio-progress-fill" id="audio-progress-fill"></div>
-    </div>
     <div class="top-left">
       <button class="menu-btn" id="btn-menu">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m18 16v1h-12v-1zm0-5v1h-12v-1zm0-5v1h-12v-1z"/></svg>
         <span>Menu</span>
       </button>
-      <span class="top-title" id="course-title">Module Title</span>
+      <span class="top-title" id="course-title">Customer Communications - Addressing Customer Concerns and Objectives</span>
     </div>
     <div class="top-right">
       <button class="top-icon-btn" id="btn-resources" title="Resources">
@@ -682,6 +690,10 @@
 
   <!-- Slide area -->
   <div class="slide-area" id="slide-area">
+    <!-- Audio progress — moved out of bottom bar; full-width strip at top edge of slide area -->
+    <div class="audio-progress disabled" id="audio-progress" title="Audio progress (visual only)">
+      <div class="audio-progress-fill" id="audio-progress-fill"></div>
+    </div>
     <div class="slide-scaler" id="slide-scaler">
       <iframe id="slide-frame" title="Slide content"></iframe>
     </div>
@@ -700,7 +712,8 @@
       </svg>
     </div>
 
-    <div class="bottom-center" aria-hidden="true"></div>
+    <div class="bottom-center">
+    </div>
 
     <div class="bottom-controls">
       <!-- Play / Pause -->

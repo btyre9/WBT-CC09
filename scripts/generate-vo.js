@@ -51,6 +51,27 @@ const fs   = require('fs');
 const path = require('path');
 const https = require('https');
 
+// Load .env (gitignored) into process.env so the user doesn't have to export
+// WELLSAID_API_KEY in every shell session. Existing env vars take precedence.
+(function loadDotenv() {
+  const envPath = path.resolve('.env');
+  if (!fs.existsSync(envPath)) return;
+  const lines = fs.readFileSync(envPath, 'utf8').split('\n');
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    const eq = line.indexOf('=');
+    if (eq < 1) continue;
+    const key   = line.slice(0, eq).trim();
+    let   value = line.slice(eq + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    if (process.env[key] === undefined) process.env[key] = value;
+  }
+})();
+
 const WELLSAID_HOST     = 'api.wellsaidlabs.com';
 const WELLSAID_ENDPOINT = '/v1/tts/stream';
 
@@ -190,6 +211,7 @@ function parseCsv(content) {
 async function generateVo(segments, { apiKey, speakerId, audioDir, captionsDir, force = false, delayMs = 500 }) {
   let created = 0, skipped = 0, failed = 0;
   const pronunciationMap = loadPronunciationMap();
+  const seenReusableText = new Map();
 
   for (const seg of segments) {
     const audioFile   = path.join(audioDir,   seg.FileName);
@@ -203,6 +225,14 @@ async function generateVo(segments, { apiKey, speakerId, audioDir, captionsDir, 
     }
 
     const rawText = (seg.VoiceoverText || '').trim();
+    const textKey = rawText.replace(/\s+/g, ' ').toLowerCase();
+    if (textKey && seenReusableText.has(textKey)) {
+      console.log(`  SKIP     ${seg.FileName} — duplicate reusable VO text already covered by ${seenReusableText.get(textKey)}`);
+      skipped++;
+      continue;
+    }
+    if (textKey) seenReusableText.set(textKey, seg.FileName);
+
     const ttsText = applyPronunciationMap(rawText, pronunciationMap);
     if (!rawText) {
       console.log(`  SKIP     ${seg.FileName} — no text`);

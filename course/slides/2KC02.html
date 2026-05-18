@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
-  <title>Knowledge Check</title>
+  <title>Slide 11 - Knowledge Check 2</title>
   <link rel="stylesheet" href="../assets/css/pds-tokens.css">
   <link rel="stylesheet" href="../assets/css/slide-base.css">
   <link rel="stylesheet" href="../assets/css/animations.css">
@@ -16,14 +16,26 @@
       justify-content: center;
     }
 
-    /* ── Dimmed backdrop ──────────────────────────────────────────── */
-    .kc-backdrop {
+    /* ── Set-level background image (per Image-File on the slide) ──── */
+    .kc-bg-image {
       position: absolute;
       inset: 0;
       z-index: 0;
-      background:
-        radial-gradient(1400px 700px at 10% -10%, var(--pds-bg-surface) 0%, transparent 60%),
-        var(--pds-bg-base);
+      overflow: hidden;
+    }
+    .kc-bg-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 28%;
+    }
+
+    /* ── Dimmed backdrop overlays the image to keep the modal readable ── */
+    .kc-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: rgba(0,0,0,0.55);
     }
 
     .kc-backdrop::before {
@@ -36,13 +48,7 @@
       background-size: 48px 48px;
       transform: rotate(45deg);
       pointer-events: none;
-    }
-
-    .kc-backdrop::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.48);
+      opacity: 0.5;
     }
 
     /* ── Modal card ───────────────────────────────────────────────── */
@@ -292,7 +298,12 @@
 </head>
 <body>
 
-<div class="slide" data-slide-id="2KC02" data-review-slide="1S05">
+<div class="slide" data-slide-id="2KC02" data-review-slide="1S08">
+
+  <!-- Set-level background image (sits behind the dimmed backdrop) -->
+  <div class="kc-bg-image">
+    <img src="../assets/images/KC_set1.jpg" alt="" onerror="this.style.display='none'">
+  </div>
 
   <!-- Dimmed backdrop -->
   <div class="kc-backdrop"></div>
@@ -311,26 +322,26 @@
       <!-- Question stem -->
       <div class="question-stem">
         <span class="question-stem__label">Question</span>
-        <p class="question-stem__text">A customer pushes back on a recommendation after you gave a clear Feature-Function-Benefit explanation. What does this most likely mean?</p>
+        <p class="question-stem__text">Why is paraphrasing important before responding to an unclear objection?</p>
       </div>
 
       <!-- Options — shuffled + re-labelled A–D by JS on load -->
       <div class="options-list" id="options-list" role="radiogroup" aria-label="Answer options">
               <div class="option-row" data-value="A" role="radio" aria-checked="false" tabindex="0">
         <div class="option-row__letter">A</div>
-        <span class="option-row__text">Your explanation was not effective and the customer is rejecting it</span>
+        <span class="option-row__text">It proves the customer is wrong</span>
       </div>
       <div class="option-row" data-correct="true" data-value="B" role="radio" aria-checked="false" tabindex="0">
         <div class="option-row__letter">B</div>
-        <span class="option-row__text">The customer needs more information or time to process the decision</span>
+        <span class="option-row__text">It gives the customer a chance to confirm or correct your understanding</span>
       </div>
       <div class="option-row" data-value="C" role="radio" aria-checked="false" tabindex="0">
         <div class="option-row__letter">C</div>
-        <span class="option-row__text">The customer has already decided to go elsewhere</span>
+        <span class="option-row__text">It replaces the need to provide technical evidence</span>
       </div>
       <div class="option-row" data-value="D" role="radio" aria-checked="false" tabindex="0">
         <div class="option-row__letter">D</div>
-        <span class="option-row__text">You should drop the recommendation to preserve the relationship</span>
+        <span class="option-row__text">It moves pricing responsibility from the service advisor to the technician</span>
       </div>
       </div>
 

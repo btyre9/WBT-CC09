@@ -2,10 +2,11 @@
 
 > **When to open this doc:** You're starting a new training module (CC09, CC10, etc.).
 > **It answers:** The exact step-by-step process from "I have learning material" to "I have a SCORM zip ready to upload."
-> **Companion docs:**
+> **For the storyboard authoring step specifically:** see [STORYBOARD-AUTHORING-KIT.md](STORYBOARD-AUTHORING-KIT.md) — a focused, self-contained reference that pulls together everything you need to write `course.md` without jumping between files.
+> **Companion docs (for deeper questions):**
+> [STORYBOARD-AUTHORING-KIT.md](STORYBOARD-AUTHORING-KIT.md) for storyboard authoring (the single source of truth — use as Claude Project Instructions) ·
 > [COURSE-RULES.md](COURSE-RULES.md) for every quality gate ·
-> [STORYBOARD-AUTHOR-PROMPT.md](STORYBOARD-AUTHOR-PROMPT.md) for how to write `course.md` ·
-> [TEMPLATE-REFERENCE.md](TEMPLATE-REFERENCE.md) for which slide template to pick ·
+> [TEMPLATE-REFERENCE.md](TEMPLATE-REFERENCE.md) for full template HTML/CSS reference ·
 > [PIPELINE-REFERENCE.md](PIPELINE-REFERENCE.md) for command-by-command detail.
 
 ---
@@ -17,44 +18,57 @@ In your file manager, copy the entire `Porsche-WBT-Template/` folder and rename 
 The duplicate inherits the latest:
 
 - Rule set: [COURSE-RULES.md](COURSE-RULES.md) (including A5 captions, A6 submit SFX, A7 completion chime, Q0a paired KC intro)
-- Reference docs: [STORYBOARD-AUTHOR-PROMPT.md](STORYBOARD-AUTHOR-PROMPT.md), [PIPELINE-REFERENCE.md](PIPELINE-REFERENCE.md), [PLAYER-RULES.md](PLAYER-RULES.md), [ANIMATIONS-REFERENCE.md](ANIMATIONS-REFERENCE.md), [TEMPLATE-REFERENCE.md](TEMPLATE-REFERENCE.md), [DESIGN.md](DESIGN.md), [VOICES.md](VOICES.md)
+- Reference docs: [STORYBOARD-AUTHORING-KIT.md](STORYBOARD-AUTHORING-KIT.md), [PIPELINE-REFERENCE.md](PIPELINE-REFERENCE.md), [PLAYER-RULES.md](PLAYER-RULES.md), [ANIMATIONS-REFERENCE.md](ANIMATIONS-REFERENCE.md), [TEMPLATE-REFERENCE.md](TEMPLATE-REFERENCE.md), [DESIGN.md](DESIGN.md), [VOICES.md](VOICES.md)
 - Shared SFX: `course/assets/audio/sfx/submit-answer.mp3`, `bell1.mp3`
 - SCORM manifest scaffold: `course/imsmanifest.xml` (SCORM 1.2, mastery score `80`)
 
 If the template is out of date relative to your most recent module, run `npm run sync-template` from that module first.
 
-### Per-module replacements
+### Per-module replacements — one command
 
-The template ships with `XXXX` placeholders and a generic `Module Title` label that must be replaced before authoring or packaging:
+The template ships with `XXXX` placeholders and a generic `Module Title` label across four files. Stamp them all in one go:
 
-- [ ] Replace `XXXX` in `course/imsmanifest.xml` with the course code (e.g. `CC09`)
-- [ ] Update both `<title>` tags in `course/imsmanifest.xml` with the real module title
-- [ ] Update `Module Title` in `course/index.html` (`#course-title` span)
-- [ ] Update `Module Title` in `course/player/index.html` (`#course-title` span)
-- [ ] Update the `<title>` tag in `course/player/index.html`
-- [ ] Update `course/data/course.data.json` with the new slide list and titles
+```bash
+npm run init-module -- --code CC09 \
+  --title "Listening Skills that Build Trust" \
+  --player-title "Customer Communications - Module 9 - Listening Skills that Build Trust"
+```
+
+`--player-title` is optional and defaults to `--title`. Add `--dry-run` to preview before writing.
+
+This updates, in one pass:
+
+- `course/imsmanifest.xml` — `XXXX` → course code, both `<title>` tags → module title
+- `course/index.html` — `#course-title` span text
+- `course/player/index.html` — `<title>` tag + `#course-title` span text
+- `course/data/course.data.json` — `meta.id` + `meta.title`
+
+`course/data/course.data.json`'s `slides[]` and `quiz` blocks are written automatically by `generate-slides` (Step 5) — you never edit them by hand.
 
 Slide and image filenames do not need per-module renaming — they carry no course code under the [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md) format. The course code lives in the project folder name and in `imsmanifest.xml` only.
 
 ---
 
-## Step 2 — Initialize the repo
+## Step 2 — Initialize the repo — one command
 
 ```bash
 cd Porsche-WBT-CCxx
-git init
-git add .
-git commit -m "Initial commit from template"
+npm run init-repo
 ```
 
-If pushing to GitLab/GitHub, add the remote:
+That runs `git init -b main`, `git add .`, and `git commit -m "Initial commit from template"` in one pass. Safe to re-run — it skips `git init` if `.git` already exists and skips `commit` if nothing is staged.
+
+**Common flags:**
 
 ```bash
-git remote add origin <repo-url>
-git push -u origin main
+npm run init-repo -- --branch master                                    # use master instead of main
+npm run init-repo -- --message "Init CC09 from template"                # custom commit message
+npm run init-repo -- --remote git@github.com:org/wbt-cc09.git           # adds 'origin', does NOT push
+npm run init-repo -- --remote <url> --push                              # also runs `git push -u origin <branch>`
+npm run init-repo -- --dry-run                                          # preview commands; nothing runs
 ```
 
-Per the dual-branch note, decide upfront whether this module's canonical branch is `main` or `master` and stick with it.
+Decide upfront whether this module's canonical branch is `main` or `master` and stick with it. The default is `main`; pass `--branch master` to keep parity with older modules.
 
 ---
 
@@ -79,14 +93,18 @@ Windows: install via WSL, or use the `--whisper` API mode (costs ~$0.006/min).
 
 ## Step 4 — Author the storyboard
 
-Open `storyboard/course.md` and replace the template content with your module. Follow [STORYBOARD-AUTHOR-PROMPT.md](STORYBOARD-AUTHOR-PROMPT.md) for the field syntax and per-template required fields.
+Open `storyboard/course.md` and replace the template content with your module.
+
+**Recommended workflow:** Load [STORYBOARD-AUTHORING-KIT.md](STORYBOARD-AUTHORING-KIT.md) as the system prompt / Project Instructions in a Claude Project, attach the source learning materials (PowerPoint, Content Outline, WBT Info Outline, SME notes) as Project knowledge, and have Claude generate the storyboard. Then save the output as `storyboard/course.md` here.
+
+The Kit is the single source of truth — it contains the module structure, every template's required fields (including `accordion-content`, `accordion-content-image-left`, `tab-panel`, `hotspot`), the storyboard grammar rules, the VO writing rules, the WellSaid pronunciation map, naming conventions, and the per-slide / per-module checklists.
 
 **Non-negotiable structure** (per [COURSE-RULES.md](COURSE-RULES.md)):
 
 | Slide | Template | Naming | Notes |
 |---|---|---|---|
 | 1 | `hero-title` | `1S01` | Module opener |
-| 2 | `objectives` | `1S02` | 4–6 learning objectives |
+| 2 | `learning-objectives` | `1S02` | 4–6 learning objectives |
 | 3 to N | various content templates | `1SNN` | 3–5 slides per objective |
 | 2 KC slots | `knowledge-check` | `2KC01`, `2KC02` | First event: KC pair |
 | more content | various | `1SNN` | Skip slot numbers used by KCs |
@@ -98,7 +116,7 @@ Open `storyboard/course.md` and replace the template content with your module. F
 **Key authoring rules to honor in `course.md`:**
 
 - **One field per line** (Rule S1) — no exceptions
-- **Image filenames** mirror the Slide-ID: `1S03.webp` (single image) or `1S03a.webp`, `1S03b.webp` for multiple images on the same slide. Full rules: [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md).
+- **Image filenames** mirror the Slide-ID: `1S03.jpg` (single image) or `1S03a.jpg`, `1S03b.jpg` for multiple images on the same slide. Full rules: [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md).
 - **Include both `Image-File` and `Image`** on every slide with an image slot — `Image-File` is the filename you'll drop in later; `Image` is art direction prose
 - **Optional `Image-Focus` and `Image-Fit`** when the default crop is wrong — use shorthand like `face-left`, `hero-top`, `bottom-detail` instead of editing HTML later
 - **KC pair intro pattern** (Rule Q0a): On the **first** KC of each pair, write `Voiceover-INTRO: Knowledge Check. Select the correct answer.` On the **second** KC of each pair, omit both `Voiceover-INTRO` and `Caption-Text`
@@ -123,13 +141,18 @@ Reads `course.md` and writes `course/slides/<Slide-ID>.html` for every slide. Ea
 npm run generate-vo
 ```
 
-Generates one `.mp3` per VO field in `course/assets/audio/vo/`. Uses WellSaid TTS — requires `WELLSAID_API_KEY` in your environment or `--key <key>`. Specify `--speaker <id>` to override the default voice (see [VOICES.md](VOICES.md)).
+Generates one `.mp3` per VO field in `course/assets/audio/vo/`. Uses WellSaid TTS — requires `WELLSAID_API_KEY`. The script reads it from (in order):
+
+1. `--key <key>` flag on the command line
+2. `WELLSAID_API_KEY` shell env var
+3. `.env` file at the project root (gitignored — `WELLSAID_API_KEY=<uuid>` on its own line)
+
+The `.env` form is the convenient default — set it once after cloning and you never have to paste the key again. Specify `--speaker <id>` to override the default voice (see [VOICES.md](VOICES.md)).
 
 Output naming:
 
 - `1SNN-INTRO.mp3` — intro narration
-- `1SNN-CLICK-<Label>.mp3` — per-card / per-tile clicks
-- `1SNN-TAB-<Label>.mp3` — per-tab clicks
+- `1SNN-CLICK-<Label>.mp3` — per-card / per-tile / per-tab / per-accordion-item clicks
 - `1SNN-STEP-<N>.mp3` — step-sequence steps
 - `2KCNN-INTRO.mp3` — first KC of each pair only (Rule Q0a)
 - `3FQ-SCORE-INTRO.mp3` — quiz score narration
@@ -174,12 +197,22 @@ Bakes the freshly-written `VO-Cue-N` values into the slide HTML.
 
 ## Step 10 — Drop in real images
 
-Place `.webp` files in `course/assets/images/` using the **exact** filenames you wrote into `course.md`. Refresh the browser — the slide swaps from placeholder to real image automatically.
+Place `.jpg` files in `course/assets/images/` using the **exact** filenames you wrote into `course.md`.
+
+**Auto-swap only works if the slide was generated *after* the file existed (or against the same intended filename).** Refresh the browser and the slide swaps from placeholder to real image automatically — but only in that case. If the slide was generated when the file was missing and an `auto-image` draft was baked in, the new file will be ignored until you regenerate that slide. See COURSE-RULES Rule S10.
+
+To regenerate one slide after dropping in its final asset:
+
+```
+node scripts/generate-slides.js --slide 1SNN --force
+```
+
+Do **not** run `generate-slides --force` across the whole module to pick up new images — that wipes all hand-edits (Rule PL5).
 
 If an image's crop is wrong:
 
 1. Open `course.md`
-2. Add `Image-Focus: face-left` (or another value from the shorthand vocabulary in [STORYBOARD-AUTHOR-PROMPT.md](STORYBOARD-AUTHOR-PROMPT.md))
+2. Add `Image-Focus: face-left` (or another shorthand value such as `hero-top`, `bottom-detail` — see line 108 above)
 3. Regenerate **only that slide**: `node scripts/generate-slides.js --slide 1SNN --force` (or accept regenerating all slides if you have no hand-edits yet)
 
 Do **not** edit `object-position` directly in the slide HTML — it'll be overwritten on the next regen.
@@ -198,7 +231,7 @@ Opens `http://localhost:8080`. Click through every slide and verify against the 
 - INTRO audio plays on each slide load
 - Interactions lock during INTRO on every interactive slide
 - Next locks during INTRO and while interactions are incomplete
-- Next unlocks and pulses simultaneously with `Click_Next.mp3`
+- Next unlocks and pulses after all required interactions are complete
 - Captions display correctly for every VO clip (Rule A5)
 - **First KC of each pair** speaks "Knowledge Check. Select the correct answer." (Rule Q0a)
 - **Second KC of each pair** runs silent
@@ -277,7 +310,7 @@ npm run generate-vo
 npm run generate-vtt -- --whisper-local
 npm run extract-vo-cues
 npm run generate-slides -- --force
-# (drop image .webp files into course/assets/images/)
+# (drop image .jpg files into course/assets/images/)
 npm run start-player        # review
 npm run package             # ship
 ```

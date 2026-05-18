@@ -3,25 +3,233 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
-  <title>When the Answer Is No — and Why That's Okay</title>
+  <title>RACE in Common Comparisons</title>
   <link rel="stylesheet" href="../assets/css/pds-tokens.css">
   <link rel="stylesheet" href="../assets/css/slide-base.css">
   <link rel="stylesheet" href="../assets/css/animations.css">
   <script>(function(){function s(){document.documentElement.style.setProperty('--scale',Math.min(window.innerWidth/1920,window.innerHeight/920));}s();window.addEventListener('resize',s);})();</script>
   <style>
-    .split-media-panel {
-      width: 100%;
-      height: 620px;
-      overflow: hidden;
-      border-radius: var(--pds-radius-xl);
-      box-shadow: var(--pds-shadow-card);
+    /* ── Outer layout — header + tab strip + panel area ──────────────────── */
+    .tab-panel-section {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      height: 100%;
+      padding: var(--pds-slide-pad-y) var(--pds-slide-pad-x);
     }
-    .split-media-panel img,
-    .split-media-panel video {
+    .tab-panel-header {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex-shrink: 0;
+      max-width: 1280px;
+    }
+    .tab-panel-header .pds-accent-bar { width: 120px; height: 6px; }
+
+    /* ────────────────────────────────────────────────────────────────────
+       TAB STRIP — notebook-tab silhouette
+       Each tab is an outlined shape with rounded top corners and no bottom
+       edge. The tabs row carries a single horizontal "spine" line; the
+       active tab overlaps that line so it visually merges into the panel
+       area below, like a paper tab pulled forward in a folder.
+    ──────────────────────────────────────────────────────────────────── */
+    .tabs {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(var(--tab-count, 4), 1fr);
+      gap: 12px;
+      flex-shrink: 0;
+      border-bottom: 1.5px solid var(--pds-border-strong);
+      transition: opacity var(--dur-fast) var(--ease-out);
+    }
+    .tabs.is-locked { opacity: 0.55; pointer-events: none; }
+
+    .tab {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+      min-height: 130px;
+      padding: 80px 28px 22px 28px;
+      background: transparent;
+      border: 1.5px solid var(--pds-border);
+      border-bottom: 0;
+      border-radius: 12px 12px 0 0;
+      cursor: pointer;
+      color: var(--pds-text-primary);
+      font-family: inherit;
+      text-align: left;
+      transition:
+        border-color  var(--dur-fast) var(--ease-out),
+        background    var(--dur-fast) var(--ease-out);
+    }
+    .tab:hover {
+      border-color: var(--pds-border-strong);
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .tab:focus-visible {
+      outline: 2px solid var(--pds-accent);
+      outline-offset: -2px;
+    }
+    /* Active tab: red stroke, and -1.5px margin-bottom to cover the spine
+       line under it — produces the classic notebook-tab "pulled forward" look. */
+    .tab.is-active {
+      border-color: var(--pds-accent);
+      margin-bottom: -1.5px;
+    }
+
+    /* Oversized accordion-style number — translucent white watermark.
+       Anchored mid-tab so the digit tops spill past the rounded top edge
+       and get clipped by the tab's overflow:hidden — same "slightly out
+       of frame" effect as accordion-content. */
+    .tab-number {
+      position: absolute;
+      top: 60%;
+      left: -5px;
+      transform: translateY(-50%);
+      font-size: 100px;
+      font-weight: var(--pds-font-weight-bold);
+      line-height: 0.85;
+      letter-spacing: -0.04em;
+      color: rgba(255, 255, 255, 0.10);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Label sits at the bottom of the tab, above the number */
+    .tab-label {
+      position: relative;
+      z-index: 1;
+      font-size: 28px;
+      font-weight: var(--pds-font-weight-bold);
+      line-height: var(--pds-line-height-tight);
+      letter-spacing: -0.005em;
+      color: var(--pds-text-muted);
+      transition: color var(--dur-fast) var(--ease-out);
+    }
+    .tab:hover .tab-label { color: var(--pds-text-secondary); }
+    .tab.is-active .tab-label { color: var(--pds-text-primary); }
+
+    /* Visited mark — top-right green check */
+    .tab-check {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 2;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid var(--pds-success);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--pds-success);
+      background: rgba(9, 208, 135, 0.10);
+      opacity: 0;
+      transform: scale(0.85);
+      transition:
+        opacity   var(--dur-normal) var(--ease-out),
+        transform var(--dur-normal) var(--ease-out);
+      pointer-events: none;
+    }
+    .tab.visited .tab-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .tab-check svg { width: 12px; height: 12px; display: block; }
+
+    /* ────────────────────────────────────────────────────────────────────
+       PANELS — stacked + crossfade in the space under the tabs/spine
+    ──────────────────────────────────────────────────────────────────── */
+    .panels {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+    .panel {
+      position: absolute;
+      inset: 0;
+      padding: 40px 8px 0 8px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition:
+        opacity   var(--dur-normal) var(--ease-out),
+        transform var(--dur-normal) var(--ease-out);
+      pointer-events: none;
+    }
+    .panel.is-active {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    .panel-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      column-gap: 64px;
+      height: 100%;
+      align-items: start;
+    }
+    .panel-grid.has-media {
+      grid-template-columns: 1fr 480px;
+    }
+    .panel-text { max-width: 880px; }
+    .panel-text > p {
+      font-size: var(--pds-font-size-md);
+      font-weight: var(--pds-font-weight-regular);
+      line-height: var(--pds-line-height-loose);
+      color: var(--pds-text-secondary);
+    }
+    .panel-text > p + p { margin-top: 14px; }
+    .panel-text > p + .acc-bullets { margin-top: 22px; }
+
+    /* Red-dot bullets — identical to accordion-content */
+    .acc-bullets {
+      list-style: none;
+      margin: 18px 0 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .acc-bullets li {
+      display: flex;
+      gap: 14px;
+      font-size: var(--pds-font-size-md);
+      line-height: 1.45;
+      color: var(--pds-contrast-high);
+    }
+    .acc-bullets li::before {
+      content: '';
+      flex-shrink: 0;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--pds-accent);
+      margin-top: 10px;
+    }
+    .acc-bullets li strong {
+      color: var(--pds-text-primary);
+      font-weight: var(--pds-font-weight-bold);
+    }
+
+    /* Inline 4:3 media — drop an <img> in or use placeholder */
+    .panel-media {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      aspect-ratio: 4 / 3;
+      border-radius: var(--pds-radius-lg);
+      overflow: hidden;
+      background: #16161a;
+    }
+    .panel-media > img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center;
+      object-position: var(--img-pos, center);
       display: block;
     }
   </style>
@@ -30,19 +238,68 @@
 
 <div class="slide" data-slide-id="1S13">
 
-  <div class="slide__split">
+  <div class="tab-panel-section">
 
-    <!-- Left: text -->
-    <div class="slide__split--text">
-      <span class="pds-eyebrow anim-fade-right">Addressing Customer Concerns and Objections</span>
-      <div class="pds-accent-bar anim-bar-grow" style="--anim-delay: 0.1s;"></div>
-      <h2 class="pds-heading-display anim-fade-right" style="--anim-delay: 0.2s;">When the Answer Is No — and Why That's Okay</h2>
-      <p class="pds-body anim-fade-right" style="--anim-delay: 0.35s;">Sometimes the customer genuinely cannot afford the service today. Sometimes they have already decided to go elsewhere. Sometimes the timing is just wrong. You do not always know what is happening in their life. When that becomes clear, the move is to accept &quot;no&quot; without becoming cold, dismissive, or pushy — and to leave the door wide open for next time.</p>
+    <!-- Header -->
+    <header class="tab-panel-header">
+      <div style="display:flex; align-items:flex-end; gap: var(--pds-space-lg);">
+        <h2 class="pds-heading-display anim-fade-up" style="--anim-delay: 0.10s;">RACE in Common Comparisons</h2>
+        <div class="pds-accent-bar anim-bar-grow" style="--anim-delay: 0.15s; margin-bottom: 8px;"></div>
+      </div>
+      <p class="pds-body anim-fade-up" style="--anim-delay: 0.20s;">The same framework works whether the customer names an independent shop, a quick-service provider, or a friend's recommendation.</p>
+    </header>
+
+    <!-- Tab strip — locked until INTRO ends; first tab pre-active+visited -->
+    <div class="tabs is-locked" id="tabs" role="tablist">
+      <button class="tab is-active visited" type="button" role="tab" aria-selected="true" data-tab="IndependentShop" aria-controls="panel-IndependentShop">
+        <span class="tab-number">01</span>
+        <span class="tab-label">Independent Shop</span>
+        <span class="tab-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"></polyline></svg></span>
+      </button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="QuickLube" aria-controls="panel-QuickLube">
+        <span class="tab-number">02</span>
+        <span class="tab-label">Quick Lube</span>
+        <span class="tab-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"></polyline></svg></span>
+      </button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="FriendAdvice" aria-controls="panel-FriendAdvice">
+        <span class="tab-number">03</span>
+        <span class="tab-label">Friend Advice</span>
+        <span class="tab-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"></polyline></svg></span>
+      </button>
     </div>
 
-    <!-- Right: image/video -->
-    <div class="slide__split--media anim-fade-left" style="--anim-delay: 0.25s; height: 620px;">
-      <img src="../assets/images/911-GT3-90FAPorsche.webp" alt="" onerror="this.style.display='none'">
+    <!-- Panels — crossfade between active tab's content -->
+    <div class="panels" id="panels">
+      <section class="panel is-active" id="panel-IndependentShop" data-panel="IndependentShop" role="tabpanel">
+        <div class="panel-grid has-media">
+          <div class="panel-text">
+            <p><strong>Customer:</strong> "I will just take it to Franz's Import Auto. Service is service, right?"</p><p><strong>Technician:</strong> "Franz's has been around for years and works on a lot of European cars. There are some important differences, including Porsche Genuine Parts, factory-certified training, and Porsche diagnostic equipment."</p>
+          </div>
+          <figure class="panel-media">
+            <img src="../assets/images/1S13a.jpg" alt="">
+          </figure>
+        </div>
+      </section>
+      <section class="panel" id="panel-QuickLube" data-panel="QuickLube" role="tabpanel" hidden="">
+        <div class="panel-grid has-media">
+          <div class="panel-text">
+            <p><strong>Customer:</strong> "Quick Lube can change my oil for much less."</p><p><strong>Technician:</strong> "They are convenient and they do a lot of volume. There are some important differences in what is included here, including Porsche-approved oil, a multi-point inspection, and a diagnostic scan."</p>
+          </div>
+          <figure class="panel-media">
+            <img src="../assets/images/1S13b.jpg" alt="">
+          </figure>
+        </div>
+      </section>
+      <section class="panel" id="panel-FriendAdvice" data-panel="FriendAdvice" role="tabpanel" hidden="">
+        <div class="panel-grid has-media">
+          <div class="panel-text">
+            <p><strong>Customer:</strong> "My friend says I should go somewhere else for this."</p><p><strong>Technician:</strong> "I understand wanting another perspective. There are some important differences to consider for your vehicle, and I can walk you through what we found so you can decide with the full picture."</p>
+          </div>
+          <figure class="panel-media">
+            <img src="../assets/images/1S13c.jpg" alt="">
+          </figure>
+        </div>
+      </section>
     </div>
 
   </div>
@@ -52,7 +309,7 @@
 <script src="../assets/vendor/gsap/gsap.min.js"></script>
 <script src="../assets/vendor/porsche-components.js"></script>
 <script>
-/* ── SandboxRuntime shim ─────────────────────────────────────────────────── */
+/* ── SandboxRuntime shim — mirrors accordion-content / card-explore ─────── */
 var SandboxRuntime = (function () {
   var CR = (function () {
     try { return window.parent && window.parent.CourseRuntime ? window.parent.CourseRuntime : null; }
@@ -113,12 +370,101 @@ var SandboxRuntime = (function () {
   return { voAudio: makeFakeVO(), interactionAudio: makeInteraction() };
 })();
 
-/* ── Slide logic ─────────────────────────────────────────────────────────── */
+/* ── Tab-panel interaction logic ───────────────────────────────────────── */
 (function () {
-  document.querySelectorAll('.anim-fade-right, .anim-fade-left, .anim-bar-grow').forEach(function (el) {
+  // Lock Next until all tabs visited
+  window.parent.postMessage({ type: 'sandbox-lock-next' }, '*');
+
+  // Audio map + total — reuse card-explore's CLICK trigger plumbing
+  var TAB_AUDIO  = {
+  'IndependentShop': '../assets/audio/vo/1S13-CLICK-IndependentShop.mp3',
+  'QuickLube': '../assets/audio/vo/1S13-CLICK-QuickLube.mp3',
+  'FriendAdvice': '../assets/audio/vo/1S13-CLICK-FriendAdvice.mp3'
+};
+  var TOTAL_TABS = 3;
+  var visited    = new Set();
+  var unlocked   = false;
+
+  // Entrance animations
+  document.querySelectorAll('.anim-fade-up, .anim-bar-grow').forEach(function (el) {
     el.classList.add('is-visible');
   });
 
+  var tabsEl = document.getElementById('tabs');
+  var tabs   = document.querySelectorAll('.tab');
+  var panels = document.querySelectorAll('.panel');
+
+  // First tab is pre-active + pre-visited (rendered by parser)
+  if (tabs[0]) visited.add(tabs[0].dataset.tab);
+
+  function unlockTabs() {
+    if (unlocked) return;
+    unlocked = true;
+    if (tabsEl) tabsEl.classList.remove('is-locked');
+    // Single-tab edge case
+    if (visited.size >= TOTAL_TABS) {
+      window.parent.postMessage({ type: 'sandbox-unlock-next' }, '*');
+    }
+  }
+
+  function activate(key, isUserClick) {
+    tabs.forEach(function (t) {
+      var isThis = (t.dataset.tab === key);
+      t.classList.toggle('is-active', isThis);
+      t.setAttribute('aria-selected', isThis ? 'true' : 'false');
+    });
+    panels.forEach(function (p) {
+      var isThis = (p.dataset.panel === key);
+      p.classList.toggle('is-active', isThis);
+      if (isThis) p.removeAttribute('hidden');
+      else        p.setAttribute('hidden', '');
+    });
+
+    if (isUserClick && !visited.has(key)) {
+      visited.add(key);
+      var tab = document.querySelector('.tab[data-tab="' + key + '"]');
+      if (tab) tab.classList.add('visited');
+
+      var audioPath = TAB_AUDIO[key];
+      if (audioPath) {
+        SandboxRuntime.interactionAudio.src = audioPath;
+        SandboxRuntime.interactionAudio.play();
+      }
+
+      if (visited.size >= TOTAL_TABS) {
+        window.parent.postMessage({ type: 'sandbox-unlock-next' }, '*');
+      }
+    }
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      if (!unlocked) return;
+      activate(tab.dataset.tab, true);
+    });
+    tab.addEventListener('keydown', function (e) {
+      if (!unlocked) return;
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      var idx  = Array.prototype.indexOf.call(tabs, tab);
+      var next = (e.key === 'ArrowRight')
+        ? (idx + 1) % tabs.length
+        : (idx - 1 + tabs.length) % tabs.length;
+      tabs[next].focus();
+      activate(tabs[next].dataset.tab, true);
+    });
+  });
+
+  // Unlock when INTRO VO ends — same fallback pattern as accordion-content
+  setTimeout(function () {
+    if (SandboxRuntime.voAudio) {
+      SandboxRuntime.voAudio.addEventListener('ended', unlockTabs);
+      SandboxRuntime.voAudio.addEventListener('error', unlockTabs);
+    }
+    try {
+      if (!window.parent || !window.parent.CourseRuntime) unlockTabs();
+    } catch (_) { unlockTabs(); }
+  }, 0);
 })();
 </script>
 

@@ -48,7 +48,7 @@ Blank line after the last field before the next `## Slide` heading.
 Slide-ID: 1S01
 Template-ID: hero-title
 Slide-Title: Understanding Today's Porsche Customer
-Image-File: porsche_showroom_CC02.webp
+Image-File: porsche_showroom_CC02.jpg
 Hero-Subtitle: Module 2 of 12
 Voiceover-INTRO: [Full VO script — complete sentences, natural delivery pacing.]
 Caption-Text: [First sentence or key phrase from the VO — used for closed captions.]
@@ -75,7 +75,7 @@ Voiceover-CLICK-ServiceQuality: Service quality represents...
 | Final quiz question | `3FQNN` | `3FQ01` |
 | Quiz score | `3FQ-SCORE` | `3FQ-SCORE` |
 
-2-digit zero-padded slide numbers. **No course code in filenames** — the project folder carries module identity. Image filenames mirror the Slide-ID: `1S05.webp` (single image) or `1S05a.webp`, `1S05b.webp` (multiple).
+2-digit zero-padded slide numbers. **No course code in filenames** — the project folder carries module identity. Image filenames mirror the Slide-ID: `1S05.jpg` (single image) or `1S05a.jpg`, `1S05b.jpg` (multiple).
 
 Full specification: [NAMING-CONVENTIONS.md](../NAMING-CONVENTIONS.md).
 
@@ -88,7 +88,7 @@ Build every module in this order unless the outline specifies otherwise:
 | Position | Template | Slide-ID pattern | Purpose |
 |---|---|---|---|
 | 1 | `hero-title` | `01` | Module opening — full-bleed hero image |
-| 2 | `objectives` | `02` | Learning objectives list |
+| 2 | `learning-objectives` | `02` | Learning objectives list |
 | 3–N | Content templates + `knowledge-check` | mixed | Core content with KCs woven in throughout |
 | Last content | `closing` | `1SNN` | Module wrap-up |
 | N+1+ | `final-quiz` | `01`+ | One question per learning objective |
@@ -131,7 +131,7 @@ overlay gradient. Module eyebrow, accent bar, large title, optional subtitle.
 Slide-ID: 1S01
 Template-ID: hero-title
 Slide-Title: Understanding Today's Porsche Customer
-Image-File: red_911_woman_CC02.webp
+Image-File: red_911_woman_CC02.jpg
 Hero-Subtitle: Module 2 of 12
 >> On slide load → 1S01-INTRO.mp3
 Voiceover-INTRO: Welcome to Module 2 — Understanding Today's Porsche Customer. In this module, you'll discover who the Porsche customer really is, what motivates their purchase decisions, and how your role as a service advisor shapes their lasting impression of the brand.
@@ -143,9 +143,11 @@ Notes: hero-title chosen — standard module opener. Hero image should evoke asp
 
 ---
 
-### `objectives`
+### `learning-objectives`
 **Use for:** The learning objectives slide — always the second slide. Two-column layout:
 section heading on the left, numbered objectives that animate in sequentially on the right.
+Per-objective emphasis fires in sync with VO cue times (`VO-Cue-N` fields, written by
+`npm run extract-vo-cues` after VO is recorded).
 
 **Required fields:**
 | Field | Notes |
@@ -159,7 +161,7 @@ section heading on the left, numbered objectives that animate in sequentially on
 ## Slide 02 — Learning Objectives
 
 Slide-ID: 1S02
-Template-ID: objectives
+Template-ID: learning-objectives
 Slide-Title: In this module, you will:
 Objective-1: Identify the key characteristics of today's Porsche customer
 Objective-2: Explain how CSI scores are calculated and what drives them
@@ -203,7 +205,7 @@ Slide-ID: 1S03
 Template-ID: content-split
 Slide-Title: Who Is the Porsche Customer?
 On-Screen-Text: With an average household income exceeding $630,000, Porsche customers are not buying transportation — they are buying an experience, a lifestyle, and a standard of service that begins the moment they arrive.
-Image-File: customer_profile_CC02.webp
+Image-File: customer_profile_CC02.jpg
 >> On slide load → 1S03-INTRO.mp3
 Voiceover-INTRO: Who is the Porsche customer? The data tells a clear story. With an average household income exceeding $630,000, this is one of the most discerning customer bases in the automotive world. They don't evaluate a Porsche the way most buyers evaluate a car. They evaluate the entire experience — from the ease of scheduling service to the quality of conversation when they walk in the door. Understanding that distinction changes how you approach every interaction.
 Caption-Text: With an average household income exceeding $630,000, Porsche customers are not buying transportation.
@@ -220,7 +222,7 @@ Slide-ID: 1S04
 Template-ID: content-split
 Slide-Title: What Drives Their Decision
 Pull-Quote: Porsche customers don't buy a car — they invest in an experience that begins the moment they meet you.
-Image-File: handshake_CC02.webp
+Image-File: handshake_CC02.jpg
 >> On slide load → 1S04-INTRO.mp3
 Voiceover-INTRO: What drives a Porsche customer's decision? Research consistently shows that the quality of human interaction is the single most influential factor — not the vehicle specs, not the price, and not the incentives. The moment a customer steps into your dealership, they are already forming an impression of the brand. You are the brand at that moment.
 Caption-Text: The quality of human interaction is the single most influential factor.
@@ -288,7 +290,7 @@ Slide-ID: 1S06
 Template-ID: content-bullets
 Slide-Title: The Six Porsche Brand Principles
 On-Screen-Text: Every interaction you have with a Porsche customer should reflect these core principles.
-Image-File: brand_book_CC02.webp
+Image-File: brand_book_CC02.jpg
 >> On slide load → 1S06-INTRO.mp3
 Voiceover-INTRO: Porsche defines six brand principles that guide every customer touchpoint. Fascination — we inspire passion in everything we do. Performance — we exceed expectations in every dimension. Innovation — we push boundaries with purpose. Tradition — we honor our heritage while looking forward. Exclusivity — we create something rare and personal. And responsibility — we act with integrity and care. These aren't abstract values. They're the filter for every decision you make on the floor.
 Caption-Text: Porsche defines six brand principles that guide every customer touchpoint.
@@ -322,7 +324,7 @@ Template-ID: content-quote
 Quote: At Porsche, we don't just build cars — we build relationships that last a lifetime.
 Quote-Attribution: Oliver Blume
 Quote-Title: CEO, Porsche AG
-Image-File: brand_moment_CC02.webp
+Image-File: brand_moment_CC02.jpg
 >> On slide load → 1S07-INTRO.mp3
 Voiceover-INTRO: This statement from Porsche AG CEO Oliver Blume captures something fundamental about the brand's philosophy. The relationship doesn't end at the sale. It deepens every time that customer returns to you for service, advice, or a conversation about what comes next. Every visit is a continuation of a relationship you have the opportunity to build.
 Caption-Text: At Porsche, we don't just build cars — we build relationships that last a lifetime.
@@ -504,7 +506,7 @@ Slide-ID: 1S10
 Template-ID: closing
 Slide-Title: Module Complete
 On-Screen-Text: You now have a deeper understanding of today's Porsche customer and what drives their expectations.
-Image-File: closing_911_CC02.webp
+Image-File: closing_911_CC02.jpg
 >> On slide load → 1S10-INTRO.mp3
 Voiceover-INTRO: You've covered a lot of ground in this module. You now understand who the Porsche customer is, what drives their expectations, and how your daily behaviors shape their experience of the brand. In the next section, you'll complete a short assessment to confirm your understanding before moving to Module 3. Take your time and trust what you've learned.
 Caption-Text: You've covered a lot of ground in this module.
@@ -562,7 +564,7 @@ Before finalizing your storyboard output, verify:
 - [ ] Every slide has a `## Slide NN —` heading with a two-digit zero-padded number
 - [ ] Every slide has `Slide-ID`, `Template-ID`, `Slide-Title`, `Voiceover-INTRO`, `Caption-Text`, `Status`, `Notes`
 - [ ] All Slide-IDs use underscores (`1S01`) — never hyphens
-- [ ] Every image filename includes the module code suffix (`_CC02.webp`)
+- [ ] Every image filename includes the module code suffix (`_CC02.jpg`)
 - [ ] Every `Voiceover-CLICK-*` field has a matching `>>` stage direction line above it
 - [ ] Each `knowledge-check` slide has `Question`, four `Choice-N` fields, `Correct-Answer`, and `Review-Slide`
 - [ ] Each `final-quiz` slide has `Question`, four `Choice-N` fields, and `Correct-Answer` (no `Review-Slide`)

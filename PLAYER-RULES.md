@@ -46,7 +46,6 @@ The top bar (defined in both `course/index.html` and `course/player/index.html`)
 | Menu button | Opens the slide-list drawer | `.menu-toggle` |
 | `.top-title` span | Displays the module title — placeholder `Module Title`, replace per module | Hardcoded text; update both HTML files when starting a new module |
 | Progress bar | Active-clip playhead (see Rule P1) | `.progress-bar` |
-| `#audio-timer` | Elapsed audio time in `M:SS` format for the currently playing clip | Updated each tick by `syncAudioProgress()` in `runtime.js` |
 
 The Porsche wordmark in the bottom-bar (`.bottom-logo svg`) carries `margin-left: 36px` to offset it from the left edge of the player.
 
@@ -91,17 +90,15 @@ On interactive slides (card-explore, tab-panel, tile-explore), the Next button s
 
 ---
 
-### Rule I4 — Click_Next.mp3 fires simultaneously with Next unlock
-When the last required interaction is visited, Click_Next.mp3 plays and the Next button unlocks at the same moment. The learner can advance immediately or wait for the clip to finish.
-
-**Implementation:** `maybePlayFinalNextCue()` calls `updateInteractionNextLock()` (which clears `nextLockedByInteraction`) before calling `playInteractionAudio()`, so the unlock and the audio start in the same call stack.
+### Rule I4 — No spoken Next prompt
+The player must not play a VO cue that tells the learner to click Next. Next readiness is communicated visually through the enabled button state and unlock pulse.
 
 ---
 
-### Rule I5 — Next button pulses on unlock
-When the Next button transitions from disabled to enabled, it plays a short red-ring pulse animation to draw the learner's attention.
+### Rule I5 — Next button pulses after required interactions complete
+When the learner completes the final required interaction on an interactive slide, the Next button unlocks and plays a short red-ring pulse animation.
 
-**Implementation:** `updateNavButtons()` adds the `pulse-unlock` CSS class on the `false → true` transition. CSS keyframe `pulse-unlock` is defined in `player/index.html`.
+**Implementation:** the `sandbox-unlock-next` handler clears `state.nextLockedByInteraction`, calls `updateNavButtons()`, and applies the `pulse-unlock` CSS class. CSS keyframe `next-unlock-pulse` is defined in both player shells.
 
 ---
 
@@ -160,7 +157,6 @@ Every interactive template must declare its required IDs synchronously on DOMCon
 window.parent.postMessage({
   type: 'sandbox-configure-interactions',
   requiredIds: ['CardA', 'CardB', 'CardC'],
-  finalCueSrc: 'assets/audio/vo/Click_Next.mp3',
   lockNextUntilComplete: true
 }, '*');
 ```
@@ -184,4 +180,4 @@ When building a new module from scratch:
 1. Use only templates listed in `TEMPLATE-REFERENCE.md` — they already implement Rules T1–T4.
 2. If adding a new template, implement the INTRO lock pattern (Rule T2) and the bridge pattern (Rule T1) before anything else.
 3. The generator (`generate-slides.js`) and `runtime.js` enforce Rules A1–A3 and I1–I5 automatically — no per-module work needed.
-4. Test by loading a card-explore or tab-panel slide, clicking a card before INTRO ends (nothing should happen), then clicking after INTRO ends (audio should play, Next should lock). When all cards are visited, Next should unlock with a pulse and Click_Next.mp3 should play.
+4. Test by loading a card-explore or tab-panel slide, clicking a card before INTRO ends (nothing should happen), then clicking after INTRO ends (audio should play, Next should lock). When all cards are visited, Next should unlock with a pulse and no spoken Next prompt should play.

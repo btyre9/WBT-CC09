@@ -38,6 +38,148 @@ function parseArgs(argv) {
 }
 
 // ---------------------------------------------------------------------------
+// Image catalog — reads the JPEG library and exposes aspect ratios so the
+// parser can pick a contextually appropriate fallback image when a slide
+// doesn't specify Image-File or specifies a not-yet-created production image.
+// ---------------------------------------------------------------------------
+
+// Read width/height from a JPEG file by walking SOF markers in the header.
+// Returns { width, height, ratio } or null if the file isn't a parseable JPEG.
+function getJpegDimensions(filePath) {
+  try {
+    const buf = fs.readFileSync(filePath);
+    if (buf.length < 4 || buf[0] !== 0xFF || buf[1] !== 0xD8) return null;
+    let i = 2;
+    while (i < buf.length - 8) {
+      if (buf[i] !== 0xFF) return null;
+      const marker = buf[i + 1];
+      // SOF markers (0xC0–0xCF), excluding DHT (0xC4), JPG (0xC8), DAC (0xCC)
+      if (marker >= 0xC0 && marker <= 0xCF && marker !== 0xC4 && marker !== 0xC8 && marker !== 0xCC) {
+        const height = buf.readUInt16BE(i + 5);
+        const width  = buf.readUInt16BE(i + 7);
+        return { width, height, ratio: width / height };
+      }
+      const segLen = buf.readUInt16BE(i + 2);
+      i += 2 + segLen;
+    }
+    return null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function loadImageCatalog(imagesDir) {
+  if (!fs.existsSync(imagesDir)) return [];
+  const files = fs.readdirSync(imagesDir).filter(f => {
+    if (!/\.jpe?g$/i.test(f) || /^placeholder\./i.test(f)) return false;
+    // Draft placeholders should come from descriptive catalog assets, not
+    // from final production slide names like 1S03.jpg or 1S03a.jpg.
+    if (/^(?:1S\d{2}[a-z]?|2KC\d{2}|3FQ\d{2}|3FQ-SCORE)\.jpe?g$/i.test(f)) return false;
+    return true;
+  });
+  return files
+    .map(filename => {
+      const dim = getJpegDimensions(path.join(imagesDir, filename));
+      return dim ? { filename, ...dim } : null;
+    })
+    .filter(Boolean);
+}
+
+// Preferred aspect ratio per template. Templates not listed default to 4:3.
+//   16:9 ≈ 1.78  wide hero/background
+//   4:3  ≈ 1.33  default content/inline
+//   3:4  ≈ 0.75  portrait rail
+const TEMPLATE_PREFERRED_RATIO = {
+  'hero-title':                     16/9,
+  'hotspot':                        16/9,
+  'video-scenario':                 16/9,
+  'content-stat':                   16/9,
+  'closing':                        16/9,
+  'accordion-content':              4/5,
+  'accordion-content-image-left':   4/5,
+  'tab-panel':                      4/3,
+  'card-explore':                   4/3,
+  'tile-explore':                   4/3,
+  'content-split':                  4/3,
+  'content-bullets':                4/3,
+  'content-quote':                  4/3,
+  'learning-objectives':            3/4,
+  'step-sequence':                  4/3,
+  'bar-chart-modal':                4/3,
+};
+
+const MAIN_IMAGE_TEMPLATES = new Set([
+  'hero-title',
+  'hotspot',
+  'video-scenario',
+  'content-stat',
+  'closing',
+  'accordion-content',
+  'accordion-content-image-left',
+  'content-split',
+  'content-bullets',
+  'content-quote',
+  'learning-objectives',
+  'knowledge-check',
+  'step-sequence',
+  'bar-chart-modal',
+]);
+
+const IMAGE_SLOT_RATIO = {
+  'card-explore:card': 1,
+  'tab-panel:item': 4/3,
+};
+
+// Pick an image from the catalog whose ratio is closest to the template's
+// preferred ratio. The choice is intentionally random within the closest
+// matches so regenerated draft slides get visual variety while staying close
+// to the shape the template needs.
+function pickImageForTemplate(catalog, templateId, slotKey) {
+  if (!catalog.length) return null;
+  const preferred = IMAGE_SLOT_RATIO[slotKey] || TEMPLATE_PREFERRED_RATIO[templateId] || (4 / 3);
+  // Sort by closeness to preferred ratio
+  const sorted = catalog.slice().sort((a, b) =>
+    Math.abs(a.ratio - preferred) - Math.abs(b.ratio - preferred)
+  );
+  // Take the top-3 closest matches (or all if fewer) and pick one randomly.
+  // The pool of 3 gives variety while still respecting aspect ratio.
+  const poolSize = Math.min(3, sorted.length);
+  const pool     = sorted.slice(0, poolSize);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function resolveImagePath(slide, imageField, templateId, imageCatalog, options = {}) {
+  const imageFile = slide[imageField];
+  const imagesDir = path.resolve('course', 'assets', 'images');
+
+  if (imageFile && fs.existsSync(path.join(imagesDir, imageFile))) {
+    return `../assets/images/${imageFile}`;
+  }
+
+  const picked = imageCatalog && imageCatalog.length
+    ? pickImageForTemplate(imageCatalog, templateId, options.slotKey)
+    : null;
+
+  if (picked) {
+    slide._autoPickedImages = slide._autoPickedImages || [];
+    slide._autoPickedImages.push({
+      field: imageField,
+      requested: imageFile || null,
+      ...picked,
+    });
+    return `../assets/images/${picked.filename}`;
+  }
+
+  if (imageFile) {
+    slide._missingImages = slide._missingImages || [];
+    slide._missingImages.push({ field: imageField, requested: imageFile });
+    return `../assets/images/${imageFile}`;
+  }
+
+  return '../assets/images/placeholder.jpg';
+}
+
+// ---------------------------------------------------------------------------
 // Parse storyboard/course.md
 // ---------------------------------------------------------------------------
 
@@ -137,63 +279,103 @@ function extractClickTriggers(slide, slideId) {
 }
 
 // ---------------------------------------------------------------------------
-// Objective items
+// Learning-objectives items (learning-objectives template — Slide 02 of every module)
+//   - Each objective is a <div> with a unique element id so the script can
+//     animate them individually via GSAP and time-based emphasis cues.
+//   - OBJECTIVES_IDS_JS emits a JS array literal of those element ids.
+//   - VO_CUE_TIMES_JS emits a JS array of per-objective cue times (seconds
+//     from INTRO audio start). Missing cues become Infinity so the
+//     animation never fires for that objective until VO-Cue-N is written
+//     (by `npm run extract-vo-cues`).
 // ---------------------------------------------------------------------------
-
-function buildObjectivesHtml(slide) {
+function collectObjectives(slide) {
   const items = [];
   for (let i = 1; i <= 10; i++) {
     const text = slide[`Objective-${i}`];
     if (!text) break;
-    const num = String(i).padStart(2, '0');
-    items.push(
-      `      <li class="obj-item">\n` +
-      `        <span class="obj-number">${num}</span>\n` +
-      `        <span class="obj-text">${escHtml(text)}</span>\n` +
-      `      </li>`
+    items.push({ n: i, text });
+  }
+  return items;
+}
+
+function objectiveElementId(slideId, n) {
+  return `obj-${slideId}-${String(n).padStart(2, '0')}`;
+}
+
+function buildLearningObjectivesHtml(slide, slideId) {
+  const items = collectObjectives(slide);
+  if (!items.length) {
+    return '        <!-- No Objective-N fields found in storyboard for this slide. -->';
+  }
+  return items.map(({ n, text }) => {
+    const id  = objectiveElementId(slideId, n);
+    const num = String(n).padStart(2, '0');
+    return (
+      `        <div class="anim-scale-up" id="${id}"\n` +
+      `          style="display: flex; align-items: flex-start; gap: 20px; color: white;">\n` +
+      `          <span style="flex-shrink: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #D5001C; font-size: 18px; font-weight: 700; color: #D5001C;">${num}</span>\n` +
+      `          <span style="font-size: 22px; line-height: 32px; font-weight: 400;">${escHtml(text)}</span>\n` +
+      `        </div>`
     );
-  }
-  if (items.length === 0) {
-    // Placeholder items for authoring
-    for (let i = 1; i <= 3; i++) {
-      const num = String(i).padStart(2, '0');
-      items.push(
-        `      <li class="obj-item">\n` +
-        `        <span class="obj-number">${num}</span>\n` +
-        `        <span class="obj-text"><!-- Objective ${i}: replace with actual objective --></span>\n` +
-        `      </li>`
-      );
-    }
-  }
-  return items.join('\n');
+  }).join('\n');
+}
+
+function buildObjectivesIdsJs(slide, slideId) {
+  const items = collectObjectives(slide);
+  if (!items.length) return '[]';
+  return '[' + items.map(({ n }) => `'${objectiveElementId(slideId, n)}'`).join(', ') + ']';
+}
+
+function buildVoCueTimesJs(slide) {
+  const items = collectObjectives(slide);
+  if (!items.length) return '[]';
+  // Missing cues become Infinity so the cue never fires (rather than 0,
+  // which would fire immediately on slide load).
+  const values = items.map(({ n }) => {
+    const raw = slide[`VO-Cue-${n}`];
+    if (raw === undefined || raw === '' || raw === 'null') return 'Infinity';
+    const num = parseFloat(raw);
+    return Number.isFinite(num) ? num.toFixed(2) : 'Infinity';
+  });
+  return '[' + values.join(', ') + ']';
 }
 
 // ---------------------------------------------------------------------------
 // Card items (card-explore template)
 // ---------------------------------------------------------------------------
 
-function buildCardsHtml(triggers, slide) {
+function buildCardsHtml(triggers, slide, imageCatalog) {
   const letters = ['01', '02', '03', '04', '05', '06'];
   return triggers.map((t, idx) => {
     const num   = letters[idx] || String(idx + 1).padStart(2, '0');
-    const title = escHtml(slide[`Card-Title-${t.label}`] || camelToWords(t.label));
-    const sig   = slide[`Card-Sig-${t.label}`] ? `        <div class="card-sig">${escHtml(slide[`Card-Sig-${t.label}`])}</div>\n` : '';
-    const rawBullets = slide[`Card-Bullets-${t.label}`];
-    let bodyHtml;
-    if (rawBullets) {
-      const lis = rawBullets.split('|').map(b => `          <li>${escHtml(b.trim())}</li>`).join('\n');
-      bodyHtml = `        <ul class="card-bullets">\n${lis}\n        </ul>`;
-    } else {
-      bodyHtml = `        <div class="card-body"></div>`;
-    }
+    const title = slide[`Card-Title-${t.label}`] || camelToWords(t.label);
+    const sig   = slide[`Card-Sig-${t.label}`] || camelToWords(t.label);
+    const bullets = String(slide[`Card-Bullets-${t.label}`] || '')
+      .split('|')
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(s => `          <li>${escHtml(s)}</li>`)
+      .join('\n') || `          <li><!-- Add Card-Bullets-${escHtml(t.label)} to course.md. --></li>`;
+    const imageField = `Card-Image-${t.label}`;
+    const imagePath = resolveImagePath(slide, imageField, 'card-explore', imageCatalog, { slotKey: 'card-explore:card' });
     return (
-      `      <div class="explore-card pds-card" data-card="${escAttr(t.label)}" id="card-${escAttr(t.label)}" tabindex="0" role="button" aria-label="Explore ${escAttr(title)}">\n` +
-      `        <div class="card-number">${num}</div>\n` +
-      `        <div class="card-title">${title}</div>\n` +
-      sig +
-      bodyHtml + '\n' +
-      `        <div class="card-chip">Explore &rarr;</div>\n` +
-      `      </div>`
+      `    <article class="tile anim-block" data-card="${escAttr(t.label)}" id="card-${escAttr(t.label)}" role="button" tabindex="0" aria-label="Explore ${escAttr(title)}">\n` +
+      `      <img class="tile-poster" src="${escAttr(imagePath)}" alt="" aria-hidden="true">\n` +
+      `      <div class="tile-dim" aria-hidden="true"></div>\n` +
+      `      <div class="tile-signature">\n` +
+      `        <span class="tile-signature__mark">${num} &middot; ${escHtml(sig)}</span>\n` +
+      `        <span class="tile-signature__divider" aria-hidden="true"></span>\n` +
+      `      </div>\n` +
+      `      <div class="tile-content">\n` +
+      `        <h2 class="tile-title">${escHtml(title)}</h2>\n` +
+      `        <ul class="tile-bullets">\n${bullets}\n        </ul>\n` +
+      `        <div class="tile-cta-row">\n` +
+      `          <span class="tile-cta">Explore</span>\n` +
+      `          <span class="tile-cta__arrow" aria-hidden="true">&rarr;</span>\n` +
+      `        </div>\n` +
+      `      </div>\n` +
+      `      <a aria-hidden="true" tabindex="-1" class="DesktopCarRangeTile__clickableArea__403b1" href="#${escAttr(t.label.toLowerCase())}" target="_self"></a>\n` +
+      `    </article>`
     );
   }).join('\n');
 }
@@ -201,6 +383,215 @@ function buildCardsHtml(triggers, slide) {
 function buildCardAudioMap(triggers) {
   const entries = triggers.map(t => `  '${t.label}': '${t.audioPath}'`);
   return '{\n' + entries.join(',\n') + '\n}';
+}
+
+function buildBulletItemsHtml(slide) {
+  const items = [];
+  for (let i = 1; i <= 10; i++) {
+    const raw = slide[`Bullet-${i}`];
+    if (!raw) break;
+    const parts = String(raw).split('|').map(s => s.trim());
+    const header = parts[0] || '';
+    const body = parts.slice(1).join(' | ');
+    items.push(
+      `        <li class="bullet-item">\n` +
+      `          <div class="bullet-bar"></div>\n` +
+      `          <div class="bullet-content">\n` +
+      `            <span class="bullet-header">${escHtml(header)}</span>\n` +
+      (body ? `            <span class="bullet-body">${escHtml(body)}</span>\n` : '') +
+      `          </div>\n` +
+      `        </li>`
+    );
+  }
+  if (!items.length) {
+    return '        <!-- No Bullet-N fields found in storyboard for this slide. -->';
+  }
+  return items.join('\n\n');
+}
+
+// ---------------------------------------------------------------------------
+// Accordion items (accordion-content template)
+// Per-item body comes from `Item-<Label>-Body` storyboard fields; if absent,
+// emits a placeholder comment so the author can fill in by editing the slide.
+// Inline HTML is allowed in the body field (e.g. <ul class="acc-bullets">).
+// ---------------------------------------------------------------------------
+
+function buildAccordionItemsHtml(triggers, slide) {
+  if (!triggers.length) return '<!-- No Voiceover-CLICK-<Label> fields found in storyboard for this slide. -->';
+  return triggers.map((t, idx) => {
+    const num   = String(idx + 1).padStart(2, '0');
+    const label = camelToWords(t.label);
+    const bodyField = slide[`Item-${t.label}-Body`];
+    const body = bodyField
+      ? bodyField
+      : `<p><!-- Body for ${label}: add Item-${t.label}-Body to course.md, or edit this slide directly. --></p>`;
+    return (
+      `    <article class="acc-item" data-item="${escAttr(t.label)}" role="listitem">\n` +
+      `      <button class="acc-header" type="button" aria-expanded="false" aria-controls="body-${escAttr(t.label)}">\n` +
+      `        <span class="acc-number">${num}</span>\n` +
+      `        <span class="acc-label">${escHtml(label)}</span>\n` +
+      `        <span class="acc-chev" aria-hidden="true">\n` +
+      `          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>\n` +
+      `        </span>\n` +
+      `      </button>\n` +
+      `      <div class="acc-body-wrap">\n` +
+      `        <div class="acc-body" id="body-${escAttr(t.label)}" role="region">\n` +
+      `          <div class="acc-body-inner">\n` +
+      `            ${body}\n` +
+      `          </div>\n` +
+      `        </div>\n` +
+      `      </div>\n` +
+      `    </article>`
+    );
+  }).join('\n');
+}
+
+// ---------------------------------------------------------------------------
+// Hotspot markers + popovers (hotspot template)
+// Generates two HTML chunks from the same Voiceover-CLICK-<Label> triggers:
+//   - markers: <button class="hotspot"> elements positioned via Item-<Label>-Pos
+//   - popovers: <aside class="popover"> blocks with body content
+// Per-hotspot storyboard fields:
+//   Voiceover-CLICK-<Label>   (required — VO trigger + audio path)
+//   Item-<Label>-Body         (required — popover body HTML)
+//   Item-<Label>-Pos          (required — "X%,Y%" marker position on background)
+//   Item-<Label>-Title        (optional — popover heading; falls back to camelToWords(label))
+//   Item-<Label>-Eyebrow      (optional — small red category label above title)
+//   Item-<Label>-Side         (optional — "left"|"right"; auto-derived from X%
+//                              when omitted: X > 50% → popover opens left,
+//                              X ≤ 50% → popover opens right)
+// ---------------------------------------------------------------------------
+
+function parseHotspotPos(posStr) {
+  // Accepts "30%,42%" or "30,42" or "30% , 42%" — returns { x: "30%", y: "42%", xNum: 30 }
+  if (!posStr) return { x: '50%', y: '50%', xNum: 50 };
+  const parts = String(posStr).split(',').map(s => s.trim());
+  const x = parts[0] || '50%';
+  const y = parts[1] || '50%';
+  const xNum = parseFloat(String(x).replace('%', '')) || 50;
+  return {
+    x: /%$/.test(x) ? x : (x + '%'),
+    y: /%$/.test(y) ? y : (y + '%'),
+    xNum,
+  };
+}
+
+function buildHotspotMarkersHtml(triggers, slide) {
+  if (!triggers.length) return '      <!-- No Voiceover-CLICK-<Label> fields found in storyboard for this slide. -->';
+  const checkSvg =
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"></polyline></svg>`;
+  return triggers.map((t, idx) => {
+    const num   = String(idx + 1).padStart(2, '0');
+    const label = camelToWords(t.label);
+    const pos   = parseHotspotPos(slide[`Item-${t.label}-Pos`]);
+    return (
+      `      <button class="hotspot" type="button" data-hs="${escAttr(t.label)}" aria-label="${escAttr(label)} — open detail" style="--hs-x: ${pos.x}; --hs-y: ${pos.y};">\n` +
+      `        <span class="hotspot-dot">\n` +
+      `          <span class="hotspot-number">${num}</span>\n` +
+      `          <span class="hotspot-check" aria-hidden="true">${checkSvg}</span>\n` +
+      `        </span>\n` +
+      `      </button>`
+    );
+  }).join('\n');
+}
+
+function buildHotspotPopoversHtml(triggers, slide) {
+  if (!triggers.length) return '';
+  return triggers.map((t, idx) => {
+    const num     = String(idx + 1).padStart(2, '0');
+    const label   = camelToWords(t.label);
+    const pos     = parseHotspotPos(slide[`Item-${t.label}-Pos`]);
+    const bodyField = slide[`Item-${t.label}-Body`];
+    const body = bodyField
+      ? bodyField
+      : `<p><!-- Body for ${label}: add Item-${t.label}-Body to course.md, or edit this slide directly. --></p>`;
+    const titleOverride = slide[`Item-${t.label}-Title`];
+    const title    = titleOverride ? titleOverride : label;
+    const eyebrow  = slide[`Item-${t.label}-Eyebrow`] || '';
+    const sideOverride = slide[`Item-${t.label}-Side`];
+    // Auto-derive side from X position if not specified
+    const side = sideOverride
+      ? sideOverride
+      : (pos.xNum > 50 ? 'left' : 'right');
+    const eyebrowMarkup = eyebrow
+      ? `        <div class="popover-eyebrow">${num} &middot; ${escHtml(eyebrow)}</div>\n`
+      : `        <div class="popover-eyebrow">${num}</div>\n`;
+    return (
+      `      <aside class="popover" data-popover="${escAttr(t.label)}" data-side="${side}" role="dialog" aria-label="${escAttr(label)} — detail" style="--hs-x: ${pos.x}; --hs-y: ${pos.y};" hidden>\n` +
+      `        <button class="popover-close" type="button" aria-label="Close">\n` +
+      `          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>\n` +
+      `        </button>\n` +
+      eyebrowMarkup +
+      `        <h2 class="popover-title">${escHtml(title)}</h2>\n` +
+      `        <div class="popover-body">\n` +
+      `          ${body}\n` +
+      `        </div>\n` +
+      `      </aside>`
+    );
+  }).join('\n');
+}
+
+// ---------------------------------------------------------------------------
+// Tab-panel items (tab-panel template)
+// Generates two HTML chunks from the same Voiceover-CLICK-<Label> triggers:
+//   - tabs: <button class="tab"> elements with number, label, visited check
+//   - panels: <section class="panel"> elements with body content
+// First tab/panel is pre-marked `is-active visited` so the slide loads with
+// one tab already showing — visited count starts at 1.
+// Panel body comes from `Item-<Label>-Body` storyboard field (same convention
+// as accordion-content); HTML is allowed.
+// ---------------------------------------------------------------------------
+
+function buildTabPanelTabsHtml(triggers) {
+  if (!triggers.length) return '<!-- No Voiceover-CLICK-<Label> fields found in storyboard for this slide. -->';
+  const checkSvg =
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"></polyline></svg>`;
+  return triggers.map((t, idx) => {
+    const num    = String(idx + 1).padStart(2, '0');
+    const label  = camelToWords(t.label);
+    const isFirst = idx === 0;
+    const cls    = isFirst ? 'tab is-active visited' : 'tab';
+    const ariaSelected = isFirst ? 'true' : 'false';
+    return (
+      `      <button class="${cls}" type="button" role="tab" aria-selected="${ariaSelected}" data-tab="${escAttr(t.label)}" aria-controls="panel-${escAttr(t.label)}">\n` +
+      `        <span class="tab-number">${num}</span>\n` +
+      `        <span class="tab-label">${escHtml(label)}</span>\n` +
+      `        <span class="tab-check" aria-hidden="true">${checkSvg}</span>\n` +
+      `      </button>`
+    );
+  }).join('\n');
+}
+
+function buildTabPanelPanelsHtml(triggers, slide, imageCatalog) {
+  if (!triggers.length) return '';
+  return triggers.map((t, idx) => {
+    const label = camelToWords(t.label);
+    const isFirst = idx === 0;
+    const cls    = isFirst ? 'panel is-active' : 'panel';
+    const hidden = isFirst ? '' : ' hidden=""';
+    const bodyField = slide[`Item-${t.label}-Body`];
+    const body = bodyField
+      ? bodyField
+      : `<p><!-- Body for ${label}: add Item-${t.label}-Body to course.md, or edit this slide directly. --></p>`;
+    // Optional per-panel image — Item-<Label>-Image: <filename in assets/images/>
+    const imageFile = slide[`Item-${t.label}-Image`];
+    const gridClass = imageFile ? 'panel-grid has-media' : 'panel-grid';
+    const imagePath = imageFile
+      ? resolveImagePath(slide, `Item-${t.label}-Image`, 'tab-panel', imageCatalog, { slotKey: 'tab-panel:item' })
+      : null;
+    const mediaHtml = imageFile
+      ? `\n          <figure class="panel-media">\n            <img src="${escAttr(imagePath)}" alt="">\n          </figure>`
+      : '';
+    return (
+      `      <section class="${cls}" id="panel-${escAttr(t.label)}" data-panel="${escAttr(t.label)}" role="tabpanel"${hidden}>\n` +
+      `        <div class="${gridClass}">\n` +
+      `          <div class="panel-text">\n` +
+      `            ${body}\n` +
+      `          </div>${mediaHtml}\n` +
+      `        </div>\n` +
+      `      </section>`
+    );
+  }).join('\n');
 }
 
 // ---------------------------------------------------------------------------
@@ -293,137 +684,19 @@ function renderTemplate(html, tokens) {
 // Build token map for a slide
 // ---------------------------------------------------------------------------
 
-function buildVoTimesArray(slide) {
-  const times = [];
-  for (let i = 1; i <= 10; i++) {
-    const val = slide[`VO-Cue-${i}`];
-    if (!val) break;
-    times.push(parseFloat(val));
-  }
-  if (times.length === 0) return 'null';
-  return JSON.stringify(times);
-}
-
-function buildMatchData(slide) {
-  const pairs = [];
-  for (let i = 1; i <= 20; i++) {
-    const item   = slide[`Match-${i}-Item`];
-    const target = slide[`Match-${i}-Target`];
-    if (!item || !target) break;
-    pairs.push({ id: String(i), item: item, target: target });
-  }
-  return JSON.stringify(pairs);
-}
-
-function countMatchPairs(slide) {
-  let count = 0;
-  for (let i = 1; i <= 20; i++) {
-    if (!slide[`Match-${i}-Item`]) break;
-    count++;
-  }
-  return count;
-}
-
-function buildTabPanelsHtml(slide, slideId) {
-  const tabs = [];
-  for (const [key] of Object.entries(slide)) {
-    const m = key.match(/^Voiceover-TAB-(.+)$/);
-    if (!m) continue;
-    const label = m[1];
-    tabs.push(label);
-  }
-  return tabs;
-}
-
-function buildTabPanelsHtmlToken(slide) {
-  const tabLabels = buildTabPanelsHtml(slide, slide['Slide-ID'] || '');
-  if (tabLabels.length === 0) return '';
-  const items = tabLabels.map((label, idx) => {
-    const num = String(idx + 1);
-    return (
-      `        <li data-step="${escAttr(label)}"><span>${num}</span>${escHtml(camelToWords(label))}</li>`
-    );
-  });
-  return (
-    `      <ul class="progress-list anim" aria-label="Visited steps">\n` +
-    items.join('\n') + '\n' +
-    `      </ul>`
-  );
-}
-
-function buildTabNamesJson(slide) {
-  const tabLabels = buildTabPanelsHtml(slide, slide['Slide-ID'] || '');
-  return JSON.stringify(tabLabels);
-}
-
-function buildTabButtonsHtml(slide, slideId) {
-  const sep = slideId.includes('_') ? '_' : '-';
-  const labels = [];
-  for (const [key] of Object.entries(slide)) {
-    const m = key.match(/^Voiceover-TAB-(.+)$/);
-    if (m) labels.push(m[1]);
-  }
-  return labels.map((label, i) => {
-    const audioPath = `../assets/audio/vo/${slideId}${sep}TAB${sep}${label}.mp3`;
-    const displayText = camelToWords(label);
-    const tabindex = i === 0 ? '0' : '-1';
-    return `      <button class="tab-btn" data-tab="${escAttr(label)}" data-audio="${escAttr(audioPath)}" role="tab" aria-selected="false" tabindex="${tabindex}">${escHtml(displayText)}</button>`;
-  }).join('\n');
-}
-
-function buildTabBodyPanelsHtml(slide) {
-  const labels = [];
-  for (const [key] of Object.entries(slide)) {
-    const m = key.match(/^Voiceover-TAB-(.+)$/);
-    if (m) labels.push(m[1]);
-  }
-  return labels.map((label, i) => {
-    const num = String(i + 1).padStart(2, '0');
-    const body = escHtml(slide[`Tab-Body-${label}`] || '');
-    return (
-      `      <div class="tab-panel" id="panel-${escAttr(label)}" role="tabpanel">\n` +
-      `        <span class="tab-panel__step-num" aria-hidden="true">${num}</span>\n` +
-      `        <p class="tab-panel__body">${body}</p>\n` +
-      `      </div>`
-    );
-  }).join('\n');
-}
-
-function buildTabImageMapJson(slide, slideId, defaultImagePath) {
-  const sep = slideId.includes('_') ? '_' : '-';
-  const labels = [];
-  for (const [key] of Object.entries(slide)) {
-    const m = key.match(/^Voiceover-TAB-(.+)$/);
-    if (m) labels.push(m[1]);
-  }
-  const map = {};
-  labels.forEach(label => {
-    const perTab = slide[`Tab-Image-${label}`];
-    map[label] = perTab ? `../assets/images/${perTab}` : defaultImagePath;
-  });
-  return JSON.stringify(map);
-}
-
-function buildTokens(slide, allSlides, courseTitle, templateHtml, availableImages) {
+function buildTokens(slide, allSlides, courseTitle, templateHtml, imageCatalog) {
   const slideId     = slide['Slide-ID'];
   const templateId  = slide['Template-ID'];
   const slideTitle  = slide['Slide-Title'] || slideId;
   const onScreen    = slide['On-Screen-Text'] || slideTitle;
-  const imageFile   = slide['Image-File'];
 
-  // BUG 6: resolve image with fallback from available images
-  const specifiedPath = imageFile ? path.resolve('course/assets/images', imageFile) : null;
-  let resolvedImageFile;
-  if (imageFile && specifiedPath && fs.existsSync(specifiedPath)) {
-    resolvedImageFile = imageFile;
-  } else if (availableImages && availableImages.length > 0) {
-    const idx = allSlides.indexOf(slide) % availableImages.length;
-    resolvedImageFile = availableImages[idx];
-  } else {
-    resolvedImageFile = 'placeholder.webp';
-  }
-  const imagePath = `../assets/images/${resolvedImageFile}`;
-  const imageFileDisplay = imageFile || 'placeholder.webp';
+  // Image fallback: for templates with a main image slot, use an existing
+  // Image-File when it exists; otherwise choose a catalog image whose aspect
+  // ratio fits the template. This lets draft storyboards use production-style
+  // names like 1S01.jpg before those final assets exist.
+  const imagePath = MAIN_IMAGE_TEMPLATES.has(templateId)
+    ? resolveImagePath(slide, 'Image-File', templateId, imageCatalog)
+    : '';
 
   const { value: statValue, label: statLabel } = splitStat(onScreen, slideTitle);
   const clicks = extractClickTriggers(slide, slideId);
@@ -433,9 +706,13 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml, availableImage
   const quoteAttributionName = slide['Quote-Attribution']  || '<!-- Attribution name -->';
   const quoteAttributionTitle= slide['Quote-Title']        || '<!-- Attribution title / role -->';
 
-  // hero-title subtitle: explicit field or second | segment of On-Screen-Text
+  // hero-title subtitle: descriptive support copy only. Module-count labels
+  // like "Module 9 of 12" are intentionally suppressed.
   const onScreenParts = (slide['On-Screen-Text'] || '').split('|');
-  const heroSubtitle  = slide['Hero-Subtitle'] || (onScreenParts[1] ? onScreenParts[1].trim() : '');
+  const rawHeroSubtitle = slide['Hero-Subtitle'] || (onScreenParts[1] ? onScreenParts[1].trim() : '');
+  const heroSubtitle = /^module\s+\d+\s+of\s+\d+$/i.test(String(rawHeroSubtitle).trim())
+    ? (slide['On-Screen-Text'] || slide['Caption-Text'] || '')
+    : rawHeroSubtitle;
 
   // Pull-Quote: optional field — if present, replaces body copy in content-split with a pc-pull-quote
   const pullQuoteText = slide['Pull-Quote'];
@@ -445,6 +722,19 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml, availableImage
   } else {
     bodyContentHtml = `<p class="pds-body anim-fade-right" style="--anim-delay: 0.35s;">${escHtml(onScreen)}</p>`;
   }
+  const calloutText = slide['Callout-Text'];
+  const calloutLabel = slide['Callout-Label'] || 'Key Point';
+  const calloutHtml = calloutText
+    ? `<div class="pds-callout anim-fade-right" style="--anim-delay:0.45s;"><strong>${escHtml(calloutLabel)}</strong><span>${escHtml(calloutText)}</span></div>`
+    : '';
+  const closingCalloutHtml = calloutText
+    ? `<p class="closing-callout anim-block" id="el-callout">${escHtml(calloutText)}</p>`
+    : '';
+
+  // Intro paragraph above the objectives list. Falls back to On-Screen-Text
+  // (matches the doc example which uses On-Screen-Text for the
+  // "By the end of this module..." sentence).
+  const introText = slide['Intro-Text'] || onScreen;
 
   const tokens = {
     SLIDE_ID:       slideId,
@@ -453,8 +743,6 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml, availableImage
     HERO_SUBTITLE:  escHtml(heroSubtitle),
     MODULE_LABEL:   escHtml(courseTitle),
     IMAGE_PATH:     imagePath,
-    // BUG 5: IMAGE_FILE token — intended filename for placeholder display
-    IMAGE_FILE:     imageFileDisplay || 'placeholder.webp',
     // Stat template
     STAT_VALUE:     escHtml(statValue),
     STAT_LABEL:     escHtml(statLabel),
@@ -462,35 +750,34 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml, availableImage
     QUOTE_TEXT:               escHtml(quoteText),
     QUOTE_ATTRIBUTION_NAME:   escHtml(quoteAttributionName),
     QUOTE_ATTRIBUTION_TITLE:  escHtml(quoteAttributionTitle),
-    // Objectives template
-    OBJECTIVES_HTML: buildObjectivesHtml(slide),
-    // BUG 5: VO cue tokens for objectives template
-    VO_TIMES_ARRAY:  buildVoTimesArray(slide),
-    VO_CLEAR_TIME:   slide['VO-Clear-Time'] ? String(parseFloat(slide['VO-Clear-Time'])) : 'null',
+    // learning-objectives template
+    OBJECTIVES_HTML:    buildLearningObjectivesHtml(slide, slideId),
+    INTRO_TEXT:         escHtml(introText),
+    OBJECTIVES_IDS_JS:  buildObjectivesIdsJs(slide, slideId),
+    VO_CUE_TIMES_JS:    buildVoCueTimesJs(slide),
     // Card-explore template
-    CARDS_HTML:      buildCardsHtml(clicks, slide),
+    CARDS_HTML:      templateId === 'card-explore' ? buildCardsHtml(clicks, slide, imageCatalog) : '',
     CARD_AUDIO_MAP:  buildCardAudioMap(clicks),
     TOTAL_CARDS:     String(clicks.length || 3),
+    // Accordion-content template (reuses CARD_AUDIO_MAP + TOTAL_CARDS for VO)
+    ACCORDION_ITEMS_HTML: buildAccordionItemsHtml(clicks, slide),
+    // Tab-panel template (also reuses CARD_AUDIO_MAP + TOTAL_CARDS)
+    TAB_PANEL_TABS_HTML:   buildTabPanelTabsHtml(clicks),
+    TAB_PANEL_PANELS_HTML: templateId === 'tab-panel' ? buildTabPanelPanelsHtml(clicks, slide, imageCatalog) : '',
+    // Hotspot template (also reuses CARD_AUDIO_MAP + TOTAL_CARDS)
+    HOTSPOT_MARKERS_HTML:  buildHotspotMarkersHtml(clicks, slide),
+    HOTSPOT_POPOVERS_HTML: buildHotspotPopoversHtml(clicks, slide),
     // content-split body — pull quote or plain body copy
     BODY_CONTENT_HTML: bodyContentHtml,
+    CALLOUT_HTML: calloutHtml,
+    CLOSING_CALLOUT_HTML: closingCalloutHtml,
+    BULLET_ITEMS_HTML: buildBulletItemsHtml(slide),
     // KC / FQ templates
     QUESTION_TEXT:   escHtml(slide['Question'] || ''),
     CHOICES_HTML:    buildChoicesHtml(slide, templateId),
     CORRECT_ANSWER:  String(parseInt(slide['Correct-Answer'], 10) || 1),
     REVIEW_SLIDE:    slide['Review-Slide'] || '',
     QUESTION_NUMBER: String(fqQuestionNumber(allSlides, slideId)),
-    // BUG 5: drag-match tokens
-    MATCH_DATA_JSON: buildMatchData(slide),
-    TOTAL_PAIRS:     String(countMatchPairs(slide)),
-    MATCH_COL_LEFT:  escHtml(slide['Match-Col-Left']  || 'Terms'),
-    MATCH_COL_RIGHT: escHtml(slide['Match-Col-Right'] || 'Definitions'),
-    // BUG 5: tab-panel tokens
-    TAB_PANELS_HTML:      buildTabPanelsHtmlToken(slide),
-    TAB_NAMES_JSON:       buildTabNamesJson(slide),
-    // New tab-panel v2 tokens (matching CC08 reference design)
-    TAB_BUTTONS_HTML:     buildTabButtonsHtml(slide, slideId),
-    TAB_BODY_PANELS_HTML: buildTabBodyPanelsHtml(slide),
-    TAB_IMAGE_MAP_JSON:   buildTabImageMapJson(slide, slideId, imagePath),
   };
 
   return tokens;
@@ -541,12 +828,14 @@ async function main() {
   const { courseTitle, slides } = parseCourseMd(sbPath);
   console.log(`Course: ${courseTitle}  |  Slides: ${slides.length}\n`);
 
-  // BUG 6: Load available images for fallback resolution
-  const imagesDir = path.resolve('course/assets/images');
-  let availableImages = [];
-  if (fs.existsSync(imagesDir)) {
-    availableImages = fs.readdirSync(imagesDir)
-      .filter(f => /\.(webp|jpg|jpeg|png)$/i.test(f) && f !== 'placeholder.webp');
+  // Load image catalog once — used to auto-pick aspect-ratio-appropriate
+  // images for slides that don't specify Image-File.
+  const imagesDir = path.resolve('course', 'assets', 'images');
+  const imageCatalog = loadImageCatalog(imagesDir);
+  if (imageCatalog.length) {
+    console.log(`Image catalog: ${imageCatalog.length} images indexed from ${path.relative('.', imagesDir)}\n`);
+  } else {
+    console.log(`Image catalog: empty — slides without Image-File will reference placeholder.jpg\n`);
   }
 
   // Ensure output directories exist
@@ -567,12 +856,12 @@ async function main() {
     const outPath    = path.resolve(args.slidesDir, slideId + '.html');
 
     // Track KC review map
-    if (/^KC[_-]/i.test(slideId) && slide['Review-Slide']) {
+    if ((/^KC[_-]/i.test(slideId) || /^2KC\d{2}$/i.test(slideId)) && slide['Review-Slide']) {
       kcReviewMap[slideId] = [slide['Review-Slide']];
     }
 
     // Track FQ question slides (not SCORE)
-    if (/^FQ[_-]/i.test(slideId) && !/[_-]SCORE$/i.test(slideId)) {
+    if ((/^FQ[_-]/i.test(slideId) && !/[_-]SCORE$/i.test(slideId)) || /^3FQ\d{2}$/i.test(slideId)) {
       fqQuestionIds.push(slideId);
     }
 
@@ -608,7 +897,7 @@ async function main() {
     }
 
     // Build tokens and render
-    const tokens   = buildTokens(slide, slides, courseTitle, templateHtml, availableImages);
+    const tokens   = buildTokens(slide, slides, courseTitle, templateHtml, imageCatalog);
     const rendered = renderTemplate(templateHtml, tokens);
 
     // Write slide file
@@ -616,6 +905,18 @@ async function main() {
       fs.writeFileSync(outPath, rendered, 'utf8');
       const tplLabel = templateId.padEnd(18);
       console.log(`  WRITE  ${tplLabel}  →  ${slideId}.html`);
+      if (slide._autoPickedImages) {
+        for (const pick of slide._autoPickedImages) {
+          const r = pick.ratio.toFixed(2);
+          const requested = pick.requested ? ` for missing ${pick.field}=${pick.requested}` : ` for ${pick.field}`;
+          console.log(`         auto-image: ${pick.filename} (${pick.width}×${pick.height}, ratio ${r})${requested}`);
+        }
+      }
+      if (slide._missingImages) {
+        for (const missing of slide._missingImages) {
+          console.warn(`         WARN image missing and no catalog fallback available: ${missing.field}=${missing.requested}`);
+        }
+      }
       written++;
     } catch (err) {
       console.error(`  ERROR  ${slideId} — write failed: ${err.message}`);
@@ -639,13 +940,22 @@ async function main() {
   }
 
   // Build slides array
+  const reusableIntroAudioByText = new Map();
   existing.slides = slides.map(slide => {
     const slideId = slide['Slide-ID'];
     const entry = {
       id:       slideId,
       title:    slide['Slide-Title'] || slideId,
-      audio_vo: resolveAudioPaths(slideId).playerPath,
     };
+    if (slide['Voiceover-INTRO']) {
+      const textKey = String(slide['Voiceover-INTRO']).replace(/\s+/g, ' ').trim().toLowerCase();
+      if (reusableIntroAudioByText.has(textKey)) {
+        entry.audio_vo = reusableIntroAudioByText.get(textKey);
+      } else {
+        entry.audio_vo = resolveAudioPaths(slideId).playerPath;
+        reusableIntroAudioByText.set(textKey, entry.audio_vo);
+      }
+    }
     return entry;
   });
 

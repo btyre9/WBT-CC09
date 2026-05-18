@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
-  <title>Final Assessment — Question 3</title>
+  <title>Slide 30 - Final Quiz 3</title>
   <link rel="stylesheet" href="../assets/css/pds-tokens.css">
   <link rel="stylesheet" href="../assets/css/slide-base.css">
   <link rel="stylesheet" href="../assets/css/animations.css">
@@ -55,9 +55,10 @@
       background: var(--pds-bg-surface-hover);
       border-color: var(--pds-border-strong);
     }
-    .fq-choice.is-selected { border-color: var(--pds-accent); background: rgba(213,0,28,0.06); }
-    .fq-choice.is-correct  { border-color: var(--pds-success); background: rgba(25,126,16,0.10); }
-    .fq-choice.is-wrong    { border-color: var(--pds-error);   background: rgba(204,25,34,0.10); }
+    .fq-choice.is-selected {
+      border-color: rgba(255,255,255,0.50);
+      background: rgba(255,255,255,0.08);
+    }
     .fq-choice-letter {
       display: flex;
       align-items: center;
@@ -74,28 +75,45 @@
       transition: background var(--dur-fast), color var(--dur-fast);
     }
     .fq-choice.is-selected .fq-choice-letter { background: var(--pds-accent); color: var(--pds-brand-white); }
-    .fq-choice.is-correct  .fq-choice-letter { background: var(--pds-success); color: var(--pds-brand-white); }
-    .fq-choice.is-wrong    .fq-choice-letter { background: var(--pds-error);   color: var(--pds-brand-white); }
     .fq-choice-text {
       font-family: var(--pds-font-family);
       font-size: var(--pds-font-size-md);
       color: var(--pds-text-secondary);
       line-height: var(--pds-line-height);
     }
-    .fq-feedback {
-      display: none;
-      align-items: center;
-      gap: var(--pds-space-md);
-      padding: var(--pds-space-md) var(--pds-space-lg);
-      border-radius: var(--pds-radius-lg);
-      font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-md);
-      font-weight: var(--pds-font-weight-semibold);
-    }
-    .fq-feedback.is-visible { display: flex; }
-    .fq-feedback--correct { background: rgba(25,126,16,0.12); border: 1px solid rgba(25,126,16,0.30); color: #4caf50; }
-    .fq-feedback--wrong   { background: rgba(204,25,34,0.12); border: 1px solid rgba(204,25,34,0.30); color: #ef5350; }
     .fq-choices.is-locked .fq-choice { pointer-events: none; }
+    .fq-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: var(--pds-space-sm);
+    }
+    .fq-submit {
+      padding: 13px 38px;
+      background: var(--pds-accent);
+      border: 0;
+      border-radius: var(--pds-radius-md);
+      font-family: var(--pds-font-family);
+      font-size: var(--pds-font-size-sm);
+      font-weight: var(--pds-font-weight-bold);
+      letter-spacing: 0.03em;
+      color: var(--pds-brand-white);
+      cursor: pointer;
+      opacity: 0.32;
+      pointer-events: none;
+      transition: background 0.2s, opacity 0.25s, transform 0.12s;
+    }
+    .fq-submit.is-ready {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .fq-submit.is-ready:hover { background: var(--pds-accent-hover); }
+    .fq-submit.is-ready:active { transform: scale(0.98); }
+    .fq-submit.is-submitted {
+      background: rgba(255,255,255,0.08);
+      color: var(--pds-text-muted);
+      opacity: 0.65;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -107,36 +125,33 @@
     <div class="fq-header anim-fade-up">
       <div style="display:flex; align-items:center; gap:var(--pds-space-md);">
         <span class="pds-badge">Final Assessment</span>
-        <span class="pds-caption">Question 0</span>
+        <span class="pds-caption" id="modal-title">Question 0</span>
       </div>
       <div class="pds-accent-bar anim-bar-grow" style="--anim-delay:0.1s;"></div>
-      <p class="fq-question">A customer says, &quot;I'm not sure I really need this service today.&quot; You don't know whether the concern is cost, timing, or perceived necessity. The first step of CPR is to:</p>
+      <p class="fq-question">In the CPR framework, what should happen before responding?</p>
     </div>
 
     <div class="fq-choices stagger-children is-visible" id="fq-choices">
             <div class="fq-choice" data-choice="1" role="button" tabindex="0">
         <span class="fq-choice-letter">A</span>
-        <span class="fq-choice-text">Respond with evidence showing why the service is needed</span>
+        <span class="fq-choice-text">Clarify the concern and paraphrase your understanding</span>
       </div>
       <div class="fq-choice" data-choice="2" role="button" tabindex="0">
         <span class="fq-choice-letter">B</span>
-        <span class="fq-choice-text">Paraphrase the concern in your own words</span>
+        <span class="fq-choice-text">Compare the customer to other customers</span>
       </div>
       <div class="fq-choice" data-choice="3" role="button" tabindex="0">
         <span class="fq-choice-letter">C</span>
-        <span class="fq-choice-text">Clarify by asking which specific concern is driving the hesitation</span>
+        <span class="fq-choice-text">Offer the lowest available price</span>
       </div>
       <div class="fq-choice" data-choice="4" role="button" tabindex="0">
         <span class="fq-choice-letter">D</span>
-        <span class="fq-choice-text">Move directly to the R-A-C-E framework instead</span>
+        <span class="fq-choice-text">Explain why the customer should not be concerned</span>
       </div>
     </div>
 
-    <div class="fq-feedback fq-feedback--correct" id="fq-feedback-correct">
-      ✓ &nbsp;Correct!
-    </div>
-    <div class="fq-feedback fq-feedback--wrong" id="fq-feedback-wrong">
-      ✗ &nbsp;Not quite.
+    <div class="fq-footer">
+      <button class="fq-submit" id="fq-submit" disabled aria-disabled="true">Submit Answer</button>
     </div>
 
   </div>
@@ -209,48 +224,65 @@ var SandboxRuntime = (function () {
 
 /* ── FQ logic ────────────────────────────────────────────────────────────── */
 (function () {
-  var CORRECT_ANSWER = 3;
+  var CORRECT_ANSWER = 1;
 
   // Entrance animations
   document.querySelectorAll('.anim-fade-up, .anim-bar-grow').forEach(function (el) {
     el.classList.add('is-visible');
   });
 
+  var selectedChoice = null;
+  var selectedValue = null;
   var answered = false;
+  var choicesContainer = document.getElementById('fq-choices');
+  var submitBtn = document.getElementById('fq-submit');
 
-  function onChoiceClick(choiceEl, choiceNum) {
+  function selectChoice(choiceEl, choiceNum) {
     if (answered) return;
+    choicesContainer.querySelectorAll('.fq-choice').forEach(function (el) {
+      el.classList.remove('is-selected');
+      el.setAttribute('aria-checked', 'false');
+    });
+    choiceEl.classList.add('is-selected');
+    choiceEl.setAttribute('aria-checked', 'true');
+    selectedChoice = choiceEl;
+    selectedValue = choiceNum;
+    submitBtn.classList.add('is-ready');
+    submitBtn.disabled = false;
+    submitBtn.setAttribute('aria-disabled', 'false');
+  }
+
+  function submitAnswer() {
+    if (!selectedChoice || answered) return;
     answered = true;
-
-    var choicesContainer = document.getElementById('fq-choices');
     choicesContainer.classList.add('is-locked');
+    submitBtn.classList.remove('is-ready');
+    submitBtn.classList.add('is-submitted');
+    submitBtn.disabled = true;
+    submitBtn.setAttribute('aria-disabled', 'true');
 
-    var isCorrect = (choiceNum === CORRECT_ANSWER);
-    choiceEl.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
-
-    // Always reveal correct choice
-    if (!isCorrect) {
-      choicesContainer.querySelectorAll('.fq-choice').forEach(function (el) {
-        if (parseInt(el.getAttribute('data-choice'), 10) === CORRECT_ANSWER) {
-          el.classList.add('is-correct');
-        }
-      });
-    }
-
-    var feedbackEl = isCorrect
-      ? document.getElementById('fq-feedback-correct')
-      : document.getElementById('fq-feedback-wrong');
-    feedbackEl.classList.add('is-visible');
-
-    // Short delay, then advance to next slide and report score
-    setTimeout(function () {
-      window.parent.postMessage({ type: 'sandbox-next', correct: isCorrect }, '*');
-    }, 1600);
+    try { new Audio('../assets/audio/sfx/submit-answer.mp3').play().catch(function () {}); } catch (_) {}
+    window.parent.postMessage({ type: 'sandbox-next', correct: selectedValue === CORRECT_ANSWER }, '*');
   }
 
   document.querySelectorAll('.fq-choice[data-choice]').forEach(function (el) {
     var num = parseInt(el.getAttribute('data-choice'), 10);
-    el.addEventListener('click', function () { onChoiceClick(el, num); });
+    el.setAttribute('role', 'radio');
+    el.setAttribute('aria-checked', 'false');
+    el.addEventListener('click', function () { selectChoice(el, num); });
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectChoice(el, num);
+      }
+    });
+  });
+  submitBtn.addEventListener('click', submitAnswer);
+  submitBtn.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      submitAnswer();
+    }
   });
 })();
 </script>

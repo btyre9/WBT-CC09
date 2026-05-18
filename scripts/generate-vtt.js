@@ -9,14 +9,17 @@
  *
  * Modes:
  *   Placeholder (default) — one cue spanning the full duration, text from VoiceoverText
- *   Whisper (--whisper)   — real word-level transcription via OpenAI Whisper API
+ *   Whisper (--whisper)   — real segment transcription via OpenAI Whisper API
+ *   Local (--whisper-local) — real segment transcription via local whisper-cli
  *
  * Segment format: { fileName: '1S04-CLICK-Appearance.mp3', text: 'Your appearance...' }
  * VTT output:     1S04-CLICK-Appearance.vtt  (mirrors the audio filename)
  *
  * Flags:
  *   --whisper         Use OpenAI Whisper API
+ *   --whisper-local   Use local whisper-cli / whisper.cpp
  *   --key <sk-...>    OpenAI API key (or OPENAI_API_KEY env var)
+ *   --model <path>    Local whisper model path for --whisper-local
  *   --clip <name>     Process one clip only (filename without extension)
  *   --audio-dir       VO audio directory  (default: course/assets/audio/vo)
  *   --output-dir      VTT output directory (default: course/assets/captions)
@@ -28,7 +31,7 @@
 
 const fs            = require('fs');
 const path          = require('path');
-const { execSync }  = require('child_process');
+const { execFileSync, execSync }  = require('child_process');
 
 // ---------------------------------------------------------------------------
 // VTT helpers
@@ -104,33 +107,6 @@ function writeSegmentedVtt(segments) {
 }
 
 // ---------------------------------------------------------------------------
-// Caption corrections — reverse of the TTS pronunciation map
-// Whisper transcribes what WellSaid spoke (e.g. "Porsha"), so we map back
-// to the correct display spelling (e.g. "Porsche") for readable captions.
-// ---------------------------------------------------------------------------
-
-const PRONUNCIATION_MAP_PATH = path.join('storyboard', 'pronunciation-map.json');
-
-function buildCaptionCorrectionMap() {
-  if (!fs.existsSync(PRONUNCIATION_MAP_PATH)) return {};
-  const forward = JSON.parse(fs.readFileSync(PRONUNCIATION_MAP_PATH, 'utf8'));
-  const inverse = {};
-  for (const [display, spoken] of Object.entries(forward)) {
-    inverse[spoken] = display;
-  }
-  return inverse;
-}
-
-function applyCaptionCorrections(text, correctionMap) {
-  let out = text;
-  for (const [spoken, display] of Object.entries(correctionMap)) {
-    const escaped = spoken.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    out = out.replace(new RegExp(`\\b${escaped}\\b`, 'gi'), display);
-  }
-  return out;
-}
-
-// ---------------------------------------------------------------------------
 // OpenAI Whisper transcription
 // ---------------------------------------------------------------------------
 
@@ -148,6 +124,38 @@ async function transcribeWithWhisper(audioPath, apiKey) {
     language:                'en',
   });
   return (response.segments || []).map((seg) => ({ start: seg.start, end: seg.end, text: seg.text }));
+}
+
+function findLocalWhisperCli() {
+  const names = ['whisper-cli', 'whisper-cpp'];
+  for (const name of names) {
+    try {
+      const out = execSync(`command -v ${name}`, { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+      if (out) return out;
+    } catch (_e) {}
+  }
+  return null;
+}
+
+function transcribeWithLocalWhisper(audioPath, modelPath, outputDir) {
+  const cli = findLocalWhisperCli();
+  if (!cli) throw new Error('local whisper-cli not found. Install whisper.cpp or use --whisper.');
+  if (!modelPath) throw new Error('--whisper-local requires --model <ggml-model.bin>.');
+  if (!fs.existsSync(modelPath)) throw new Error(`local whisper model not found: ${modelPath}`);
+
+  fs.mkdirSync(outputDir, { recursive: true });
+  const base = path.join(outputDir, path.basename(audioPath).replace(/\.[^.]+$/, ''));
+  execFileSync(cli, [
+    '-m', modelPath,
+    '-f', audioPath,
+    '-l', 'en',
+    '-ovtt',
+    '-of', base,
+    '-np',
+  ], { stdio: ['ignore', 'ignore', 'pipe'] });
+  const vttPath = `${base}.vtt`;
+  if (!fs.existsSync(vttPath)) throw new Error('local whisper did not produce a VTT file');
+  return fs.readFileSync(vttPath, 'utf8');
 }
 
 // ---------------------------------------------------------------------------
@@ -207,7 +215,9 @@ function parseCsv(content) {
 function parseArgs(argv) {
   const args = {
     whisper:   false,
+    whisperLocal: false,
     key:       process.env.OPENAI_API_KEY || null,
+    model:     process.env.WHISPER_MODEL || null,
     clip:      null,
     audioDir:  path.join('course', 'assets', 'audio', 'vo'),
     outputDir: path.join('course', 'assets', 'captions'),
@@ -216,7 +226,9 @@ function parseArgs(argv) {
   };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--whisper')    { args.whisper   = true; }
+    if (argv[i] === '--whisper-local') { args.whisperLocal = true; }
     if (argv[i] === '--key')        { args.key       = argv[++i]; }
+    if (argv[i] === '--model')      { args.model     = argv[++i]; }
     if (argv[i] === '--clip')       { args.clip      = argv[++i]; }
     if (argv[i] === '--audio-dir')  { args.audioDir  = argv[++i]; }
     if (argv[i] === '--output-dir') { args.outputDir = argv[++i]; }
@@ -238,6 +250,14 @@ async function main() {
     console.error('Error: --whisper requires an OpenAI API key. Pass --key or set OPENAI_API_KEY.');
     process.exit(1);
   }
+  if (args.whisper && args.whisperLocal) {
+    console.error('Error: choose either --whisper or --whisper-local, not both.');
+    process.exit(1);
+  }
+  if (args.whisperLocal && !args.model) {
+    console.error('Error: --whisper-local requires --model <ggml-model.bin> or WHISPER_MODEL.');
+    process.exit(1);
+  }
 
   const rows    = parseCsv(fs.readFileSync(args.manifest, 'utf8'));
   let segments  = rows.map((r) => ({ fileName: r.FileName, text: r.VoiceoverText || '' }));
@@ -250,23 +270,28 @@ async function main() {
     const outputFile = path.join(args.outputDir, vttName);
     const audioFile  = path.join(args.audioDir, seg.fileName);
 
-    if (args.whisper) {
+    if (args.whisper || args.whisperLocal) {
       if (!fs.existsSync(audioFile)) {
         console.log(`  SKIP  ${seg.fileName} — no audio file`);
         skipped++; continue;
       }
       try {
         process.stdout.write(`  TRANSCRIBE  ${seg.fileName} … `);
-        const segs = await transcribeWithWhisper(audioFile, args.key);
-        if (segs.length === 0) {
-          writePlaceholderVtt(seg.fileName, seg.text, outputFile, args.duration);
-          console.log('no speech, wrote placeholder');
-        } else {
-          const correctionMap = buildCaptionCorrectionMap();
-          const correctedSegs = segs.map((s) => ({ ...s, text: applyCaptionCorrections(s.text, correctionMap) }));
+        if (args.whisperLocal) {
+          const localVtt = transcribeWithLocalWhisper(audioFile, args.model, args.outputDir);
           fs.mkdirSync(path.dirname(outputFile), { recursive: true });
-          fs.writeFileSync(outputFile, writeSegmentedVtt(correctedSegs), 'utf8');
-          console.log(`${segs.length} segment(s)`);
+          fs.writeFileSync(outputFile, localVtt, 'utf8');
+          console.log('local VTT');
+        } else {
+          const segs = await transcribeWithWhisper(audioFile, args.key);
+          if (segs.length === 0) {
+            writePlaceholderVtt(seg.fileName, seg.text, outputFile, args.duration);
+            console.log('no speech, wrote placeholder');
+          } else {
+            fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+            fs.writeFileSync(outputFile, writeSegmentedVtt(segs), 'utf8');
+            console.log(`${segs.length} segment(s)`);
+          }
         }
         generated++;
       } catch (err) {

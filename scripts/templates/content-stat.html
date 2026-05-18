@@ -13,7 +13,7 @@
       display: flex;
       gap: calc(var(--col-gap) * var(--slide-width) / 100);
       height: 100%;
-      align-items: center;
+      align-items: flex-start;
       padding: var(--pds-slide-pad-y) var(--pds-slide-pad-x);
     }
     .stat-text-col {
@@ -21,7 +21,7 @@
       display: flex;
       flex-direction: column;
       gap: var(--pds-space-lg);
-      justify-content: center;
+      justify-content: flex-start;
     }
     .stat-media-col {
       flex: 0 0 var(--col-media);
@@ -66,7 +66,6 @@
 
     <!-- Left: text content -->
     <div class="stat-text-col">
-      <span class="pds-eyebrow anim-fade-up">{{MODULE_LABEL}}</span>
       <div class="pds-accent-bar anim-bar-grow" style="--anim-delay: 0.1s;"></div>
       <h2 class="pds-heading-display anim-fade-up" style="--anim-delay: 0.2s;">{{SLIDE_TITLE}}</h2>
       <p class="pds-body anim-fade-up" style="--anim-delay: 0.35s;">

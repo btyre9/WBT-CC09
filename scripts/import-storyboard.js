@@ -216,6 +216,7 @@ async function extractDocxLines(docxPath) {
 
 function parseLines(lines) {
   let courseTitle    = '';
+  let playerTitle    = '';
   const slides       = [];
   let current        = null;
   let lastKey        = null;
@@ -244,6 +245,12 @@ function parseLines(lines) {
     }
     if (/^course:/i.test(text) && !courseTitle) {
       courseTitle = text.split(':').slice(1).join(':').trim(); continue;
+    }
+    if (/^#\s*player-title:/i.test(text)) {
+      playerTitle = text.split(':').slice(1).join(':').trim(); continue;
+    }
+    if (/^player-title:/i.test(text) && !playerTitle) {
+      playerTitle = text.split(':').slice(1).join(':').trim(); continue;
     }
 
     const headingText = text.replace(/^#{1,2}\s*/, '');
@@ -292,7 +299,7 @@ function parseLines(lines) {
     slide['Slide-Title'] = slide['Slide-Title'] || slide.section_heading || `Slide ${idx + 1}`;
   });
 
-  return { courseTitle, slides };
+  return { courseTitle, playerTitle, slides };
 }
 
 // ---------------------------------------------------------------------------
@@ -357,7 +364,7 @@ function orderSlideKeys(slide) {
     .sort((a, b) => {
       const ta = triggerOrder[a.split('-')[1]?.toUpperCase()] ?? 99;
       const tb = triggerOrder[b.split('-')[1]?.toUpperCase()] ?? 99;
-      return ta !== tb ? ta - tb : a.localeCompare(b);
+      return ta !== tb ? ta - tb : 0;
     });
   ordered.push(...voKeys);
 
@@ -372,8 +379,10 @@ function orderSlideKeys(slide) {
   return ordered;
 }
 
-function renderMarkdown(courseTitle, slides) {
-  const lines = [`# Course: ${courseTitle}`, ''];
+function renderMarkdown(courseTitle, playerTitle, slides) {
+  const lines = [`# Course: ${courseTitle}`];
+  if (playerTitle) lines.push(`# Player-Title: ${playerTitle}`);
+  lines.push('');
   slides.forEach((slide, i) => {
     lines.push(`## ${slide.section_heading || `Slide${String(i + 1).padStart(2, '0')}`}`);
     orderSlideKeys(slide).forEach((k) => lines.push(`${k}: ${slide[k] ?? ''}`));
@@ -458,7 +467,7 @@ async function main() {
     console.log('─'.repeat(60));
     lines = await extractDocxLines(docxPath);
   }
-  const { courseTitle, slides } = parseLines(lines);
+  const { courseTitle, playerTitle, slides } = parseLines(lines);
 
   if (slides.length === 0) {
     console.error(
@@ -470,7 +479,7 @@ async function main() {
 
   // ── 2. Write markdown ─────────────────────────────────────────────────────
   fs.mkdirSync(path.dirname(args.output), { recursive: true });
-  fs.writeFileSync(args.output, renderMarkdown(courseTitle, slides), 'utf8');
+  fs.writeFileSync(args.output, renderMarkdown(courseTitle, playerTitle, slides), 'utf8');
   console.log(`\n✓ Markdown        ${args.output}  (${slides.length} slides)`);
 
   // ── 3. Build VO manifest ──────────────────────────────────────────────────

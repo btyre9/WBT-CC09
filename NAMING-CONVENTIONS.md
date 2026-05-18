@@ -2,7 +2,7 @@
 
 > **When to open this doc:** You're naming a new slide, image, audio clip, or caption file — or auditing existing names for compliance.
 > **It answers:** The exact filename format for every asset class.
-> **Authoritative source:** This file is canonical. Other docs (COURSE-RULES, TEMPLATE-REFERENCE, STORYBOARD-AUTHOR-PROMPT, NEW-MODULE-WORKFLOW) defer to it.
+> **Authoritative source:** This file is canonical. Other docs (COURSE-RULES, TEMPLATE-REFERENCE, STORYBOARD-AUTHORING-KIT, NEW-MODULE-WORKFLOW) defer to it.
 
 When referencing, generating, or labeling any slide or image asset, you MUST follow these naming conventions exactly. Do not deviate from these formats. **Course and module identity is carried by the project folder — do not include course codes or module numbers in filenames.**
 
@@ -93,8 +93,7 @@ Suffix separators are **hyphens** (not underscores). Labels are PascalCase, no s
 
 ```
 1S01-INTRO.mp3              ← slide narration
-1S01-CLICK-Feature.mp3      ← card-explore click audio
-1S01-TAB-Paraphrase.mp3     ← tab-panel tab audio
+1S01-CLICK-Feature.mp3      ← card-explore, tab-panel, accordion-content click audio
 1S01-STEP-3.mp3             ← step-sequence step audio
 2KC01-INTRO.mp3             ← first KC of each pair only (Rule Q0a)
 3FQ-SCORE-INTRO.mp3         ← quiz score narration
@@ -115,7 +114,7 @@ course/assets/captions/2KC01-INTRO.vtt
 course/assets/captions/3FQ-SCORE-INTRO.vtt
 ```
 
-**Player-chrome captions** (shared across modules) keep their existing names: `Click_Next.vtt`, `Click_Start_Quiz.vtt`, `Congratulations.vtt`, `FailResponse.vtt`, `KC_correct_response.vtt`, `KC_Incorrect_response.vtt`. These are not slide-tied and are not regenerated per module.
+**Player-chrome captions** (shared across modules) keep their existing names: `Click_Start_Quiz.vtt`, `Congratulations.vtt`, `FailResponse.vtt`, `KC_correct_response.vtt`, `KC_Incorrect_response.vtt`. These are not slide-tied and are not regenerated per module.
 
 ---
 
@@ -124,52 +123,52 @@ course/assets/captions/3FQ-SCORE-INTRO.vtt
 ### Format
 
 ```
-[SortPrefix][Type][SlideNumber][Variant].webp
+[SortPrefix][Type][SlideNumber][Variant].jpg
 ```
 
 ### Rules
 
-- Image filenames mirror their parent slide name with `.webp` appended.
+- Image filenames mirror their parent slide name with `.jpg` appended.
 - Variant letters (`a`, `b`, `c` ...) are lowercase and only used when a slide has **more than one image**.
 - If a slide has only one image, omit the variant entirely — do NOT append `a`.
-- No underscore or hyphen before the variant letter: `1S01a.webp`, not `1S01-a.webp` or `1S01_a.webp`.
-- Extension is always `.webp`, always lowercase.
+- No underscore or hyphen before the variant letter: `1S01a.jpg`, not `1S01-a.jpg` or `1S01_a.jpg`.
+- Extension is always `.jpg`, always lowercase.
 - Never include course code or module number in the filename.
 
 ### Decision logic
 
 1. Identify the parent slide name → e.g. `1S03`
 2. Does this slide have more than one image?
-   - NO → `1S03.webp`
-   - YES → `1S03a.webp`, `1S03b.webp`, `1S03c.webp`, etc.
+   - NO → `1S03.jpg`
+   - YES → `1S03a.jpg`, `1S03b.jpg`, `1S03c.jpg`, etc.
 
 ### Correct examples
 
 ```
-1S01.webp        ← Standard slide, single image
-1S01a.webp       ← Standard slide, first of multiple images
-1S01b.webp       ← Standard slide, second image
-1S01c.webp       ← Standard slide, third image
-1S14a.webp
-2KC01.webp       ← Knowledge Check, single image
-2KC01a.webp      ← Knowledge Check, first of multiple images
-3FQ01.webp       ← Final Quiz slide, single image
-3FQ10a.webp
+1S01.jpg        ← Standard slide, single image
+1S01a.jpg       ← Standard slide, first of multiple images
+1S01b.jpg       ← Standard slide, second image
+1S01c.jpg       ← Standard slide, third image
+1S14a.jpg
+2KC01.jpg       ← Knowledge Check, single image
+2KC01a.jpg      ← Knowledge Check, first of multiple images
+3FQ01.jpg       ← Final Quiz slide, single image
+3FQ10a.jpg
 ```
 
 ### Incorrect examples — never do this
 
 ```
-1S01A.webp        ← Variant must be lowercase
-1S01_a.webp       ← No underscore before variant
-1S01-a.webp       ← No hyphen before variant either
-1S1.webp          ← Slide number must be zero-padded
-CC08_1S01.webp    ← Do not include course/module code
-1s01.webp         ← Type prefix must be uppercase
-1S01a.PNG         ← Extension must be lowercase .webp
-1S01a.webp        ← Do not append variant `a` when slide has only one image
-descriptive_name_CC08.webp  ← Old descriptive format, do not use
-CC09_S03.webp     ← Old positional format with course code, do not use
+1S01A.jpg        ← Variant must be lowercase
+1S01_a.jpg       ← No underscore before variant
+1S01-a.jpg       ← No hyphen before variant either
+1S1.jpg          ← Slide number must be zero-padded
+CC08_1S01.jpg    ← Do not include course/module code
+1s01.jpg         ← Type prefix must be uppercase
+1S01a.PNG         ← Extension must be lowercase .jpg
+1S01a.jpg        ← Do not append variant `a` when slide has only one image
+descriptive_name_CC08.jpg  ← Old descriptive format, do not use
+CC09_S03.jpg     ← Old positional format with course code, do not use
 ```
 
 ---
@@ -198,7 +197,7 @@ Because slide IDs lead with a digit, file managers sort them naturally:
 ## Future-proofing
 
 - If a new slide type is introduced, assign the next sort number (e.g. `4XX`) and add it to the table above.
-- If files ever need to leave the project folder, prepend the course/module code using bulk rename (e.g. `CC08_1S01.webp`).
+- If files ever need to leave the project folder, prepend the course/module code using bulk rename (e.g. `CC08_1S01.jpg`).
 
 ---
 

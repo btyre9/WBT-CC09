@@ -42,7 +42,7 @@ Slide-ID: 1S01
 Template-ID: hero-title
 Slide-Title: Listening Skills that Build Trust
 Hero-Subtitle: Module 4 of 12
-Image-File: advisor_greeting_CC04.webp
+Image-File: advisor_greeting_CC04.jpg
 Voiceover-INTRO: Welcome to Module 4 — Listening Skills that Build Trust. Great diagnosis starts before you touch the car. In this module, you'll learn the active listening techniques that top Porsche service advisors use to turn every intake into a trust-building moment.
 Caption-Text: Welcome to Module 4 — Listening Skills that Build Trust.
 Image: Wide shot of a Porsche service advisor fully engaged with a customer during intake. Warm, professional, premium service environment.
@@ -58,13 +58,13 @@ The parser reads the storyboard line by line. Each line is treated as a single `
 
 **Wrong — `Image-File` is lost:**
 ```
-On-Screen-Text: Your customer thinks in outcomes. Image-File: 1S04.webp
+On-Screen-Text: Your customer thinks in outcomes. Image-File: 1S04.jpg
 ```
 
 **Correct — both fields are parsed:**
 ```
 On-Screen-Text: Your customer thinks in outcomes.
-Image-File: 1S04.webp
+Image-File: 1S04.jpg
 ```
 
 This is the most common authoring mistake and the hardest to catch because the slide will render without errors — it just won't have the image, the bullets, or whatever field was buried on the wrong line. Always write one field per line, every time.
@@ -221,7 +221,7 @@ Menu / table of contents numbering applies only to `SLD_*` title and content sli
 ### Image fields
 - **Always include both `Image` (art direction) and `Image-File` (intended filename)** on every slide that has an image slot — even before assets are sourced.
 - `Image`: Describe the ideal scene — subject, mood, setting, composition. This is what the asset team or image generation uses.
-- `Image-File`: Write the intended filename now using the `1SNN.webp` convention. When the file is created with that name and placed in `course/assets/images/`, it automatically appears on the next browser refresh. The generator shows the filename in the image placeholder until then.
+- `Image-File`: Write the intended filename now using the `1SNN.jpg` convention. When the file is created with that name and placed in `course/assets/images/`, it automatically appears on the next browser refresh. The generator shows the filename in the image placeholder until then.
 - Templates without image slots: `knowledge-check`, `final-quiz`, `quiz-score` — do not add image fields.
 
 ---

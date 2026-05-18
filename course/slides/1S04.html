@@ -3,64 +3,227 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
-  <title>Two Misconceptions That Cost You Customers</title>
+  <title>Two Misconceptions</title>
   <link rel="stylesheet" href="../assets/css/pds-tokens.css">
   <link rel="stylesheet" href="../assets/css/slide-base.css">
   <link rel="stylesheet" href="../assets/css/animations.css">
   <script>(function(){function s(){document.documentElement.style.setProperty('--scale',Math.min(window.innerWidth/1920,window.innerHeight/920));}s();window.addEventListener('resize',s);})();</script>
   <style>
-    .bullets-image-panel {
+    /* ── Two-column shell: content left, 3:4 portrait image right ─────────── */
+    .accordion-section {
+      display: grid;
+      grid-template-columns: 1fr 600px;
+      column-gap: 80px;
+      padding: var(--pds-slide-pad-y) var(--pds-slide-pad-x);
       height: 100%;
-      border-radius: var(--pds-radius-xl);
-      overflow: hidden;
-      box-shadow: var(--pds-shadow-card);
+      align-items: stretch;
     }
-    .bullets-image-panel img {
+    .accordion-main {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      min-width: 0;
+    }
+    .accordion-image {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-height: 776px;
+      border-radius: var(--pds-radius-lg, 12px);
+      overflow: hidden;
+      background: #16161a;
+      align-self: center;
+    }
+    .accordion-image > img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center;
+      object-position: var(--img-pos, center);
       display: block;
     }
-    /* Bullet list */
-    .bullet-list {
-      list-style: none;
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    .accordion-header {
       display: flex;
       flex-direction: column;
-      gap: var(--pds-space-md);
-    }
-    .bullet-item {
-      display: flex;
-      gap: var(--pds-space-md);
-      align-items: flex-start;
-    }
-    .bullet-bar {
-      width: 3px;
-      min-height: 100%;
-      background: var(--pds-accent);
-      border-radius: 2px;
+      gap: 14px;
       flex-shrink: 0;
-      align-self: stretch;
-      opacity: 0.7;
+      max-width: 1100px;
     }
-    .bullet-content {
+    .accordion-header .pds-accent-bar { width: 120px; height: 6px; }
+
+    /* ── Accordion column ───────────────────────────────────────────────── */
+    .accordion {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 12px;
+      width: 100%;
+      align-self: flex-start;
     }
-    .bullet-header {
-      font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-md);
-      font-weight: var(--pds-font-weight-semibold);
+    .accordion.is-locked .acc-item { pointer-events: none; opacity: 0.55; }
+    .accordion.is-locked .acc-header { cursor: not-allowed; }
+
+    .acc-item {
+      position: relative;
+      background: var(--pds-bg-surface);
+      border: 1px solid var(--pds-border);
+      border-radius: var(--pds-radius-lg, 12px);
+      overflow: hidden;
+      transition:
+        background    var(--dur-fast) var(--ease-out),
+        border-color  var(--dur-fast) var(--ease-out),
+        box-shadow    var(--dur-fast) var(--ease-out),
+        opacity       var(--dur-fast) var(--ease-out);
+    }
+    .acc-item:hover {
+      background: var(--pds-bg-surface-hover);
+      border-color: var(--pds-border-strong);
+    }
+    .acc-item.is-open {
+      border-color: rgba(213, 0, 28, 0.55);
+      box-shadow: var(--pds-shadow-card);
+    }
+    .acc-item.is-visited {
+      border-color: var(--pds-success);
+    }
+    .acc-item.is-visited.is-open {
+      border-color: var(--pds-success);
+    }
+
+    /* Left red rail — visible when open */
+    .acc-item::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: var(--pds-accent);
+      transform: scaleY(0);
+      transform-origin: top;
+      transition: transform var(--dur-slow, 0.55s) var(--ease-in-out, cubic-bezier(0.4, 0, 0.2, 1));
+    }
+    .acc-item.is-open::before { transform: scaleY(1); }
+
+    /* ── Label row ──────────────────────────────────────────────────────── */
+    .acc-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      width: 100%;
+      padding: 26px 32px 26px 140px;  /* extra left to clear the oversized number */
+      background: transparent;
+      border: 0;
+      cursor: pointer;
       color: var(--pds-text-primary);
-      line-height: var(--pds-line-height-tight);
+      font-family: inherit;
+      text-align: left;
     }
-    .bullet-body {
-      font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-sm);
+    .acc-header:focus-visible {
+      outline: 2px solid var(--pds-accent);
+      outline-offset: -2px;
+    }
+    /* Oversized number — absolutely positioned so it can spill past the bar frame */
+    .acc-number {
+      position: absolute;
+      top: 60%;
+      left: -5px;
+      transform: translateY(-50%);
+      font-size: 100px;
+      font-weight: var(--pds-font-weight-bold);
+      line-height: 0.85;
+      letter-spacing: -0.04em;
+      color: rgba(255, 255, 255, 0.10);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .acc-label {
+      flex: 1 1 auto;
+      font-size: 28px;
+      font-weight: var(--pds-font-weight-bold);
+      line-height: var(--pds-line-height-tight);
+      letter-spacing: -0.005em;
+      color: var(--pds-text-primary);
+    }
+
+    /* Chevron — round bezel, rotates on open */
+    .acc-chev {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--pds-border-strong);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--pds-text-primary);
+      transition:
+        transform    var(--dur-slow, 0.55s) var(--ease-in-out, cubic-bezier(0.4, 0, 0.2, 1)),
+        background   var(--dur-fast) var(--ease-out),
+        border-color var(--dur-fast) var(--ease-out);
+    }
+    .acc-item:hover .acc-chev { border-color: var(--pds-text-primary); }
+    .acc-item.is-open .acc-chev {
+      transform: rotate(180deg);
+      background: var(--pds-accent);
+      border-color: var(--pds-accent);
+    }
+    .acc-chev svg { width: 18px; height: 18px; display: block; }
+
+    /* ── Body — height animates via grid 0fr → 1fr ─────────────────────── */
+    .acc-body-wrap {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows var(--dur-slow, 0.55s) var(--ease-in-out, cubic-bezier(0.4, 0, 0.2, 1));
+    }
+    .acc-item.is-open .acc-body-wrap { grid-template-rows: 1fr; }
+    .acc-body { overflow: hidden; min-height: 0; }
+    .acc-body-inner {
+      padding: 0 32px 28px 96px;
+      opacity: 0;
+      transform: translateY(-6px);
+      transition:
+        opacity   var(--dur-normal, 0.4s) var(--ease-out),
+        transform var(--dur-normal, 0.4s) var(--ease-out);
+    }
+    .acc-item.is-open .acc-body-inner {
+      opacity: 1;
+      transform: none;
+      transition-delay: 0.1s;
+    }
+    .acc-body p {
+      font-size: var(--pds-font-size-md);
       font-weight: var(--pds-font-weight-regular);
-      color: var(--pds-text-secondary);
       line-height: var(--pds-line-height-loose);
+      color: var(--pds-text-secondary);
+    }
+    .acc-body p + p { margin-top: 14px; }
+    .acc-bullets {
+      list-style: none;
+      margin: 18px 0 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .acc-bullets li {
+      display: flex;
+      gap: 14px;
+      font-size: var(--pds-font-size-md);
+      line-height: 1.45;
+      color: var(--pds-text-secondary);
+    }
+    .acc-bullets li::before {
+      content: '';
+      flex-shrink: 0;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--pds-accent);
+      margin-top: 10px;
+    }
+    .acc-bullets li strong {
+      color: var(--pds-text-primary);
+      font-weight: var(--pds-font-weight-bold);
     }
   </style>
 </head>
@@ -68,65 +231,77 @@
 
 <div class="slide" data-slide-id="1S04">
 
-  <div class="slide__split">
+  <div class="accordion-section">
 
-    <!-- Left: text + bullet list -->
-    <div class="slide__split--text">
-      <span class="pds-eyebrow anim-fade-right">Addressing Customer Concerns and Objections</span>
-      <div class="pds-accent-bar anim-bar-grow" style="--anim-delay: 0.1s;"></div>
-      <h2 class="pds-heading-display anim-fade-right" style="--anim-delay: 0.2s;">Two Misconceptions That Cost You Customers</h2>
-      <p class="pds-body anim-fade-right" style="--anim-delay: 0.3s;">Two assumptions sit underneath a lot of bad objection handling. Both are wrong. Both cost you customers.</p>
+    <div class="accordion-main">
 
-      <!-- Bullet list — add/edit items to match the VO content -->
-      <ul class="bullet-list stagger-children" id="bullet-list" style="--anim-delay: 0.4s; margin-top: var(--pds-space-sm);">
+      <!-- Header -->
+      <header class="accordion-header">
+        <div style="display:flex; align-items:flex-end; gap: var(--pds-space-lg);">
+          <h2 class="pds-heading-display anim-fade-up" style="--anim-delay: 0.10s;">Two Misconceptions</h2>
+          <div class="pds-accent-bar anim-bar-grow" style="--anim-delay: 0.15s; margin-bottom: 8px;"></div>
+        </div>
+        <p class="pds-body anim-fade-up" style="--anim-delay: 0.20s;">Some of the biggest risks in service communication come from how we interpret customer emotion or silence.</p>
+      </header>
 
-        <li class="bullet-item">
-          <div class="bullet-bar"></div>
-          <div class="bullet-content">
-            <span class="bullet-header"><!-- Bullet heading 1 --></span>
-            <span class="bullet-body"><!-- Supporting detail for bullet 1. --></span>
+      <!-- Accordion — locked until INTRO VO ends -->
+      <div class="accordion is-locked stagger-children" id="accordion" role="list">
+            <article class="acc-item" data-item="AngryMeansLost" role="listitem">
+      <button class="acc-header" type="button" aria-expanded="false" aria-controls="body-AngryMeansLost">
+        <span class="acc-number">01</span>
+        <span class="acc-label">Angry Means Lost</span>
+        <span class="acc-chev" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </span>
+      </button>
+      <div class="acc-body-wrap">
+        <div class="acc-body" id="body-AngryMeansLost" role="region">
+          <div class="acc-body-inner">
+            <p><strong>Misconception:</strong> Angry customers are lost customers.</p><p><strong>Reality:</strong> Customers who have problems resolved can become more loyal because the recovery proves your professionalism.</p>
           </div>
-        </li>
-
-        <li class="bullet-item">
-          <div class="bullet-bar"></div>
-          <div class="bullet-content">
-            <span class="bullet-header"><!-- Bullet heading 2 --></span>
-            <span class="bullet-body"><!-- Supporting detail for bullet 2. --></span>
+        </div>
+      </div>
+    </article>
+    <article class="acc-item" data-item="QuietMeansHappy" role="listitem">
+      <button class="acc-header" type="button" aria-expanded="false" aria-controls="body-QuietMeansHappy">
+        <span class="acc-number">02</span>
+        <span class="acc-label">Quiet Means Happy</span>
+        <span class="acc-chev" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </span>
+      </button>
+      <div class="acc-body-wrap">
+        <div class="acc-body" id="body-QuietMeansHappy" role="region">
+          <div class="acc-body-inner">
+            <p><strong>Misconception:</strong> Quiet customers are happy customers.</p><p><strong>Reality:</strong> Many unhappy customers never complain directly. They quietly go elsewhere.</p>
           </div>
-        </li>
-
-        <li class="bullet-item">
-          <div class="bullet-bar"></div>
-          <div class="bullet-content">
-            <span class="bullet-header"><!-- Bullet heading 3 --></span>
-            <span class="bullet-body"><!-- Supporting detail for bullet 3. --></span>
+        </div>
+      </div>
+    </article>
+    <article class="acc-item" data-item="ConcernMeansFailure" role="listitem">
+      <button class="acc-header" type="button" aria-expanded="false" aria-controls="body-ConcernMeansFailure">
+        <span class="acc-number">03</span>
+        <span class="acc-label">Concern Means Failure</span>
+        <span class="acc-chev" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </span>
+      </button>
+      <div class="acc-body-wrap">
+        <div class="acc-body" id="body-ConcernMeansFailure" role="region">
+          <div class="acc-body-inner">
+            <p><strong>Misconception:</strong> An objection means the explanation failed.</p><p><strong>Reality:</strong> Objections are a natural part of processing information and making a decision.</p>
           </div>
-        </li>
+        </div>
+      </div>
+    </article>
+      </div>
 
-        <li class="bullet-item">
-          <div class="bullet-bar"></div>
-          <div class="bullet-content">
-            <span class="bullet-header"><!-- Bullet heading 4 --></span>
-            <span class="bullet-body"><!-- Supporting detail for bullet 4. --></span>
-          </div>
-        </li>
-
-        <li class="bullet-item">
-          <div class="bullet-bar"></div>
-          <div class="bullet-content">
-            <span class="bullet-header"><!-- Bullet heading 5 --></span>
-            <span class="bullet-body"><!-- Supporting detail for bullet 5. --></span>
-          </div>
-        </li>
-
-      </ul>
     </div>
 
-    <!-- Right: image -->
-    <div class="slide__split--media anim-fade-left" style="--anim-delay: 0.25s; height: 720px;">
-      <img src="../assets/images/Cayenne-E-Hybrid-Coupé.webp" alt="" onerror="this.style.display='none'">
-    </div>
+    <!-- 3:4 image rail -->
+    <figure class="accordion-image anim-fade-up" style="--anim-delay: 0.30s;">
+      <img src="../assets/images/1S04.jpg" alt="" onerror="this.style.display='none'">
+    </figure>
 
   </div>
 
@@ -135,7 +310,7 @@
 <script src="../assets/vendor/gsap/gsap.min.js"></script>
 <script src="../assets/vendor/porsche-components.js"></script>
 <script>
-/* ── SandboxRuntime shim ─────────────────────────────────────────────────── */
+/* ── SandboxRuntime shim — mirrors card-explore.html ─────────────────────── */
 var SandboxRuntime = (function () {
   var CR = (function () {
     try { return window.parent && window.parent.CourseRuntime ? window.parent.CourseRuntime : null; }
@@ -196,18 +371,86 @@ var SandboxRuntime = (function () {
   return { voAudio: makeFakeVO(), interactionAudio: makeInteraction() };
 })();
 
-/* ── Slide logic ─────────────────────────────────────────────────────────── */
+/* ── Accordion interaction logic ─────────────────────────────────────────── */
 (function () {
-  document.querySelectorAll('.anim-fade-right, .anim-fade-left, .anim-bar-grow').forEach(function (el) {
+  // Lock Next until all items visited
+  window.parent.postMessage({ type: 'sandbox-lock-next' }, '*');
+
+  // Audio map: label → path  (injected by generator — same shape as card-explore)
+  var ITEM_AUDIO  = {
+  'AngryMeansLost': '../assets/audio/vo/1S04-CLICK-AngryMeansLost.mp3',
+  'QuietMeansHappy': '../assets/audio/vo/1S04-CLICK-QuietMeansHappy.mp3',
+  'ConcernMeansFailure': '../assets/audio/vo/1S04-CLICK-ConcernMeansFailure.mp3'
+};
+  var TOTAL_ITEMS = 3;
+  var visited     = new Set();
+  var unlocked    = false;
+
+  // Entrance animations
+  document.querySelectorAll('.anim-fade-up, .anim-bar-grow').forEach(function (el) {
     el.classList.add('is-visible');
   });
 
-  // Stagger in bullet list after header elements
-  setTimeout(function () {
-    var list = document.getElementById('bullet-list');
-    if (list) list.classList.add('is-visible');
-  }, 400);
+  var accordion = document.getElementById('accordion');
+  var items     = document.querySelectorAll('.acc-item');
 
+  function unlockAccordion() {
+    if (unlocked) return;
+    unlocked = true;
+    if (accordion) {
+      accordion.classList.remove('is-locked');
+      accordion.classList.add('is-visible');
+    }
+  }
+
+  function setOpen(target) {
+    items.forEach(function (item) {
+      var header   = item.querySelector('.acc-header');
+      var isTarget = (item === target);
+      var willOpen = isTarget && !item.classList.contains('is-open');
+      item.classList.toggle('is-open', willOpen);
+      if (header) header.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+  }
+
+  function onItemActivate(itemEl, label) {
+    if (!unlocked) return;
+    setOpen(itemEl);
+
+    // First-time visit: play CLICK audio and track for unlock-Next
+    if (!visited.has(label)) {
+      visited.add(label);
+      itemEl.classList.add('is-visited');
+      var audioPath = ITEM_AUDIO[label];
+      if (audioPath) {
+        SandboxRuntime.interactionAudio.src = audioPath;
+        SandboxRuntime.interactionAudio.play();
+      }
+      if (visited.size >= TOTAL_ITEMS) {
+        window.parent.postMessage({ type: 'sandbox-unlock-next' }, '*');
+      }
+    }
+  }
+
+  // Wire click handlers
+  items.forEach(function (item) {
+    var header = item.querySelector('.acc-header');
+    var label  = item.getAttribute('data-item');
+    if (!header || !label) return;
+    header.addEventListener('click', function () { onItemActivate(item, label); });
+  });
+
+  // Unlock when INTRO VO ends
+  setTimeout(function () {
+    if (SandboxRuntime.voAudio) {
+      SandboxRuntime.voAudio.addEventListener('ended', unlockAccordion);
+      SandboxRuntime.voAudio.addEventListener('error', unlockAccordion);
+    }
+    // Local-file fallback (no player wrapper)
+    try {
+      if (!window.parent || !window.parent.CourseRuntime) unlockAccordion();
+    } catch (_) { unlockAccordion(); }
+  }, 0);
 })();
 </script>
 

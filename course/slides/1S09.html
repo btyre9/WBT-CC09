@@ -3,109 +3,234 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
-  <title>The Two Words That Undo Everything</title>
+  <title>CPR in a Brake Service Conversation</title>
   <link rel="stylesheet" href="../assets/css/pds-tokens.css">
   <link rel="stylesheet" href="../assets/css/slide-base.css">
   <link rel="stylesheet" href="../assets/css/animations.css">
   <script>(function(){function s(){document.documentElement.style.setProperty('--scale',Math.min(window.innerWidth/1920,window.innerHeight/920));}s();window.addEventListener('resize',s);})();</script>
   <style>
-    .quote-image-panel {
+    /* ── Outer layout — header + tab strip + panel area ──────────────────── */
+    .tab-panel-section {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      height: 100%;
+      padding: var(--pds-slide-pad-y) var(--pds-slide-pad-x);
+    }
+    .tab-panel-header {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex-shrink: 0;
+      max-width: 1280px;
+    }
+    .tab-panel-header .pds-accent-bar { width: 120px; height: 6px; }
+
+    /* ────────────────────────────────────────────────────────────────────
+       TAB STRIP — notebook-tab silhouette
+       Each tab is an outlined shape with rounded top corners and no bottom
+       edge. The tabs row carries a single horizontal "spine" line; the
+       active tab overlaps that line so it visually merges into the panel
+       area below, like a paper tab pulled forward in a folder.
+    ──────────────────────────────────────────────────────────────────── */
+    .tabs {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(var(--tab-count, 4), 1fr);
+      gap: 12px;
+      flex-shrink: 0;
+      border-bottom: 1.5px solid var(--pds-border-strong);
+      transition: opacity var(--dur-fast) var(--ease-out);
+    }
+    .tabs.is-locked { opacity: 0.55; pointer-events: none; }
+
+    .tab {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+      min-height: 130px;
+      padding: 80px 28px 22px 28px;
+      background: transparent;
+      border: 1.5px solid var(--pds-border);
+      border-bottom: 0;
+      border-radius: 12px 12px 0 0;
+      cursor: pointer;
+      color: var(--pds-text-primary);
+      font-family: inherit;
+      text-align: left;
+      transition:
+        border-color  var(--dur-fast) var(--ease-out),
+        background    var(--dur-fast) var(--ease-out);
+    }
+    .tab:hover {
+      border-color: var(--pds-border-strong);
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .tab:focus-visible {
+      outline: 2px solid var(--pds-accent);
+      outline-offset: -2px;
+    }
+    /* Active tab: red stroke, and -1.5px margin-bottom to cover the spine
+       line under it — produces the classic notebook-tab "pulled forward" look. */
+    .tab.is-active {
+      border-color: var(--pds-accent);
+      margin-bottom: -1.5px;
+    }
+
+    /* Oversized accordion-style number — translucent white watermark.
+       Anchored mid-tab so the digit tops spill past the rounded top edge
+       and get clipped by the tab's overflow:hidden — same "slightly out
+       of frame" effect as accordion-content. */
+    .tab-number {
       position: absolute;
-      inset: 0;
+      top: 60%;
+      left: -5px;
+      transform: translateY(-50%);
+      font-size: 100px;
+      font-weight: var(--pds-font-weight-bold);
+      line-height: 0.85;
+      letter-spacing: -0.04em;
+      color: rgba(255, 255, 255, 0.10);
+      pointer-events: none;
       z-index: 0;
     }
-    .quote-image-panel img {
+
+    /* Label sits at the bottom of the tab, above the number */
+    .tab-label {
+      position: relative;
+      z-index: 1;
+      font-size: 28px;
+      font-weight: var(--pds-font-weight-bold);
+      line-height: var(--pds-line-height-tight);
+      letter-spacing: -0.005em;
+      color: var(--pds-text-muted);
+      transition: color var(--dur-fast) var(--ease-out);
+    }
+    .tab:hover .tab-label { color: var(--pds-text-secondary); }
+    .tab.is-active .tab-label { color: var(--pds-text-primary); }
+
+    /* Visited mark — top-right green check */
+    .tab-check {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 2;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid var(--pds-success);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--pds-success);
+      background: rgba(9, 208, 135, 0.10);
+      opacity: 0;
+      transform: scale(0.85);
+      transition:
+        opacity   var(--dur-normal) var(--ease-out),
+        transform var(--dur-normal) var(--ease-out);
+      pointer-events: none;
+    }
+    .tab.visited .tab-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .tab-check svg { width: 12px; height: 12px; display: block; }
+
+    /* ────────────────────────────────────────────────────────────────────
+       PANELS — stacked + crossfade in the space under the tabs/spine
+    ──────────────────────────────────────────────────────────────────── */
+    .panels {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+    .panel {
+      position: absolute;
+      inset: 0;
+      padding: 40px 8px 0 8px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition:
+        opacity   var(--dur-normal) var(--ease-out),
+        transform var(--dur-normal) var(--ease-out);
+      pointer-events: none;
+    }
+    .panel.is-active {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    .panel-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      column-gap: 64px;
+      height: 100%;
+      align-items: start;
+    }
+    .panel-grid.has-media {
+      grid-template-columns: 1fr 480px;
+    }
+    .panel-text { max-width: 880px; }
+    .panel-text > p {
+      font-size: var(--pds-font-size-md);
+      font-weight: var(--pds-font-weight-regular);
+      line-height: var(--pds-line-height-loose);
+      color: var(--pds-text-secondary);
+    }
+    .panel-text > p + p { margin-top: 14px; }
+    .panel-text > p + .acc-bullets { margin-top: 22px; }
+
+    /* Red-dot bullets — identical to accordion-content */
+    .acc-bullets {
+      list-style: none;
+      margin: 18px 0 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .acc-bullets li {
+      display: flex;
+      gap: 14px;
+      font-size: var(--pds-font-size-md);
+      line-height: 1.45;
+      color: var(--pds-contrast-high);
+    }
+    .acc-bullets li::before {
+      content: '';
+      flex-shrink: 0;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--pds-accent);
+      margin-top: 10px;
+    }
+    .acc-bullets li strong {
+      color: var(--pds-text-primary);
+      font-weight: var(--pds-font-weight-bold);
+    }
+
+    /* Inline 4:3 media — drop an <img> in or use placeholder */
+    .panel-media {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      aspect-ratio: 4 / 3;
+      border-radius: var(--pds-radius-lg);
+      overflow: hidden;
+      background: #16161a;
+    }
+    .panel-media > img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center;
+      object-position: var(--img-pos, center);
       display: block;
-    }
-    /* Gradient: strong left for text legibility, fades right */
-    .quote-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      background: linear-gradient(
-        105deg,
-        rgba(14, 15, 17, 0.96) 0%,
-        rgba(14, 15, 17, 0.88) 45%,
-        rgba(14, 15, 17, 0.40) 75%,
-        rgba(14, 15, 17, 0.10) 100%
-      );
-    }
-    .quote-content {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      height: 100%;
-      padding: var(--pds-slide-pad-y) var(--pds-slide-pad-x);
-      max-width: 1100px;
-      gap: var(--pds-space-xl);
-    }
-    .quote-header {
-      display: flex;
-      flex-direction: column;
-      gap: var(--pds-space-md);
-    }
-    /* Opening quote mark */
-    .quote-mark {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 120px;
-      line-height: 0.6;
-      color: var(--pds-accent);
-      opacity: 0.6;
-      flex-shrink: 0;
-      user-select: none;
-      align-self: flex-start;
-    }
-    .quote-text {
-      font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-2xl);
-      font-weight: var(--pds-font-weight-regular);
-      line-height: 1.35;
-      color: var(--pds-text-primary);
-      font-style: italic;
-      max-width: 900px;
-    }
-    .quote-divider {
-      width: 56px;
-      height: 2px;
-      background: var(--pds-accent);
-      border-radius: 2px;
-    }
-    .quote-attribution {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .quote-attribution-name {
-      font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-md);
-      font-weight: var(--pds-font-weight-semibold);
-      color: var(--pds-text-primary);
-      letter-spacing: 0.04em;
-    }
-    .quote-attribution-title {
-      font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-sm);
-      font-weight: var(--pds-font-weight-regular);
-      color: var(--pds-text-muted);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    .quote-context {
-      font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-md);
-      color: var(--pds-text-secondary);
-      line-height: var(--pds-line-height-loose);
-      max-width: 680px;
-      padding: var(--pds-space-lg);
-      background: rgba(33, 34, 37, 0.70);
-      border-left: 3px solid rgba(213, 0, 28, 0.50);
-      border-radius: 0 var(--pds-radius-md) var(--pds-radius-md) 0;
     }
   </style>
 </head>
@@ -113,35 +238,68 @@
 
 <div class="slide" data-slide-id="1S09">
 
-  <!-- Background image -->
-  <div class="quote-image-panel">
-    <img src="../assets/images/911-sport-classic.webp" alt="" onerror="this.style.display='none'">
-    <div class="quote-overlay"></div>
-  </div>
+  <div class="tab-panel-section">
 
-  <!-- Quote content -->
-  <div class="quote-content">
-
-    <div class="quote-header">
-      <span class="pds-eyebrow anim-fade-up">Addressing Customer Concerns and Objections</span>
-      <h2 class="pds-heading-lg anim-fade-up" style="--anim-delay: 0.1s;">The Two Words That Undo Everything</h2>
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: var(--pds-space-lg);">
-      <div class="quote-mark anim-fade-in" style="--anim-delay: 0.2s;">&ldquo;</div>
-      <blockquote class="quote-text anim-fade-up" style="--anim-delay: 0.3s;">
-        &quot;Franz's does good work, but…&quot; — Everything before the &quot;but&quot; is gone.
-      </blockquote>
-      <div class="quote-divider anim-bar-grow" style="--anim-delay: 0.5s; width: 0;"></div>
-      <div class="quote-attribution anim-fade-up" style="--anim-delay: 0.6s;">
-        <span class="quote-attribution-name">The Verbal Eraser Principle</span>
-        <span class="quote-attribution-title">R-A-C-E — Contrast step</span>
+    <!-- Header -->
+    <header class="tab-panel-header">
+      <div style="display:flex; align-items:flex-end; gap: var(--pds-space-lg);">
+        <h2 class="pds-heading-display anim-fade-up" style="--anim-delay: 0.10s;">CPR in a Brake Service Conversation</h2>
+        <div class="pds-accent-bar anim-bar-grow" style="--anim-delay: 0.15s; margin-bottom: 8px;"></div>
       </div>
+      <p class="pds-body anim-fade-up" style="--anim-delay: 0.20s;">Customer: &quot;I'm just not sure I really need those brakes done today.&quot;</p>
+    </header>
+
+    <!-- Tab strip — locked until INTRO ends; first tab pre-active+visited -->
+    <div class="tabs is-locked" id="tabs" role="tablist">
+      <button class="tab is-active visited" type="button" role="tab" aria-selected="true" data-tab="Clarify" aria-controls="panel-Clarify">
+        <span class="tab-number">01</span>
+        <span class="tab-label">Clarify</span>
+        <span class="tab-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"></polyline></svg></span>
+      </button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="Paraphrase" aria-controls="panel-Paraphrase">
+        <span class="tab-number">02</span>
+        <span class="tab-label">Paraphrase</span>
+        <span class="tab-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"></polyline></svg></span>
+      </button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="Respond" aria-controls="panel-Respond">
+        <span class="tab-number">03</span>
+        <span class="tab-label">Respond</span>
+        <span class="tab-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"></polyline></svg></span>
+      </button>
     </div>
 
-    <!-- Optional context box — remove if not needed -->
-    <div class="quote-context anim-fade-up" style="--anim-delay: 0.8s;">
-      The Two Words That Undo Everything
+    <!-- Panels — crossfade between active tab's content -->
+    <div class="panels" id="panels">
+      <section class="panel is-active" id="panel-Clarify" data-panel="Clarify" role="tabpanel">
+        <div class="panel-grid has-media">
+          <div class="panel-text">
+            <p><strong>Technician (Clarify):</strong> "When you say you are not sure, what is your main concern? Is it the cost, the timing, or that you are not convinced it is necessary?"</p>
+          </div>
+          <figure class="panel-media">
+            <img src="../assets/images/1S09a.jpg" alt="">
+          </figure>
+        </div>
+      </section>
+      <section class="panel" id="panel-Paraphrase" data-panel="Paraphrase" role="tabpanel" hidden="">
+        <div class="panel-grid has-media">
+          <div class="panel-text">
+            <p><strong>Technician (Paraphrase):</strong> "So it sounds like you are questioning whether this service is needed right now since you have not noticed a problem."</p>
+          </div>
+          <figure class="panel-media">
+            <img src="../assets/images/1S09b.jpg" alt="">
+          </figure>
+        </div>
+      </section>
+      <section class="panel" id="panel-Respond" data-panel="Respond" role="tabpanel" hidden="">
+        <div class="panel-grid has-media">
+          <div class="panel-text">
+            <p><strong>Technician (Respond):</strong> "Your pads are at 2 millimeters, which is Porsche's minimum specification. You have not noticed it yet because the wear has been gradual, but you are close to metal-on-metal contact, which would damage the rotors and cost more to repair."</p>
+          </div>
+          <figure class="panel-media">
+            <img src="../assets/images/1S09c.jpg" alt="">
+          </figure>
+        </div>
+      </section>
     </div>
 
   </div>
@@ -151,7 +309,7 @@
 <script src="../assets/vendor/gsap/gsap.min.js"></script>
 <script src="../assets/vendor/porsche-components.js"></script>
 <script>
-/* ── SandboxRuntime shim ─────────────────────────────────────────────────── */
+/* ── SandboxRuntime shim — mirrors accordion-content / card-explore ─────── */
 var SandboxRuntime = (function () {
   var CR = (function () {
     try { return window.parent && window.parent.CourseRuntime ? window.parent.CourseRuntime : null; }
@@ -212,12 +370,101 @@ var SandboxRuntime = (function () {
   return { voAudio: makeFakeVO(), interactionAudio: makeInteraction() };
 })();
 
-/* ── Slide logic ─────────────────────────────────────────────────────────── */
+/* ── Tab-panel interaction logic ───────────────────────────────────────── */
 (function () {
-  document.querySelectorAll('.anim-fade-up, .anim-fade-in, .anim-bar-grow').forEach(function (el) {
+  // Lock Next until all tabs visited
+  window.parent.postMessage({ type: 'sandbox-lock-next' }, '*');
+
+  // Audio map + total — reuse card-explore's CLICK trigger plumbing
+  var TAB_AUDIO  = {
+  'Clarify': '../assets/audio/vo/1S09-CLICK-Clarify.mp3',
+  'Paraphrase': '../assets/audio/vo/1S09-CLICK-Paraphrase.mp3',
+  'Respond': '../assets/audio/vo/1S09-CLICK-Respond.mp3'
+};
+  var TOTAL_TABS = 3;
+  var visited    = new Set();
+  var unlocked   = false;
+
+  // Entrance animations
+  document.querySelectorAll('.anim-fade-up, .anim-bar-grow').forEach(function (el) {
     el.classList.add('is-visible');
   });
 
+  var tabsEl = document.getElementById('tabs');
+  var tabs   = document.querySelectorAll('.tab');
+  var panels = document.querySelectorAll('.panel');
+
+  // First tab is pre-active + pre-visited (rendered by parser)
+  if (tabs[0]) visited.add(tabs[0].dataset.tab);
+
+  function unlockTabs() {
+    if (unlocked) return;
+    unlocked = true;
+    if (tabsEl) tabsEl.classList.remove('is-locked');
+    // Single-tab edge case
+    if (visited.size >= TOTAL_TABS) {
+      window.parent.postMessage({ type: 'sandbox-unlock-next' }, '*');
+    }
+  }
+
+  function activate(key, isUserClick) {
+    tabs.forEach(function (t) {
+      var isThis = (t.dataset.tab === key);
+      t.classList.toggle('is-active', isThis);
+      t.setAttribute('aria-selected', isThis ? 'true' : 'false');
+    });
+    panels.forEach(function (p) {
+      var isThis = (p.dataset.panel === key);
+      p.classList.toggle('is-active', isThis);
+      if (isThis) p.removeAttribute('hidden');
+      else        p.setAttribute('hidden', '');
+    });
+
+    if (isUserClick && !visited.has(key)) {
+      visited.add(key);
+      var tab = document.querySelector('.tab[data-tab="' + key + '"]');
+      if (tab) tab.classList.add('visited');
+
+      var audioPath = TAB_AUDIO[key];
+      if (audioPath) {
+        SandboxRuntime.interactionAudio.src = audioPath;
+        SandboxRuntime.interactionAudio.play();
+      }
+
+      if (visited.size >= TOTAL_TABS) {
+        window.parent.postMessage({ type: 'sandbox-unlock-next' }, '*');
+      }
+    }
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      if (!unlocked) return;
+      activate(tab.dataset.tab, true);
+    });
+    tab.addEventListener('keydown', function (e) {
+      if (!unlocked) return;
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      var idx  = Array.prototype.indexOf.call(tabs, tab);
+      var next = (e.key === 'ArrowRight')
+        ? (idx + 1) % tabs.length
+        : (idx - 1 + tabs.length) % tabs.length;
+      tabs[next].focus();
+      activate(tabs[next].dataset.tab, true);
+    });
+  });
+
+  // Unlock when INTRO VO ends — same fallback pattern as accordion-content
+  setTimeout(function () {
+    if (SandboxRuntime.voAudio) {
+      SandboxRuntime.voAudio.addEventListener('ended', unlockTabs);
+      SandboxRuntime.voAudio.addEventListener('error', unlockTabs);
+    }
+    try {
+      if (!window.parent || !window.parent.CourseRuntime) unlockTabs();
+    } catch (_) { unlockTabs(); }
+  }, 0);
 })();
 </script>
 

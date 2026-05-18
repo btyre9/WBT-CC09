@@ -2,7 +2,7 @@
 
 > **When to open this doc:** You're about to run `generate-slides` (especially with `--force`), debating whether regeneration is safe, or signing off a finished module for delivery.
 > **It answers:** Regeneration safety (PL5), new-module delivery checklist (Part 9), interaction-lock rules (I1–I6), audio rules (A1–A7), quiz counts and structure (Q0–Q4), template-build rules (T1–T4).
-> **Does NOT cover:** How to write storyboard content (see [STORYBOARD-AUTHOR-PROMPT.md](STORYBOARD-AUTHOR-PROMPT.md)) or template field schemas (see [TEMPLATE-REFERENCE.md](TEMPLATE-REFERENCE.md)).
+> **Does NOT cover:** How to write storyboard content (see [STORYBOARD-AUTHORING-KIT.md](STORYBOARD-AUTHORING-KIT.md)) or template field schemas (see [TEMPLATE-REFERENCE.md](TEMPLATE-REFERENCE.md)).
 
 The complete rule set for this system. Applies to every module built on this pipeline. When in doubt about any decision — storyboard content, template selection, audio behavior, player UI — check this file first.
 
@@ -41,11 +41,11 @@ The parser reads line by line. Every `Key: Value` pair must be on its own line. 
 
 ```
 # Wrong — Image-File is silently lost:
-On-Screen-Text: Your customer thinks in outcomes. Image-File: 1S04.webp
+On-Screen-Text: Your customer thinks in outcomes. Image-File: 1S04.jpg
 
 # Correct:
 On-Screen-Text: Your customer thinks in outcomes.
-Image-File: 1S04.webp
+Image-File: 1S04.jpg
 ```
 
 ### S2 — Always specify Template-ID explicitly
@@ -83,12 +83,25 @@ Every image assigned to a slide must have a corresponding storyboard field. The 
 
 | Template | Field format | Example |
 |---|---|---|
-| card-explore | `Card-Image-{Label}` | `Card-Image-Feature: 1S03a.webp` |
-| tab-panel | `Tab-Image-{Label}` | `Tab-Image-Feature: 1S05a.webp` |
-| tile-explore | `Image-{Label}` | `Image-Enthusiast: 1S07.webp` |
-| all others | `Image-File` | `Image-File: 1S04.webp` |
+| card-explore | `Card-Image-{Label}` | `Card-Image-Feature: 1S03a.jpg` |
+| tab-panel | `Item-<Label>-Image` | `Item-Feature-Image: 1S05a.jpg` |
+| accordion-content | `Image-File` | `Image-File: 1S05.jpg` (single right-rail image, not per-item) |
+| tile-explore | `Image-{Label}` | `Image-Enthusiast: 1S07.jpg` |
+| all others | `Image-File` | `Image-File: 1S04.jpg` |
 
-The generator prints a `WARN` line for every image that falls back to a placeholder, so missing fields are visible at generation time. Treat any `WARN` line about an image as an authoring gap to fill before the module ships.
+When a requested image file does not exist yet, the generator prints an `auto-image` line and uses a real file from `course/assets/images/` whose aspect ratio fits the template. Treat each `auto-image` line as a draft placeholder to replace before shipping. A `WARN` line means no catalog fallback was available.
+
+### S10 — Retire draft catalog images by regenerating, not just moving
+When a slide is generated against a draft placeholder (an `auto-image` fallback), the chosen filename is **baked into the slide HTML** — it does **not** track the storyboard's intended `Image-File` value. So when the final production asset arrives, or when draft catalog images are moved into `course/assets/images/placeholders/` (or deleted), every slide HTML that named the retired file silently breaks.
+
+Before retiring any descriptive draft image from `course/assets/images/`:
+
+1. `grep -l "<draft-filename>" course/slides/*.html` to find slides that reference it.
+2. Drop the intended final asset into `course/assets/images/` using the exact `Image-File` name from `course.md`.
+3. Regenerate **only** the affected slides: `node scripts/generate-slides.js --slide 1SNN --force` per slide. Do **not** force-regen the whole module (see Rule PL5).
+4. Then move or delete the draft.
+
+Symptom of skipping this: slides show broken images even though the matching `1SNN.jpg` is present in `course/assets/images/`. The slide HTML is still pointing at the retired draft name.
 
 ### S10 — Limit passive (non-interactive) slides
 
@@ -132,13 +145,12 @@ Only `1S*` content slides receive slide numbers in the menu / table of contents.
 Audio files are named by the generator — never name them by hand. All separators are hyphens; labels are PascalCase with no spaces.
 ```
 1S01-INTRO.mp3              ← slide narration
-1S01-CLICK-Feature.mp3      ← card-explore click audio
-1S01-TAB-Paraphrase.mp3     ← tab-panel tab audio
+1S01-CLICK-Feature.mp3      ← card-explore, tab-panel, and accordion-content click audio
 1S01-STEP-3.mp3             ← step-sequence step audio
 2KC01-INTRO.mp3             ← first KC of each pair only (Rule Q0a)
 3FQ-SCORE-INTRO.mp3         ← quiz score narration
 ```
-Captions mirror the MP3 filename with `.vtt`. See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md).
+Tab-panel and accordion-content reuse the `Voiceover-CLICK-<Label>` trigger pattern from card-explore, so their per-tab / per-item audio files are named `1SNN-CLICK-<Label>.mp3`. Captions mirror the MP3 filename with `.vtt`. See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md).
 
 ---
 
@@ -207,14 +219,14 @@ The only exception is `modal-audio-progress`, which has a documented mirror-audi
 
 **How to generate them:** always run `npm run generate-vtt -- --whisper-local` (or `--whisper` for the API version). The default `npm run generate-vtt` mode emits one-cue placeholders that span the full clip with no word-level timing — those are not deliverable.
 
-**Coverage check before packaging:** the number of `.vtt` files in `course/assets/captions/` should equal the number of `.mp3` files in `course/assets/audio/vo/` (excluding shared player-chrome clips like `Click_Next`, `Congratulations`, `FailResponse`, which have their own captions). If a click/tab/step audio clip exists but its caption doesn't, the SCORM build is incomplete.
+**Coverage check before packaging:** the number of `.vtt` files in `course/assets/captions/` should equal the number of `.mp3` files in `course/assets/audio/vo/` (excluding shared player-chrome clips like `Click_Start_Quiz`, `Congratulations`, `FailResponse`, and KC response audio, which have their own captions). If a click/tab/step audio clip exists but its caption doesn't, the SCORM build is incomplete.
 
 ### A6 — Submit-answer SFX on knowledge-check and final-quiz slides
 
 Play `course/assets/audio/sfx/submit-answer.mp3` immediately when the learner submits an answer:
 
 - **`knowledge-check`**: fires when the learner clicks the **Submit** button. Plays in parallel with the correct/incorrect response VO that follows — they are not chained.
-- **`final-quiz`**: fires when the learner clicks an **answer choice** (at the top of `onChoiceClick()`, after the answered guard). Final-quiz has no separate Submit button and no response VO (see Rule Q2).
+- **`final-quiz`**: fires when the learner clicks **Submit Answer** after selecting a choice. Final-quiz has no correct/incorrect response VO and no per-question feedback (see Rule Q2).
 
 SFX files live in `course/assets/audio/sfx/`, separate from VO clips in `course/assets/audio/vo/`, and do not require captions (Rule A5 applies to VO only).
 
@@ -268,11 +280,11 @@ The Next button is disabled for the duration of INTRO audio playback.
 ### I3 — Next button locked until all interactions complete
 On interactive slides, Next stays locked until the learner has visited every required interaction element. Required IDs are declared via `sandbox-configure-interactions`.
 
-### I4 — 2-second pause before Click_Next.mp3 plays
-When the last required interaction is visited, the Next button enables immediately. `Click_Next.mp3` plays 2 seconds later. This gives the learner a brief breath after the last interaction audio ends before the navigation prompt sounds. The delay is implemented centrally in `runtime.js → maybePlayFinalNextCue()` and applies to all interactive templates automatically.
+### I4 — No spoken Next prompt
+Do not play a VO cue that tells the learner to click Next. The old spoken prompt behavior has been retired; Next readiness is visual only.
 
-### I5 — Next button pulses on unlock
-When Next transitions from disabled to enabled, it plays a brief red-ring pulse animation to draw attention.
+### I5 — Next button pulses after required interactions complete
+When the learner completes the final required interaction on an interactive slide, the player unlocks Next and plays a brief red-ring pulse animation on the Next button. Non-interactive slide VO ending does not play a Next prompt.
 
 ### I6 — Player controls always active
 These four controls are never disabled by any lock state — not during INTRO, not while interactions are incomplete:
@@ -318,8 +330,8 @@ Write **2 questions per learning objective** (2 × 5 = 10). Each pair must appro
 ### Q2 — Final quiz question slides have no VO or captions
 `final-quiz` slides are a silent assessment flow. Do not author `Voiceover-INTRO`, `Caption-Text`, or any other VO fields on `3FQ01`–`3FQ10`. The only quiz slide that carries VO is the score slide (`3FQ-SCORE`). This rule also exists for a second reason: questions are drawn in random order, so any numbered VO would not match the displayed position.
 
-### Q3 — Feedback before auto-advance
-On submit: correct option highlights green, wrong option highlights red and the correct answer is revealed. The feedback strip animates in. The player auto-advances to the next question after **2.5 seconds**. No review loop — final quiz questions never route back to content slides.
+### Q3 — No per-question feedback
+On submit, the final-quiz slide reports the selected answer to the player and advances. It must not show "Correct," "Incorrect," green/red result states, or reveal the correct answer. Learners see results only on the final score slide. No review loop — final quiz questions never route back to content slides.
 
 ### Q4 — No question-stem label
 The body of a `final-quiz` slide shows only the question text and the four options. No "Question N" label appears inside the card body — that information is already in the header, injected by the player.
@@ -368,7 +380,6 @@ element.addEventListener('click', function () {
 window.parent.postMessage({
   type: 'sandbox-configure-interactions',
   requiredIds: ['CardA', 'CardB', 'CardC'],
-  finalCueSrc: 'assets/audio/vo/Click_Next.mp3',
   lockNextUntilComplete: true
 }, '*');
 ```
@@ -417,7 +428,7 @@ Use this checklist when starting from scratch on a new module.
 - [ ] INTRO audio plays on each slide load
 - [ ] Interaction elements locked during INTRO on **every** interactive slide — cards, tabs, tiles, drag items, hotspots, KC options, FQ options
 - [ ] Next locks during INTRO and while interactions are incomplete
-- [ ] Next unlocks and pulses simultaneously with `Click_Next.mp3`
+- [ ] Next unlocks and pulses after all required interactions are complete
 - [ ] Mute button silences all audio including interaction clips
 - [ ] Progress bar is thin red line at bottom of top bar, resets on each new clip
 - [ ] Captions, mute, replay, speed all work at all times

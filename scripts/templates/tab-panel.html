@@ -9,477 +9,416 @@
   <link rel="stylesheet" href="../assets/css/animations.css">
   <script>(function(){function s(){document.documentElement.style.setProperty('--scale',Math.min(window.innerWidth/1920,window.innerHeight/920));}s();window.addEventListener('resize',s);})();</script>
   <style>
-
-    .slide {
-      display: flex;
-      flex-direction: row;
-      overflow: hidden;
-    }
-
-    /* ── Left panel — title ───────────────────────────────────────────────── */
-    .left-panel {
-      flex-shrink: 0;
-      width: 560px;
-      height: 920px;
-      background: #0D0D0F;
+    /* ── Outer layout — header + tab strip + panel area ──────────────────── */
+    .tab-panel-section {
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      padding: 100px 56px 80px 100px;
-      position: relative;
-      z-index: 2;
-    }
-
-    .red-accent {
-      width: 120px; height: 8px;
-      background: var(--pds-accent);
-      margin-bottom: 20px;
-    }
-
-    .headline {
-      font-size: var(--pds-font-size-2xl);
-      font-weight: var(--pds-font-weight-bold);
-      line-height: 1.08;
-      color: var(--pds-text-primary);
-      margin: 0 0 20px 0;
-    }
-
-    .intro-text {
-      font-size: var(--pds-font-size-sm);
-      color: var(--pds-contrast-high);
-      line-height: 1.55;
-      margin: 0;
-    }
-
-    /* ── Right panel — tab interface + image ────────────────────────────── */
-    .right-panel {
-      flex: 1;
-      height: 920px;
-      background: #111116;
-      display: flex;
-      flex-direction: row;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* Tab nav + content column */
-    .tab-content-col {
-      width: 740px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      padding: 72px 60px 72px 80px;
-      position: relative;
-      z-index: 2;
-    }
-
-    /* Image column */
-    .tab-image-col {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .tab-image-col img {
-      width: 100%;
+      gap: 36px;
       height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: opacity 0.35s ease;
+      padding: var(--pds-slide-pad-y) var(--pds-slide-pad-x);
     }
-
-    /* Left-edge scrim so text column blends into the image */
-    .tab-image-col::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to right,
-        #111116 0%,
-        rgba(17,17,22,0.55) 18%,
-        rgba(17,17,22,0.10) 45%,
-        transparent 70%
-      );
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    /* ── Tab navigation ──────────────────────────────────────────────────── */
-    .tabs-nav {
+    .tab-panel-header {
       display: flex;
-      gap: 6px;
-      border-bottom: 2px solid rgba(255,255,255,0.14);
-      margin-bottom: 36px;
+      flex-direction: column;
+      gap: 14px;
       flex-shrink: 0;
-      flex-wrap: wrap;
-      align-items: flex-end;
+      max-width: 1280px;
     }
+    .tab-panel-header .pds-accent-bar { width: 120px; height: 6px; }
 
-    .tab-btn {
-      padding: 11px 22px 13px;
-      background: rgba(255,255,255,0.03);
-      border-top: 1px solid rgba(255,255,255,0.14);
-      border-left: 1px solid rgba(255,255,255,0.14);
-      border-right: 1px solid rgba(255,255,255,0.14);
-      border-bottom: 3px solid transparent;
-      border-radius: 6px 6px 0 0;
-      margin-bottom: -2px;
-      font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-sm);
-      font-weight: var(--pds-font-weight-semibold);
-      color: var(--pds-text-muted);
-      cursor: pointer;
-      transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-      white-space: nowrap;
-      letter-spacing: 0.01em;
+    /* ────────────────────────────────────────────────────────────────────
+       TAB STRIP — notebook-tab silhouette
+       Each tab is an outlined shape with rounded top corners and no bottom
+       edge. The tabs row carries a single horizontal "spine" line; the
+       active tab overlaps that line so it visually merges into the panel
+       area below, like a paper tab pulled forward in a folder.
+    ──────────────────────────────────────────────────────────────────── */
+    .tabs {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(var(--tab-count, 4), 1fr);
+      gap: 12px;
+      flex-shrink: 0;
+      border-bottom: 1.5px solid var(--pds-border-strong);
+      transition: opacity var(--dur-fast) var(--ease-out);
     }
-    .tab-btn:hover {
-      color: var(--pds-text-secondary);
-      border-top-color: rgba(255,255,255,0.24);
-      border-left-color: rgba(255,255,255,0.24);
-      border-right-color: rgba(255,255,255,0.24);
-      background: rgba(255,255,255,0.05);
-    }
-    .tab-btn.is-active {
-      color: var(--pds-text-primary);
-      border-top-color: rgba(255,255,255,0.28);
-      border-left-color: rgba(255,255,255,0.28);
-      border-right-color: rgba(255,255,255,0.28);
-      border-bottom-color: var(--pds-accent);
-      background: rgba(255,255,255,0.05);
-    }
-    .tab-btn[aria-disabled="true"] {
-      cursor: default;
-      opacity: 0.5;
-    }
+    .tabs.is-locked { opacity: 0.55; pointer-events: none; }
 
-    /* ── Tab panels ──────────────────────────────────────────────────────── */
-    .tabs-content {
-      flex: 1;
+    .tab {
       position: relative;
       overflow: hidden;
-    }
-
-    .tab-panel {
-      position: absolute;
-      inset: 0;
-      display: none;
-      flex-direction: column;
-      justify-content: flex-start;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    .tab-panel.is-active {
       display: flex;
-      opacity: 1;
-      transform: none;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+      min-height: 130px;
+      padding: 80px 28px 22px 28px;
+      background: transparent;
+      border: 1.5px solid var(--pds-border);
+      border-bottom: 0;
+      border-radius: 12px 12px 0 0;
+      cursor: pointer;
+      color: var(--pds-text-primary);
+      font-family: inherit;
+      text-align: left;
+      transition:
+        border-color  var(--dur-fast) var(--ease-out),
+        background    var(--dur-fast) var(--ease-out);
+    }
+    .tab:hover {
+      border-color: var(--pds-border-strong);
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .tab:focus-visible {
+      outline: 2px solid var(--pds-accent);
+      outline-offset: -2px;
+    }
+    /* Active tab: red stroke, and -1.5px margin-bottom to cover the spine
+       line under it — produces the classic notebook-tab "pulled forward" look. */
+    .tab.is-active {
+      border-color: var(--pds-accent);
+      margin-bottom: -1.5px;
     }
 
-    .tab-panel__body {
-      font-size: 20px;
-      line-height: 1.65;
-      color: var(--pds-contrast-high);
-      margin: 0;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Decorative step number — large faint numeral behind the body text */
-    .tab-panel__step-num {
+    /* Oversized accordion-style number — translucent white watermark.
+       Anchored mid-tab so the digit tops spill past the rounded top edge
+       and get clipped by the tab's overflow:hidden — same "slightly out
+       of frame" effect as accordion-content. */
+    .tab-number {
       position: absolute;
-      bottom: -24px;
-      right: -10px;
-      font-size: 240px;
-      font-weight: 900;
-      line-height: 1;
+      top: 60%;
+      left: -5px;
+      transform: translateY(-50%);
+      font-size: 100px;
+      font-weight: var(--pds-font-weight-bold);
+      line-height: 0.85;
       letter-spacing: -0.04em;
-      color: rgba(255,255,255,0.038);
+      color: rgba(255, 255, 255, 0.10);
       pointer-events: none;
-      user-select: none;
       z-index: 0;
     }
 
-    /* ── Progress list (left panel) — numbered circles fill red as each tab is visited */
-    .progress-list {
-      margin: 44px 0 0;
-      padding: 0;
-      list-style: none;
-      display: grid;
-      gap: 0;
-      border-top: 1px solid rgba(255,255,255,0.12);
+    /* Label sits at the bottom of the tab, above the number */
+    .tab-label {
+      position: relative;
+      z-index: 1;
+      font-size: 28px;
+      font-weight: var(--pds-font-weight-bold);
+      line-height: var(--pds-line-height-tight);
+      letter-spacing: -0.005em;
+      color: var(--pds-text-muted);
+      transition: color var(--dur-fast) var(--ease-out);
     }
-    .progress-list li {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      min-height: 58px;
-      border-bottom: 1px solid rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.72);
-      font-size: 18px;
-      font-weight: 700;
-    }
-    .progress-list span {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: rgba(255,255,255,0.10);
-      color: rgba(255,255,255,0.82);
-      font-size: 14px;
-      flex-shrink: 0;
-      transition: background 0.25s ease, color 0.25s ease;
-    }
-    .progress-list li.is-seen span {
-      background: var(--pds-accent);
-      color: #fff;
-    }
+    .tab:hover .tab-label { color: var(--pds-text-secondary); }
+    .tab.is-active .tab-label { color: var(--pds-text-primary); }
 
-    /* ── Pre-click prompt (shown before any tab is opened) ───────────────── */
-    .prompt {
-      color: rgba(255,255,255,0.72);
-      font-size: 24px;
-      line-height: 1.4;
-      max-width: 520px;
-      margin: 0;
-      padding-top: 12px;
-    }
-    .prompt.hidden { display: none; }
-
-    /* ── Lock note (visible while INTRO audio plays) ─────────────────────── */
-    .lock-note {
+    /* Visited mark — top-right green check */
+    .tab-check {
       position: absolute;
-      left: 80px;
-      bottom: 48px;
-      color: rgba(255,255,255,0.58);
-      font-size: 14px;
-      letter-spacing: 0.02em;
-    }
-    .lock-note.hidden { display: none; }
-
-    /* ── Entrance animations ─────────────────────────────────────────────── */
-    .anim-block {
+      top: 14px;
+      right: 14px;
+      z-index: 2;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid var(--pds-success);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--pds-success);
+      background: rgba(9, 208, 135, 0.10);
       opacity: 0;
-      transform: translateY(14px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
+      transform: scale(0.85);
+      transition:
+        opacity   var(--dur-normal) var(--ease-out),
+        transform var(--dur-normal) var(--ease-out);
+      pointer-events: none;
     }
-    .anim-block.is-visible { opacity: 1; transform: none; }
+    .tab.visited .tab-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .tab-check svg { width: 12px; height: 12px; display: block; }
 
+    /* ────────────────────────────────────────────────────────────────────
+       PANELS — stacked + crossfade in the space under the tabs/spine
+    ──────────────────────────────────────────────────────────────────── */
+    .panels {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+    .panel {
+      position: absolute;
+      inset: 0;
+      padding: 40px 8px 0 8px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition:
+        opacity   var(--dur-normal) var(--ease-out),
+        transform var(--dur-normal) var(--ease-out);
+      pointer-events: none;
+    }
+    .panel.is-active {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    .panel-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      column-gap: 64px;
+      height: 100%;
+      align-items: start;
+    }
+    .panel-grid.has-media {
+      grid-template-columns: 1fr 480px;
+    }
+    .panel-text { max-width: 880px; }
+    .panel-text > p {
+      font-size: var(--pds-font-size-md);
+      font-weight: var(--pds-font-weight-regular);
+      line-height: var(--pds-line-height-loose);
+      color: var(--pds-text-secondary);
+    }
+    .panel-text > p + p { margin-top: 14px; }
+    .panel-text > p + .acc-bullets { margin-top: 22px; }
+
+    /* Red-dot bullets — identical to accordion-content */
+    .acc-bullets {
+      list-style: none;
+      margin: 18px 0 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .acc-bullets li {
+      display: flex;
+      gap: 14px;
+      font-size: var(--pds-font-size-md);
+      line-height: 1.45;
+      color: var(--pds-contrast-high);
+    }
+    .acc-bullets li::before {
+      content: '';
+      flex-shrink: 0;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--pds-accent);
+      margin-top: 10px;
+    }
+    .acc-bullets li strong {
+      color: var(--pds-text-primary);
+      font-weight: var(--pds-font-weight-bold);
+    }
+
+    /* Inline 4:3 media — drop an <img> in or use placeholder */
+    .panel-media {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      aspect-ratio: 4 / 3;
+      border-radius: var(--pds-radius-lg);
+      overflow: hidden;
+      background: #16161a;
+    }
+    .panel-media > img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: var(--img-pos, center);
+      display: block;
+    }
   </style>
 </head>
 <body>
 
-<div class="slide intro-locked" data-slide-id="{{SLIDE_ID}}">
+<div class="slide" data-slide-id="{{SLIDE_ID}}">
 
-  <!-- Left: title panel -->
-  <div class="left-panel">
-    <div class="red-accent anim-block" id="el-accent"></div>
-    <h2 class="headline anim-block" id="el-headline">{{SLIDE_TITLE}}</h2>
-    <p class="intro-text anim-block" id="el-intro">{{ON_SCREEN_TEXT}}</p>
-  </div>
+  <div class="tab-panel-section">
 
-  <!-- Right: tab interface + image -->
-  <div class="right-panel">
-    <div class="tab-content-col" id="tab-content-col">
-      <div class="tabs-nav" id="tabs-nav" role="tablist">
-{{TAB_BUTTONS_HTML}}
+    <!-- Header -->
+    <header class="tab-panel-header">
+      <div style="display:flex; align-items:flex-end; gap: var(--pds-space-lg);">
+        <h2 class="pds-heading-display anim-fade-up" style="--anim-delay: 0.10s;">{{SLIDE_TITLE}}</h2>
+        <div class="pds-accent-bar anim-bar-grow" style="--anim-delay: 0.15s; margin-bottom: 8px;"></div>
       </div>
-      <div class="tabs-content">
-        <p class="prompt" id="prompt">Select a tab to explore each topic.</p>
-{{TAB_BODY_PANELS_HTML}}
-      </div>
-      <div class="lock-note" id="lock-note">Tabs unlock when the intro audio ends.</div>
+      <p class="pds-body anim-fade-up" style="--anim-delay: 0.20s;">{{ON_SCREEN_TEXT}}</p>
+    </header>
+
+    <!-- Tab strip — locked until INTRO ends; first tab pre-active+visited -->
+    <div class="tabs is-locked" id="tabs" role="tablist">
+{{TAB_PANEL_TABS_HTML}}
     </div>
-    <div class="tab-image-col" id="tab-image-col">
-      <img id="tab-image" src="{{IMAGE_PATH}}" alt="" draggable="false">
+
+    <!-- Panels — crossfade between active tab's content -->
+    <div class="panels" id="panels">
+{{TAB_PANEL_PANELS_HTML}}
     </div>
+
   </div>
 
 </div>
 
 <script src="../assets/vendor/gsap/gsap.min.js"></script>
-<script src="../assets/vendor/slide-pause.js"></script>
+<script src="../assets/vendor/porsche-components.js"></script>
 <script>
-(function () {
+/* ── SandboxRuntime shim — mirrors accordion-content / card-explore ─────── */
+var SandboxRuntime = (function () {
+  var CR = (function () {
+    try { return window.parent && window.parent.CourseRuntime ? window.parent.CourseRuntime : null; }
+    catch (_) { return null; }
+  })();
 
-  /* ── Entrance animations ───────────────────────────────────────────────── */
-  ['el-accent', 'el-headline', 'el-intro'].forEach(function (id, i) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    setTimeout(function () { el.classList.add('is-visible'); }, 80 + i * 120);
+  function makeFakeVO() {
+    var listeners = {};
+    var obj = {
+      currentTime: 0,
+      _wasPlaying: false,
+      addEventListener: function (e, f) { (listeners[e] = listeners[e] || []).push(f); },
+      removeEventListener: function (e, f) {
+        if (listeners[e]) listeners[e] = listeners[e].filter(function (g) { return g !== f; });
+      },
+      _fire: function (e) { (listeners[e] || []).forEach(function (f) { f(); }); },
+      play: function () { return Promise.resolve(); }
+    };
+    (function poll() {
+      requestAnimationFrame(function () {
+        if (CR) {
+          obj.currentTime = CR.getAudioCurrentTime ? CR.getAudioCurrentTime() : 0;
+          var p = CR.isAudioPlaying ? CR.isAudioPlaying() : false;
+          if (!obj._wasPlaying && p) obj._wasPlaying = true;
+          if (obj._wasPlaying && !p && obj.currentTime > 0) {
+            obj._wasPlaying = false;
+            obj._fire('ended');
+          }
+          obj._fire('timeupdate');
+        }
+        poll();
+      });
+    })();
+    return obj;
+  }
+
+  function makeInteraction() {
+    return {
+      src: '',
+      play: function () {
+        if (CR && CR.playInteractionAudio) {
+          CR.playInteractionAudio({ src: this.src });
+        } else {
+          var a = new Audio(this.src);
+          a.play().catch(function () {});
+        }
+        return Promise.resolve();
+      }
+    };
+  }
+
+  window.addEventListener('message', function (e) {
+    if (!e.data || e.data.type !== 'player-play-state') return;
+    var s = document.querySelector('.slide');
+    if (s) s.classList.toggle('is-paused', e.data.state === 'paused');
   });
 
-  var tabsNav = document.getElementById('tabs-nav');
-  if (tabsNav) {
-    tabsNav.style.transform = 'translateY(14px)';
-    tabsNav.style.transition = 'transform 0.5s ease';
-    setTimeout(function () {
-      tabsNav.style.transform = '';
-    }, 320);
-  }
+  return { voAudio: makeFakeVO(), interactionAudio: makeInteraction() };
+})();
 
-  /* ── Tab image map ─────────────────────────────────────────────────────── */
-  var TAB_IMAGE_MAP = {{TAB_IMAGE_MAP_JSON}};
-  var tabImg = document.getElementById('tab-image');
-
-  /* ── Tab switching ─────────────────────────────────────────────────────── */
-  var buttons = Array.from(document.querySelectorAll('.tab-btn'));
-  var panels  = Array.from(document.querySelectorAll('.tab-panel'));
-  var slideRoot = document.querySelector('.slide');
-  var seen = {};
-
-  function activateTab(btn) {
-    if (tabsLocked) return;
-    var label = btn.getAttribute('data-tab');
-    var audioPath = btn.getAttribute('data-audio');
-
-    buttons.forEach(function (b) {
-      b.classList.remove('is-active');
-      b.setAttribute('aria-selected', 'false');
-      b.setAttribute('tabindex', '-1');
-    });
-    panels.forEach(function (p) { p.classList.remove('is-active'); });
-
-    btn.classList.add('is-active');
-    btn.setAttribute('aria-selected', 'true');
-    btn.setAttribute('tabindex', '0');
-
-    var panel = document.getElementById('panel-' + label);
-    if (panel) {
-      panel.style.opacity = '0';
-      panel.style.transform = 'translateY(10px)';
-      panel.classList.add('is-active');
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          panel.style.opacity = '';
-          panel.style.transform = '';
-        });
-      });
-    }
-
-    /* Hide pre-click prompt */
-    var promptEl = document.getElementById('prompt');
-    if (promptEl) promptEl.classList.add('hidden');
-
-    /* Mark this tab as seen in the left-panel progress list */
-    document.querySelectorAll('.progress-list li').forEach(function (li) {
-      if (li.getAttribute('data-step') === label) li.classList.add('is-seen');
-    });
-
-    /* Track and unlock Next when all tabs visited */
-    seen[label] = true;
-    if (Object.keys(seen).length >= buttons.length) {
-      window.parent.postMessage({ type: 'sandbox-unlock-next' }, '*');
-    }
-
-    /* Swap tab image with a brief fade */
-    if (tabImg && TAB_IMAGE_MAP[label]) {
-      tabImg.style.opacity = '0';
-      setTimeout(function () {
-        tabImg.src = TAB_IMAGE_MAP[label];
-        tabImg.style.opacity = '';
-      }, 180);
-    }
-
-    /* Play tab audio via CourseRuntime or fallback to Audio() */
-    if (audioPath) {
-      var cr = null;
-      try { cr = window.parent && window.parent.CourseRuntime; } catch(_) {}
-      if (cr && cr.playInteractionAudio) {
-        cr.playInteractionAudio({ src: audioPath, pauseNarration: true, resumeNarration: false });
-      } else {
-        try { new Audio(audioPath).play(); } catch(_) {}
-      }
-    }
-  }
-
-  /* ── Build left-panel progress list from tab data ───────────────────────── */
-  (function () {
-    var introEl = document.getElementById('el-intro');
-    if (!introEl || !buttons.length) return;
-    var ul = document.createElement('ul');
-    ul.className = 'progress-list';
-    ul.setAttribute('aria-label', 'Visited steps');
-    buttons.forEach(function (btn, i) {
-      var li = document.createElement('li');
-      li.setAttribute('data-step', btn.getAttribute('data-tab'));
-      li.setAttribute('aria-hidden', 'true');
-      li.innerHTML =
-        '<span>' + (i + 1) + '</span>' +
-        (btn.textContent || btn.innerText).trim();
-      ul.appendChild(li);
-    });
-    /* Fade the list in slightly after the intro text */
-    ul.style.transform = 'translateY(14px)';
-    ul.style.transition = 'transform 0.5s ease';
-    setTimeout(function () {
-      ul.style.transform = '';
-    }, 480);
-    introEl.parentNode.insertBefore(ul, introEl.nextSibling);
-  }());
-
-  /* ── Lock Next until all tabs visited ──────────────────────────────────── */
+/* ── Tab-panel interaction logic ───────────────────────────────────────── */
+(function () {
+  // Lock Next until all tabs visited
   window.parent.postMessage({ type: 'sandbox-lock-next' }, '*');
 
-  /* ── INTRO lock ─────────────────────────────────────────────────────────── */
-  var tabsLocked = true;
-  var _introMsgReceived = false;
+  // Audio map + total — reuse card-explore's CLICK trigger plumbing
+  var TAB_AUDIO  = {{CARD_AUDIO_MAP}};
+  var TOTAL_TABS = {{TOTAL_CARDS}};
+  var visited    = new Set();
+  var unlocked   = false;
 
-  function applyLock() {
-    tabsLocked = true;
-    if (slideRoot) slideRoot.classList.add('intro-locked');
-    buttons.forEach(function (b) { b.setAttribute('aria-disabled', 'true'); });
-    var lockNote = document.getElementById('lock-note');
-    if (lockNote) lockNote.classList.remove('hidden');
-  }
+  // Entrance animations
+  document.querySelectorAll('.anim-fade-up, .anim-bar-grow').forEach(function (el) {
+    el.classList.add('is-visible');
+  });
+
+  var tabsEl = document.getElementById('tabs');
+  var tabs   = document.querySelectorAll('.tab');
+  var panels = document.querySelectorAll('.panel');
+
+  // First tab is pre-active + pre-visited (rendered by parser)
+  if (tabs[0]) visited.add(tabs[0].dataset.tab);
 
   function unlockTabs() {
-    if (!tabsLocked) return;
-    tabsLocked = false;
-    if (slideRoot) slideRoot.classList.remove('intro-locked');
-    buttons.forEach(function (b) { b.setAttribute('aria-disabled', 'false'); });
-    if (buttons.length > 0) buttons[0].setAttribute('tabindex', '0');
-    var lockNote = document.getElementById('lock-note');
-    if (lockNote) lockNote.classList.add('hidden');
+    if (unlocked) return;
+    unlocked = true;
+    if (tabsEl) tabsEl.classList.remove('is-locked');
+    // Single-tab edge case
+    if (visited.size >= TOTAL_TABS) {
+      window.parent.postMessage({ type: 'sandbox-unlock-next' }, '*');
+    }
   }
 
-  applyLock();
-
-  /* Unlock when the player signals INTRO audio has ended. If running standalone
-     with no parent player, fall back to unlocking after a short wait. */
-  window.addEventListener('message', function (e) {
-    if (!e.data || e.data.type !== 'player-intro-state') return;
-    _introMsgReceived = true;
-    if (e.data.locked) applyLock();
-    else unlockTabs();
-  });
-  setTimeout(function () {
-    if (!_introMsgReceived && window.parent === window) unlockTabs();
-  }, 300);
-
-  /* ── Tab click/keyboard handlers ──────────────────────────────────────── */
-  buttons.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      if (!tabsLocked) activateTab(btn);
+  function activate(key, isUserClick) {
+    tabs.forEach(function (t) {
+      var isThis = (t.dataset.tab === key);
+      t.classList.toggle('is-active', isThis);
+      t.setAttribute('aria-selected', isThis ? 'true' : 'false');
     });
-    btn.addEventListener('keydown', function (e) {
-      if (tabsLocked) return;
-      var idx = buttons.indexOf(btn);
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        var next = buttons[(idx + 1) % buttons.length];
-        activateTab(next);
-        next.focus();
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        var prev = buttons[(idx - 1 + buttons.length) % buttons.length];
-        activateTab(prev);
-        prev.focus();
+    panels.forEach(function (p) {
+      var isThis = (p.dataset.panel === key);
+      p.classList.toggle('is-active', isThis);
+      if (isThis) p.removeAttribute('hidden');
+      else        p.setAttribute('hidden', '');
+    });
+
+    if (isUserClick && !visited.has(key)) {
+      visited.add(key);
+      var tab = document.querySelector('.tab[data-tab="' + key + '"]');
+      if (tab) tab.classList.add('visited');
+
+      var audioPath = TAB_AUDIO[key];
+      if (audioPath) {
+        SandboxRuntime.interactionAudio.src = audioPath;
+        SandboxRuntime.interactionAudio.play();
       }
+
+      if (visited.size >= TOTAL_TABS) {
+        window.parent.postMessage({ type: 'sandbox-unlock-next' }, '*');
+      }
+    }
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      if (!unlocked) return;
+      activate(tab.dataset.tab, true);
+    });
+    tab.addEventListener('keydown', function (e) {
+      if (!unlocked) return;
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      var idx  = Array.prototype.indexOf.call(tabs, tab);
+      var next = (e.key === 'ArrowRight')
+        ? (idx + 1) % tabs.length
+        : (idx - 1 + tabs.length) % tabs.length;
+      tabs[next].focus();
+      activate(tabs[next].dataset.tab, true);
     });
   });
 
-}());
+  // Unlock when INTRO VO ends — same fallback pattern as accordion-content
+  setTimeout(function () {
+    if (SandboxRuntime.voAudio) {
+      SandboxRuntime.voAudio.addEventListener('ended', unlockTabs);
+      SandboxRuntime.voAudio.addEventListener('error', unlockTabs);
+    }
+    try {
+      if (!window.parent || !window.parent.CourseRuntime) unlockTabs();
+    } catch (_) { unlockTabs(); }
+  }, 0);
+})();
 </script>
 
 </body>

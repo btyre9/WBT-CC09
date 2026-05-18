@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
-  <title>Knowledge Check</title>
+  <title>Slide 20 - Knowledge Check 3</title>
   <link rel="stylesheet" href="../assets/css/pds-tokens.css">
   <link rel="stylesheet" href="../assets/css/slide-base.css">
   <link rel="stylesheet" href="../assets/css/animations.css">
@@ -16,14 +16,26 @@
       justify-content: center;
     }
 
-    /* ── Dimmed backdrop ──────────────────────────────────────────── */
-    .kc-backdrop {
+    /* ── Set-level background image (per Image-File on the slide) ──── */
+    .kc-bg-image {
       position: absolute;
       inset: 0;
       z-index: 0;
-      background:
-        radial-gradient(1400px 700px at 10% -10%, var(--pds-bg-surface) 0%, transparent 60%),
-        var(--pds-bg-base);
+      overflow: hidden;
+    }
+    .kc-bg-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 28%;
+    }
+
+    /* ── Dimmed backdrop overlays the image to keep the modal readable ── */
+    .kc-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: rgba(0,0,0,0.55);
     }
 
     .kc-backdrop::before {
@@ -36,13 +48,7 @@
       background-size: 48px 48px;
       transform: rotate(45deg);
       pointer-events: none;
-    }
-
-    .kc-backdrop::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.48);
+      opacity: 0.5;
     }
 
     /* ── Modal card ───────────────────────────────────────────────── */
@@ -292,7 +298,12 @@
 </head>
 <body>
 
-<div class="slide" data-slide-id="2KC03" data-review-slide="1S09">
+<div class="slide" data-slide-id="2KC03" data-review-slide="1S11">
+
+  <!-- Set-level background image (sits behind the dimmed backdrop) -->
+  <div class="kc-bg-image">
+    <img src="../assets/images/KC_set2.jpg" alt="" onerror="this.style.display='none'">
+  </div>
 
   <!-- Dimmed backdrop -->
   <div class="kc-backdrop"></div>
@@ -311,26 +322,26 @@
       <!-- Question stem -->
       <div class="question-stem">
         <span class="question-stem__label">Question</span>
-        <p class="question-stem__text">A customer says, &quot;Franz's does this work for less and they're closer to my office.&quot; After you Respect and Align, what is the exact phrase you should use to begin the Contrast step?</p>
+        <p class="question-stem__text">A customer says, &quot;Franz's Import Auto can do this cheaper.&quot; Which response best follows RACE?</p>
       </div>
 
       <!-- Options — shuffled + re-labelled A–D by JS on load -->
       <div class="options-list" id="options-list" role="radiogroup" aria-label="Answer options">
               <div class="option-row" data-value="A" role="radio" aria-checked="false" tabindex="0">
         <div class="option-row__letter">A</div>
-        <span class="option-row__text">&quot;But there's more to it than that&quot;</span>
+        <span class="option-row__text">&quot;They are cheaper because they do not know Porsche vehicles like we do.&quot;</span>
       </div>
-      <div class="option-row" data-value="B" role="radio" aria-checked="false" tabindex="0">
+      <div class="option-row" data-correct="true" data-value="B" role="radio" aria-checked="false" tabindex="0">
         <div class="option-row__letter">B</div>
-        <span class="option-row__text">&quot;However, you should consider…&quot;</span>
+        <span class="option-row__text">&quot;Franz's is a reputable shop. There are some important differences in the parts, training, and diagnostic equipment we use.&quot;</span>
       </div>
-      <div class="option-row" data-correct="true" data-value="C" role="radio" aria-checked="false" tabindex="0">
+      <div class="option-row" data-value="C" role="radio" aria-checked="false" tabindex="0">
         <div class="option-row__letter">C</div>
-        <span class="option-row__text">&quot;There are some important differences&quot;</span>
+        <span class="option-row__text">&quot;If you want cheap service, that is your choice.&quot;</span>
       </div>
       <div class="option-row" data-value="D" role="radio" aria-checked="false" tabindex="0">
         <div class="option-row__letter">D</div>
-        <span class="option-row__text">&quot;On the other hand…&quot;</span>
+        <span class="option-row__text">&quot;However, they cannot provide the same service, so you should stay here.&quot;</span>
       </div>
       </div>
 

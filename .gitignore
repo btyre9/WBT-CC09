@@ -7,3 +7,4 @@ course/assets/audio/vo/*.mp3
 course/assets/captions/*.vtt
 .env
 *.zip
+.DS_Store
