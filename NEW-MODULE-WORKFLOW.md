@@ -197,7 +197,17 @@ Bakes the freshly-written `VO-Cue-N` values into the slide HTML.
 
 ## Step 10 — Drop in real images
 
-Place `.jpg` files in `course/assets/images/` using the **exact** filenames you wrote into `course.md`. Refresh the browser — the slide swaps from placeholder to real image automatically.
+Place `.jpg` files in `course/assets/images/` using the **exact** filenames you wrote into `course.md`.
+
+**Auto-swap only works if the slide was generated *after* the file existed (or against the same intended filename).** Refresh the browser and the slide swaps from placeholder to real image automatically — but only in that case. If the slide was generated when the file was missing and an `auto-image` draft was baked in, the new file will be ignored until you regenerate that slide. See COURSE-RULES Rule S10.
+
+To regenerate one slide after dropping in its final asset:
+
+```
+node scripts/generate-slides.js --slide 1SNN --force
+```
+
+Do **not** run `generate-slides --force` across the whole module to pick up new images — that wipes all hand-edits (Rule PL5).
 
 If an image's crop is wrong:
 

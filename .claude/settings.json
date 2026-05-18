@@ -59,13 +59,16 @@
       "Bash(awk 'BEGIN{c=0} /^```/{c++} END{print \"fences:\", c, \"\\(should be even\\)\"}' /Users/home/Documents/Porsche/00_Projects/Porsche-WBT-Template/STORYBOARD-AUTHORING-KIT.md)",
       "Bash(git check-ignore *)",
       "Bash(grep -rn \"Template-ID:\\\\s*objectives\\\\|^### \\\\`objectives\\\\`\\\\|'objectives'\\\\|\\\\\"objectives\\\\\"\\\\|/objectives\\\\b\\\\|objectives\\\\.html\\\\|objectives template\\\\|\\\\`objectives\\\\`\" /Users/home/Documents/Porsche/00_Projects/Porsche-WBT-Template --include=\"*.md\" --include=\"*.js\" --include=\"*.json\" --include=\"*.html\")",
-      "Bash(grep -rn \"Template-ID:\\\\s*objectives\\\\b\\\\|^### \\\\`objectives\\\\`\\\\| \\\\`objectives\\\\` \" /Users/home/Documents/Porsche/00_Projects/Porsche-WBT-Template --include=\"*.md\" --include=\"*.js\" --include=\"*.json\" --include=\"*.html\")"
+      "Bash(grep -rn \"Template-ID:\\\\s*objectives\\\\b\\\\|^### \\\\`objectives\\\\`\\\\| \\\\`objectives\\\\` \" /Users/home/Documents/Porsche/00_Projects/Porsche-WBT-Template --include=\"*.md\" --include=\"*.js\" --include=\"*.json\" --include=\"*.html\")",
+      "Bash(git remote *)",
+      "Bash(git ls-remote *)"
     ],
     "additionalDirectories": [
       "G:\\My Drive\\00-Projects\\CC02\\course\\assets\\vendor",
       "\\tmp",
       "G:\\My Drive\\00-Projects\\CC02\\course\\assets\\mgfx",
-      "/Users/home/Documents/Porsche-WBT-Template/course/assets/captions"
+      "/Users/home/Documents/Porsche-WBT-Template/course/assets/captions",
+      "/Users/home/Documents/Porsche/00_Projects/Porsche-WBT-Template"
     ]
   }
 }

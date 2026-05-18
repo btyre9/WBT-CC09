@@ -185,8 +185,9 @@
     devMode: false,
     audio: null,
     audioStartTimer: null,
-    nextLockedByAudio: false,       // unlocked when VO ends
+    nextLockedByAudio: false,       // unlocked when primary VO ends
     nextLockedByInteraction: false, // controlled by sandbox-lock/unlock-next messages
+    nextLockedByInteractionAudio: false, // unlocked when click/response VO ends
     pendingKCReturn: null,          // { kcSlideId, reviewSlides } — active during review loop
     kcReviewConfig: {},             // loaded from kc-review.json
     pendingAudioStart: false,
@@ -252,9 +253,11 @@
 
   function updateNavButtons() {
     var atEnd = state.slideIndex >= state.totalSlides - 1;
-    var locked = state.nextLockedByAudio || state.nextLockedByInteraction;
-    $("btn-next").disabled = atEnd || locked;
-    $("btn-next").style.opacity = locked ? "0.35" : "";
+    var locked = state.nextLockedByAudio || state.nextLockedByInteraction || state.nextLockedByInteractionAudio;
+    var btn = $("btn-next");
+    btn.disabled = atEnd || locked;
+    btn.style.opacity = locked ? "0.35" : "";
+    if (locked || atEnd) btn.classList.remove("pulse-unlock");
   }
 
   function pulseNextButton() {
@@ -270,9 +273,10 @@
     if (slide.audio_vo) return slide.audio_vo;
 
     var id = String(slide.id || "");
-    // Standard slides (1S01–1S50), KC slides (2KC01–2KC04), and quiz score (3FQ-SCORE) have INTRO VO.
+    // Standard slides and first slides in each KC pair have authored INTRO VO.
     // Final quiz question slides (3FQ01–3FQ10) are silent — no VO.
-    if (/^1S\d{2}$/.test(id) || /^2KC\d{2}$/.test(id) || id === "3FQ-SCORE") {
+    // The quiz-score template plays the shared Congratulations.mp3 itself.
+    if (/^1S\d{2}$/.test(id) || /^2KC0[13]$/.test(id)) {
       return "assets/audio/vo/" + id + "-INTRO.mp3";
     }
     return "";
@@ -514,8 +518,10 @@
     syncAudioProgress();
     updateAudioUi();
     if (state.cueEditor.open) updateCueCurrentTimeLabel();
+    var wasAudioLocked = state.nextLockedByAudio;
     state.nextLockedByAudio = false;
     updateNavButtons();
+    if (wasAudioLocked && !state.nextLockedByInteraction && !state.nextLockedByInteractionAudio) pulseNextButton();
   }
 
   function onAudioMeta() {
@@ -562,14 +568,17 @@
     state.interactionAudioMap = {};
 
     state.slideIndex = i;
+    var nextBtn = $("btn-next");
+    if (nextBtn) nextBtn.classList.remove("pulse-unlock");
     if (i > state.furthestSlide) {
       state.furthestSlide = i;
       updateTocLock();
     }
     scorm.setLocation(slides[i].id);
     scorm.commit();
-    // Reset both lock flags on every slide change
+    // Reset slide-scoped locks on every slide change
     state.nextLockedByInteraction = false;
+    state.nextLockedByInteractionAudio = false;
     var slideAudio = resolveSlideAudioSrc(slides[i]);
     state.nextLockedByAudio = !!slideAudio && !state.devMode;
     var slideSrc = "./slides/" + slides[i].id + ".html";
@@ -815,6 +824,8 @@
       current.pause();
       state.interactionAudio = null;
     }
+    state.nextLockedByInteractionAudio = false;
+    updateNavButtons();
 
     if (shouldResume) maybeResumeNarrationAfterInteraction();
     else state.interactionAudioShouldResumeNarration = false;
@@ -915,6 +926,7 @@
 
     var pauseNarration = opts.pauseNarration !== false;
     var resumeNarration = opts.resumeNarration !== false;
+    var lockNext = opts.lockNext !== false && !state.devMode;
     var narrationWasPlaying = !!(
       state.audio &&
       !state.audio.paused &&
@@ -923,6 +935,8 @@
     );
 
     stopInteractionAudio(false);
+    state.nextLockedByInteractionAudio = lockNext;
+    updateNavButtons();
 
     state.interactionAudioShouldResumeNarration = false;
     if (pauseNarration && narrationWasPlaying && state.audio) {
@@ -943,6 +957,11 @@
       channel.removeEventListener("loadedmetadata", onLoadedMeta);
       channel.pause();
       if (state.interactionAudio === channel) state.interactionAudio = null;
+      if (state.nextLockedByInteractionAudio) {
+        state.nextLockedByInteractionAudio = false;
+        updateNavButtons();
+        if (!state.nextLockedByAudio && !state.nextLockedByInteraction) pulseNextButton();
+      }
       if (allowResume !== false) maybeResumeNarrationAfterInteraction();
       else state.interactionAudioShouldResumeNarration = false;
     }
@@ -1694,7 +1713,7 @@
           var wasInteractionLocked = state.nextLockedByInteraction;
           state.nextLockedByInteraction = false;
           updateNavButtons();
-          if (wasInteractionLocked && !state.nextLockedByAudio) pulseNextButton();
+          if (wasInteractionLocked && !state.nextLockedByAudio && !state.nextLockedByInteractionAudio) pulseNextButton();
           break;
         case "sandbox-swap-audio":
           // Slide requests a mid-slide audio swap (e.g. a split-explore slide part 2).
@@ -1729,7 +1748,7 @@
               state.nextLockedByInteraction = false;
               state.nextLockedByAudio = false;
               updateNavButtons();
-              if (wasInteractionLocked) pulseNextButton();
+              if (wasInteractionLocked && !state.nextLockedByInteractionAudio) pulseNextButton();
             }, { once: true });
             updateNavButtons();
             updateAudioUi();

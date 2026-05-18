@@ -53,7 +53,7 @@ Use this as the first filter when deciding which template to use for a slide. Fu
 
 | Content type | Template ID |
 |---|---|
-| Module opener (Slide 01 only) | `hero-title` *(title middle-right)* or `hero-title-left` *(title middle-left)* — pick whichever sits better against the chosen hero image |
+| Module opener (Slide 01 only) | `hero-title` *(title slightly above middle-left)* |
 | Learning objectives (Slide 02 only) | `learning-objectives` |
 | Single concept with supporting context | `content-split` |
 | List of 3–6 parallel principles, steps, or components | `content-bullets` |
@@ -80,11 +80,10 @@ Across the entire course there are exactly two title positions. Every slide fall
 
 | Position | Templates | Location |
 |---|---|---|
-| **Middle-right** — vertically centered, anchored to the right half of the slide | `hero-title` (i.e. `1S01`) | Full-bleed hero image fills the slide; the title sits at the vertical midline on the right side over the image |
-| **Middle-left** — vertically centered, anchored to the left half of the slide | `hero-title-left` (alternative `1S01` template) | Same as middle-right, mirrored. Choose this variant when the hero image's subject sits on the right and the title needs negative space on the left |
+| **Slightly above middle-left** — near the vertical midpoint, anchored to the left half of the slide | `hero-title` (i.e. `1S01`) | Full-bleed hero image fills the slide; the title group sits slightly above the vertical midline on the left side over a dark left-to-right gradient |
 | **Top** — anchored near the top of the content panel | All other templates | Top-**left** when the content panel is on the left (image on the right). Top-**right** when the content panel is on the right (image on the left). The title is never centered on a content slide. |
 
-**Hard rule:** only `hero-title` and `hero-title-left` may place the slide title near the vertical middle, and only for `Slide-ID: 1S01`. Every other template must keep `Slide-Title` near the top of its content area. Do not write notes, art direction, or template guidance asking for a middle-positioned title on content, interaction, quiz, or closing slides.
+**Hard rule:** only `hero-title` may place the slide title near the vertical middle, and only for `Slide-ID: 1S01`. It must remain left-aligned and slightly above center. Every other template must keep `Slide-Title` near the top of its content area. Do not write notes, art direction, or template guidance asking for a middle-positioned title on content, interaction, quiz, or closing slides.
 
 ---
 
@@ -222,6 +221,23 @@ Templates with no image slot: `final-quiz`, `quiz-score`. (Knowledge-check is th
 
 The art-direction `Image:` prose still describes the *ideal* asset for future replacement.
 
+### Image folder layout — `placeholders/` and `reference/` subfolders
+
+`course/assets/images/` has two subdirectories that the generator treats specially:
+
+| Path | Purpose | Visible to generator? |
+|---|---|---|
+| `course/assets/images/` (root) | Live catalog. Any `.jpg`/`.jpeg` here is eligible as an `auto-image` fallback and as a real production asset. | **Yes** — scanned by `loadImageCatalog`. |
+| `course/assets/images/placeholders/` | Stash for descriptive draft images (e.g. `Cayenne-Electric.jpg`) that should not appear in finished slides. | **No** — the catalog scan is non-recursive. |
+| `course/assets/images/reference/` | Reference photography (e.g. `Ptech-*.jpeg` people shots) used for art direction only, never as a slide asset. | **No** — non-recursive. |
+
+Rules of thumb:
+
+- **Promote** an image (subfolder → root) when you want the generator to use it as a fallback or when its filename matches an `Image-File` value in `course.md`.
+- **Demote** an image (root → `placeholders/`) when retiring it from the live catalog. Always follow Rule S10 in COURSE-RULES: regenerate any slides that reference the file *before* moving it, otherwise their baked-in HTML breaks.
+- Never reference a file from a subfolder in `Image-File`, `Card-Image-<Label>`, `Item-<Label>-Image`, or `Image-<Label>`. The generator resolves all image paths relative to `course/assets/images/` root and will treat a subfolder file as missing.
+- An empty live catalog (everything in subfolders, nothing in root) is a valid but risky state — `generate-slides` will print `Image catalog: empty` and any slide without an `Image-File` field will fall back to `placeholder.jpg`.
+
 ---
 
 ## 4. Template catalog
@@ -230,21 +246,19 @@ Each entry below gives: **purpose**, **when to pick it**, **required fields**, *
 
 Templates are grouped by readiness. `Status: Standard` means the parser fully wires it; `Status: Emerging` means it's custom-built per slide from a reference implementation.
 
-### 4.1 `hero-title` / `hero-title-left` — module opener
+### 4.1 `hero-title` — module opener
 
 **Status:** Standard
-**Use when:** Slide 01 of every module. Always. Pick **one** of the two variants.
+**Use when:** Slide 01 of every module. Always.
 **Title position:**
-- `hero-title` → title is **vertically centered** and anchored to the **right** half of the slide.
-- `hero-title-left` → title is **vertically centered** and anchored to the **left** half of the slide.
+- `hero-title` → title is left-aligned, anchored to the **left** half of the slide, and positioned slightly above the vertical midpoint.
+- Use the single `hero-title` template only. Do not create or select side-specific hero variants.
 
-Both variants are otherwise identical (same fields, same animations, same audio behavior). The variant choice is a composition decision: pick whichever side has negative space against the chosen hero image so the title doesn't fight the subject.
-
-**Required (both variants):**
+**Required:**
 - `Slide-ID: 1S01`
-- `Template-ID: hero-title` **or** `Template-ID: hero-title-left`
+- `Template-ID: hero-title`
 - `Slide-Title` — main module heading
-- `Hero-Subtitle` — e.g. `Module 3 of 12`
+- `Hero-Subtitle` — short descriptive support line under the title; never use module-count text such as "Module 9 of 12"
 - `Image-File` — `1S01.jpg` (full-bleed hero image, premium and aspirational). If this final file does not exist yet, the generator will use a 16:9 catalog image as a draft placeholder.
 - `Image` — art direction prose
 - `Voiceover-INTRO` — 3–5 sentences. Welcome + module purpose + what learner gains. **Do not** list objectives here.
@@ -662,6 +676,7 @@ Image-File: KC_set2.jpg
 
 **Hard rules:**
 - **No VO, no captions** on `3FQ01`–`3FQ10` (silent assessment flow). Don't author `Voiceover-INTRO` or `Caption-Text`.
+- **No per-question feedback:** final-quiz slides do not show correct/incorrect states or reveal the answer. Results appear only on the score slide.
 - Write **2 questions per learning objective** (5 objectives × 2 = 10). Pairs should approach the same objective from different angles.
 
 ---
@@ -728,7 +743,7 @@ Every `.mp3` in `course/assets/audio/vo/` must have a matching `.vtt` in `course
 
 `course/assets/audio/sfx/submit-answer.mp3` plays when the learner submits an answer:
 - KC: fires on **Submit** button click; plays in parallel with the correct/incorrect response VO.
-- FQ: fires on **answer choice** click (no separate Submit button on FQ).
+- FQ: fires on **Submit Answer** after a choice is selected. FQ does not show correct/incorrect feedback.
 
 This is wired in the existing templates — you don't author anything for it.
 

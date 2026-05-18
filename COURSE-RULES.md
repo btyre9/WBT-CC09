@@ -91,6 +91,18 @@ Every image assigned to a slide must have a corresponding storyboard field. The 
 
 When a requested image file does not exist yet, the generator prints an `auto-image` line and uses a real file from `course/assets/images/` whose aspect ratio fits the template. Treat each `auto-image` line as a draft placeholder to replace before shipping. A `WARN` line means no catalog fallback was available.
 
+### S10 — Retire draft catalog images by regenerating, not just moving
+When a slide is generated against a draft placeholder (an `auto-image` fallback), the chosen filename is **baked into the slide HTML** — it does **not** track the storyboard's intended `Image-File` value. So when the final production asset arrives, or when draft catalog images are moved into `course/assets/images/placeholders/` (or deleted), every slide HTML that named the retired file silently breaks.
+
+Before retiring any descriptive draft image from `course/assets/images/`:
+
+1. `grep -l "<draft-filename>" course/slides/*.html` to find slides that reference it.
+2. Drop the intended final asset into `course/assets/images/` using the exact `Image-File` name from `course.md`.
+3. Regenerate **only** the affected slides: `node scripts/generate-slides.js --slide 1SNN --force` per slide. Do **not** force-regen the whole module (see Rule PL5).
+4. Then move or delete the draft.
+
+Symptom of skipping this: slides show broken images even though the matching `1SNN.jpg` is present in `course/assets/images/`. The slide HTML is still pointing at the retired draft name.
+
 ---
 
 ## Part 2 — Slide IDs and Naming
@@ -194,7 +206,7 @@ The only exception is `modal-audio-progress`, which has a documented mirror-audi
 Play `course/assets/audio/sfx/submit-answer.mp3` immediately when the learner submits an answer:
 
 - **`knowledge-check`**: fires when the learner clicks the **Submit** button. Plays in parallel with the correct/incorrect response VO that follows — they are not chained.
-- **`final-quiz`**: fires when the learner clicks an **answer choice** (at the top of `onChoiceClick()`, after the answered guard). Final-quiz has no separate Submit button and no response VO (see Rule Q2).
+- **`final-quiz`**: fires when the learner clicks **Submit Answer** after selecting a choice. Final-quiz has no correct/incorrect response VO and no per-question feedback (see Rule Q2).
 
 SFX files live in `course/assets/audio/sfx/`, separate from VO clips in `course/assets/audio/vo/`, and do not require captions (Rule A5 applies to VO only).
 
@@ -294,8 +306,8 @@ Write **2 questions per learning objective** (2 × 5 = 10). Each pair must appro
 ### Q2 — Final quiz question slides have no VO or captions
 `final-quiz` slides are a silent assessment flow. Do not author `Voiceover-INTRO`, `Caption-Text`, or any other VO fields on `3FQ01`–`3FQ10`. The only quiz slide that carries VO is the score slide (`3FQ-SCORE`). This rule also exists for a second reason: questions are drawn in random order, so any numbered VO would not match the displayed position.
 
-### Q3 — Feedback before auto-advance
-On submit: correct option highlights green, wrong option highlights red and the correct answer is revealed. The feedback strip animates in. The player auto-advances to the next question after **2.5 seconds**. No review loop — final quiz questions never route back to content slides.
+### Q3 — No per-question feedback
+On submit, the final-quiz slide reports the selected answer to the player and advances. It must not show "Correct," "Incorrect," green/red result states, or reveal the correct answer. Learners see results only on the final score slide. No review loop — final quiz questions never route back to content slides.
 
 ### Q4 — No question-stem label
 The body of a `final-quiz` slide shows only the question text and the four options. No "Question N" label appears inside the card body — that information is already in the header, injected by the player.

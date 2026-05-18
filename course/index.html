@@ -386,16 +386,17 @@
     .ctrl-btn-next:hover { background: #b0001a; }
     .ctrl-btn-next:disabled { background: #d5001c; opacity: 0.3; }
     .ctrl-btn-next.pulse-unlock {
-      animation: next-unlock-pulse 1.25s ease-out 0s 2;
+      animation: next-unlock-pulse 1.4s ease-out infinite;
+      transform-origin: center;
     }
     @keyframes next-unlock-pulse {
       0% {
-        box-shadow: 0 0 0 0 rgba(213, 0, 28, 0.8);
+        box-shadow: 0 0 0 0 rgba(213, 0, 28, 0.9);
         transform: scale(1);
       }
-      45% {
-        box-shadow: 0 0 0 12px rgba(213, 0, 28, 0);
-        transform: scale(1.04);
+      42% {
+        box-shadow: 0 0 0 18px rgba(213, 0, 28, 0);
+        transform: scale(1.18);
       }
       100% {
         box-shadow: 0 0 0 0 rgba(213, 0, 28, 0);

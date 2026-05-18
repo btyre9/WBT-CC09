@@ -211,6 +211,7 @@ function parseCsv(content) {
 async function generateVo(segments, { apiKey, speakerId, audioDir, captionsDir, force = false, delayMs = 500 }) {
   let created = 0, skipped = 0, failed = 0;
   const pronunciationMap = loadPronunciationMap();
+  const seenReusableText = new Map();
 
   for (const seg of segments) {
     const audioFile   = path.join(audioDir,   seg.FileName);
@@ -224,6 +225,14 @@ async function generateVo(segments, { apiKey, speakerId, audioDir, captionsDir, 
     }
 
     const rawText = (seg.VoiceoverText || '').trim();
+    const textKey = rawText.replace(/\s+/g, ' ').toLowerCase();
+    if (textKey && seenReusableText.has(textKey)) {
+      console.log(`  SKIP     ${seg.FileName} — duplicate reusable VO text already covered by ${seenReusableText.get(textKey)}`);
+      skipped++;
+      continue;
+    }
+    if (textKey) seenReusableText.set(textKey, seg.FileName);
+
     const ttsText = applyPronunciationMap(rawText, pronunciationMap);
     if (!rawText) {
       console.log(`  SKIP     ${seg.FileName} — no text`);

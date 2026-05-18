@@ -91,7 +91,6 @@ function loadImageCatalog(imagesDir) {
 //   3:4  ≈ 0.75  portrait rail
 const TEMPLATE_PREFERRED_RATIO = {
   'hero-title':                     16/9,
-  'hero-title-left':                16/9,
   'hotspot':                        16/9,
   'video-scenario':                 16/9,
   'content-stat':                   16/9,
@@ -111,7 +110,6 @@ const TEMPLATE_PREFERRED_RATIO = {
 
 const MAIN_IMAGE_TEMPLATES = new Set([
   'hero-title',
-  'hero-title-left',
   'hotspot',
   'video-scenario',
   'content-stat',
@@ -350,17 +348,34 @@ function buildCardsHtml(triggers, slide, imageCatalog) {
   const letters = ['01', '02', '03', '04', '05', '06'];
   return triggers.map((t, idx) => {
     const num   = letters[idx] || String(idx + 1).padStart(2, '0');
-    const title = camelToWords(t.label);
+    const title = slide[`Card-Title-${t.label}`] || camelToWords(t.label);
+    const sig   = slide[`Card-Sig-${t.label}`] || camelToWords(t.label);
+    const bullets = String(slide[`Card-Bullets-${t.label}`] || '')
+      .split('|')
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(s => `          <li>${escHtml(s)}</li>`)
+      .join('\n') || `          <li><!-- Add Card-Bullets-${escHtml(t.label)} to course.md. --></li>`;
     const imageField = `Card-Image-${t.label}`;
     const imagePath = resolveImagePath(slide, imageField, 'card-explore', imageCatalog, { slotKey: 'card-explore:card' });
     return (
-      `      <div class="explore-card pds-card" data-card="${escAttr(t.label)}" id="card-${escAttr(t.label)}" tabindex="0" role="button" aria-label="Explore ${escAttr(title)}">\n` +
-      `        <figure class="card-media"><img src="${escAttr(imagePath)}" alt=""></figure>\n` +
-      `        <div class="card-number">${num}</div>\n` +
-      `        <div class="card-title">${escHtml(title)}</div>\n` +
-      `        <div class="card-body"><!-- Add card detail content here --></div>\n` +
-      `        <div class="card-chip">Explore &rarr;</div>\n` +
-      `      </div>`
+      `    <article class="tile anim-block" data-card="${escAttr(t.label)}" id="card-${escAttr(t.label)}" role="button" tabindex="0" aria-label="Explore ${escAttr(title)}">\n` +
+      `      <img class="tile-poster" src="${escAttr(imagePath)}" alt="" aria-hidden="true">\n` +
+      `      <div class="tile-dim" aria-hidden="true"></div>\n` +
+      `      <div class="tile-signature">\n` +
+      `        <span class="tile-signature__mark">${num} &middot; ${escHtml(sig)}</span>\n` +
+      `        <span class="tile-signature__divider" aria-hidden="true"></span>\n` +
+      `      </div>\n` +
+      `      <div class="tile-content">\n` +
+      `        <h2 class="tile-title">${escHtml(title)}</h2>\n` +
+      `        <ul class="tile-bullets">\n${bullets}\n        </ul>\n` +
+      `        <div class="tile-cta-row">\n` +
+      `          <span class="tile-cta">Explore</span>\n` +
+      `          <span class="tile-cta__arrow" aria-hidden="true">&rarr;</span>\n` +
+      `        </div>\n` +
+      `      </div>\n` +
+      `      <a aria-hidden="true" tabindex="-1" class="DesktopCarRangeTile__clickableArea__403b1" href="#${escAttr(t.label.toLowerCase())}" target="_self"></a>\n` +
+      `    </article>`
     );
   }).join('\n');
 }
@@ -368,6 +383,30 @@ function buildCardsHtml(triggers, slide, imageCatalog) {
 function buildCardAudioMap(triggers) {
   const entries = triggers.map(t => `  '${t.label}': '${t.audioPath}'`);
   return '{\n' + entries.join(',\n') + '\n}';
+}
+
+function buildBulletItemsHtml(slide) {
+  const items = [];
+  for (let i = 1; i <= 10; i++) {
+    const raw = slide[`Bullet-${i}`];
+    if (!raw) break;
+    const parts = String(raw).split('|').map(s => s.trim());
+    const header = parts[0] || '';
+    const body = parts.slice(1).join(' | ');
+    items.push(
+      `        <li class="bullet-item">\n` +
+      `          <div class="bullet-bar"></div>\n` +
+      `          <div class="bullet-content">\n` +
+      `            <span class="bullet-header">${escHtml(header)}</span>\n` +
+      (body ? `            <span class="bullet-body">${escHtml(body)}</span>\n` : '') +
+      `          </div>\n` +
+      `        </li>`
+    );
+  }
+  if (!items.length) {
+    return '        <!-- No Bullet-N fields found in storyboard for this slide. -->';
+  }
+  return items.join('\n\n');
 }
 
 // ---------------------------------------------------------------------------
@@ -667,9 +706,13 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml, imageCatalog) 
   const quoteAttributionName = slide['Quote-Attribution']  || '<!-- Attribution name -->';
   const quoteAttributionTitle= slide['Quote-Title']        || '<!-- Attribution title / role -->';
 
-  // hero-title subtitle: explicit field or second | segment of On-Screen-Text
+  // hero-title subtitle: descriptive support copy only. Module-count labels
+  // like "Module 9 of 12" are intentionally suppressed.
   const onScreenParts = (slide['On-Screen-Text'] || '').split('|');
-  const heroSubtitle  = slide['Hero-Subtitle'] || (onScreenParts[1] ? onScreenParts[1].trim() : '');
+  const rawHeroSubtitle = slide['Hero-Subtitle'] || (onScreenParts[1] ? onScreenParts[1].trim() : '');
+  const heroSubtitle = /^module\s+\d+\s+of\s+\d+$/i.test(String(rawHeroSubtitle).trim())
+    ? (slide['On-Screen-Text'] || slide['Caption-Text'] || '')
+    : rawHeroSubtitle;
 
   // Pull-Quote: optional field — if present, replaces body copy in content-split with a pc-pull-quote
   const pullQuoteText = slide['Pull-Quote'];
@@ -679,6 +722,14 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml, imageCatalog) 
   } else {
     bodyContentHtml = `<p class="pds-body anim-fade-right" style="--anim-delay: 0.35s;">${escHtml(onScreen)}</p>`;
   }
+  const calloutText = slide['Callout-Text'];
+  const calloutLabel = slide['Callout-Label'] || 'Key Point';
+  const calloutHtml = calloutText
+    ? `<div class="pds-callout anim-fade-right" style="--anim-delay:0.45s;"><strong>${escHtml(calloutLabel)}</strong><span>${escHtml(calloutText)}</span></div>`
+    : '';
+  const closingCalloutHtml = calloutText
+    ? `<p class="closing-callout anim-block" id="el-callout">${escHtml(calloutText)}</p>`
+    : '';
 
   // Intro paragraph above the objectives list. Falls back to On-Screen-Text
   // (matches the doc example which uses On-Screen-Text for the
@@ -718,6 +769,9 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml, imageCatalog) 
     HOTSPOT_POPOVERS_HTML: buildHotspotPopoversHtml(clicks, slide),
     // content-split body — pull quote or plain body copy
     BODY_CONTENT_HTML: bodyContentHtml,
+    CALLOUT_HTML: calloutHtml,
+    CLOSING_CALLOUT_HTML: closingCalloutHtml,
+    BULLET_ITEMS_HTML: buildBulletItemsHtml(slide),
     // KC / FQ templates
     QUESTION_TEXT:   escHtml(slide['Question'] || ''),
     CHOICES_HTML:    buildChoicesHtml(slide, templateId),
@@ -802,12 +856,12 @@ async function main() {
     const outPath    = path.resolve(args.slidesDir, slideId + '.html');
 
     // Track KC review map
-    if (/^KC[_-]/i.test(slideId) && slide['Review-Slide']) {
+    if ((/^KC[_-]/i.test(slideId) || /^2KC\d{2}$/i.test(slideId)) && slide['Review-Slide']) {
       kcReviewMap[slideId] = [slide['Review-Slide']];
     }
 
     // Track FQ question slides (not SCORE)
-    if (/^FQ[_-]/i.test(slideId) && !/[_-]SCORE$/i.test(slideId)) {
+    if ((/^FQ[_-]/i.test(slideId) && !/[_-]SCORE$/i.test(slideId)) || /^3FQ\d{2}$/i.test(slideId)) {
       fqQuestionIds.push(slideId);
     }
 
@@ -886,13 +940,22 @@ async function main() {
   }
 
   // Build slides array
+  const reusableIntroAudioByText = new Map();
   existing.slides = slides.map(slide => {
     const slideId = slide['Slide-ID'];
     const entry = {
       id:       slideId,
       title:    slide['Slide-Title'] || slideId,
-      audio_vo: resolveAudioPaths(slideId).playerPath,
     };
+    if (slide['Voiceover-INTRO']) {
+      const textKey = String(slide['Voiceover-INTRO']).replace(/\s+/g, ' ').trim().toLowerCase();
+      if (reusableIntroAudioByText.has(textKey)) {
+        entry.audio_vo = reusableIntroAudioByText.get(textKey);
+      } else {
+        entry.audio_vo = resolveAudioPaths(slideId).playerPath;
+        reusableIntroAudioByText.set(textKey, entry.audio_vo);
+      }
+    }
     return entry;
   });
 

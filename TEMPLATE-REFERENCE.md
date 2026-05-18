@@ -66,7 +66,7 @@ Every slide should carry an image wherever the template supports one. Never leav
 **Avoid when:** Any position other than Slide 01.
 
 **What the learner sees:**
-Full-bleed background image with dark gradient overlay. Left-aligned: small module eyebrow label, red accent bar (120px × 8px), large module title, subtitle line below. Title fades in at 0.5s. Optional Lottie underline animation on the title.
+Full-bleed background image with a dark left-to-right gradient overlay. The title group is left-aligned and positioned slightly above the vertical midpoint: red accent bar aligned to the left edge of the title, large module title, descriptive subtitle line below. Do not use module-count labels such as "Module 9 of 12" as the subtitle.
 
 **Required fields:**
 
@@ -74,7 +74,7 @@ Full-bleed background image with dark gradient overlay. Left-aligned: small modu
 |-------|--------|-------|
 | `Slide-Title` | Module title text | Main hero heading |
 | `Image-File` | `1SNN.jpg` | Full-bleed background — premium, aspirational |
-| `Hero-Subtitle` | e.g. `Module 3 of 12` | Caption line below the title |
+| `Hero-Subtitle` | Short descriptive support line | Caption line below the title; never a module-count label |
 | `Voiceover-INTRO` | 3–5 sentences | Welcome + module purpose + what learner will gain |
 | `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
 
@@ -89,7 +89,7 @@ Full-bleed background image with dark gradient overlay. Left-aligned: small modu
 - VO plays on entry. No other interactions.
 
 **VO guidance:**
-Open with the module name and number. State what the learner will gain. End with energy — this sets the tone for the entire module. Do not list objectives here (that is the next slide's job).
+Open with the module topic. State what the learner will gain. End with energy — this sets the tone for the entire module. Do not list objectives here (that is the next slide's job).
 
 **Example:**
 ```
@@ -99,7 +99,7 @@ Slide-ID: 1S01
 Template-ID: hero-title
 Slide-Title: The Art of Communication
 Image-File: porsche_advisor_greeting_CC00.jpg
-Hero-Subtitle: Module 3 of 12
+Hero-Subtitle: Turn everyday conversations into trust-building service moments.
 >> On slide load → 1S01-INTRO.mp3
 Voiceover-INTRO: Welcome to Module 3 — The Art of Communication. In every service interaction, the words you choose, the way you listen, and the energy you bring determine whether a customer leaves satisfied — or simply leaves. In this module, you'll learn the communication skills that set Porsche service professionals apart from the rest.
 Caption-Text: Welcome to Module 3 — The Art of Communication.
@@ -519,7 +519,7 @@ Notes: knowledge-check chosen — tests the core concept from the communication 
 **Avoid when:** Mid-module comprehension checks (use `knowledge-check`).
 
 **What the learner sees:**
-Centered modal card on a dimmed backdrop. Header shows "Question N of M" (injected by the player — the storyboard title is only a fallback). No question-number label inside the body. Four lettered options (A–D). **No Submit button** — clicking a choice submits immediately and plays `submit-answer.mp3` (Rule A6). On submit: correct option highlights green, incorrect option highlights red and the correct answer is also revealed. Feedback strip animates in. After 2.5 seconds the player advances to the next question automatically. All results reported to SCORM.
+Centered modal card on a dimmed backdrop. Header shows "Question N of M" (injected by the player — the storyboard title is only a fallback). No question-number label inside the body. Four lettered options (A–D) and a Submit Answer button. Selecting an option only marks it selected; Submit Answer reports the answer and advances. The slide must not reveal correctness, use green/red result states, or show "Correct"/"Incorrect" feedback. All results are shown only on the final score slide and reported to SCORM.
 
 **Question pool and random draw:**
 Each module must have **10** `final-quiz` slides (3FQ01 through 3FQ10). The player randomly draws **5** each time the learner enters the quiz. The drawn questions are always presented as "Question 1 of 5" through "Question 5 of 5" in sequence, regardless of which 5 were drawn. Write every question so it stands alone — learners will not always see the same 5.
@@ -538,7 +538,7 @@ Each module must have **10** `final-quiz` slides (3FQ01 through 3FQ10). The play
 Final quiz question slides do not count as numbered slides in the menu / table of contents. The menu shows one unnumbered Final Quiz entry.
 
 **Interaction model:**
-- Clicking an answer choice submits immediately — no separate Submit button. The choice click plays `assets/audio/sfx/submit-answer.mp3` (Rule A6), shows feedback (correct = green, incorrect = red with the correct answer revealed), then auto-advances after 2.5s.
+- Selecting an answer enables Submit Answer. Submit reports the selected answer, plays `assets/audio/sfx/submit-answer.mp3` (Rule A6), and advances without any per-question correctness feedback.
 - Results tallied across all drawn `final-quiz` slides; reported by the `quiz-score` slide.
 
 **Example:**
@@ -593,7 +593,7 @@ Notes: quiz-score chosen — required final slide. Pass threshold 80%. SCORM rep
 **Avoid when:** Any position other than just before the final quiz slides.
 
 **What the learner sees:**
-Module wrap-up layout with heading, brief summary message, optional accent image. Clean and minimal — designed to transition the learner from content into assessment mode.
+Full-height two-column wrap-up layout. The left side uses a dark panel with a red accent bar, top-left heading, summary message, callout line, and an "Up Next" assessment banner. The right side uses a tall image column. This is designed to transition the learner from content into assessment mode.
 
 **Required fields:**
 
@@ -601,6 +601,7 @@ Module wrap-up layout with heading, brief summary message, optional accent image
 |-------|--------|-------|
 | `Slide-Title` | e.g. `Module Complete` or `Well Done` | Closing heading |
 | `On-Screen-Text` | 1–2 sentence summary | What the learner has accomplished |
+| `Callout-Text` | Short memorable takeaway | Displayed as the red-accent callout under the summary |
 | `Image-File` | `1SNN.jpg` | Accent image — aspirational, forward-momentum scene |
 | `Voiceover-INTRO` | 3–5 sentences | Brief summary + clear transition to the assessment |
 | `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
@@ -622,6 +623,7 @@ Slide-ID: 1S16
 Template-ID: closing
 Slide-Title: Module Complete
 On-Screen-Text: You've explored the communication skills that separate good service from great service — and learned how to apply them in every customer interaction.
+Callout-Text: Stay calm. Stay accurate. Keep the door open.
 Image-File: porsche_handshake_closing_CC00.jpg
 >> On slide load → 1S16-INTRO.mp3
 Voiceover-INTRO: You've covered a lot of ground in this module. You now understand why communication breaks down, how the three channels shape every message you send, and how to use the FACE framework to structure every intake conversation. In the next section, you'll complete a short assessment to confirm your understanding. Take your time and trust what you've learned.
@@ -1082,7 +1084,7 @@ These IDs appear in the system's field reference but have no implementation or d
 | `Template-ID` | All | See template catalog above |
 | `Slide-Title` | All | Display title shown in course menu |
 | `Slide-Subtitle` | `tile-explore` | 1–2 sentence instructional intro displayed below the heading |
-| `Hero-Subtitle` | `hero-title` | e.g. `Module 3 of 12` |
+| `Hero-Subtitle` | `hero-title` | Short descriptive support line; never module-count text |
 | `Objective-N` | `learning-objectives` | Verb-first format. Parser stops at first missing number. Max 10. Missing fields produce placeholder HTML — treat as build error. |
 | `VO-Cue-N` | `learning-objectives` | Seconds from INTRO audio start for per-objective emphasis animation. Set after VO recording. |
 | `Intro-Text` | `learning-objectives` (optional) | Paragraph above the objectives list. Defaults to `On-Screen-Text` if absent. |
