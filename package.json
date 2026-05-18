@@ -13,7 +13,8 @@
     "clean-generated": "node scripts/clean-generated.js",
     "init-module": "node scripts/init-module.js",
     "init-repo": "node scripts/init-repo.js",
-    "sync-from-template": "node scripts/sync-from-template.js"
+    "sync-from-template": "node scripts/sync-from-template.js",
+    "sync-audio": "node scripts/sync-audio.js"
   },
   "devDependencies": {
     "browser-sync": "^3.0.4",
