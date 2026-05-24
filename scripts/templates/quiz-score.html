@@ -97,6 +97,39 @@
     .score-panel { display: none; }
     .score-layout.is-pass .score-panel--pass { display: contents; }
     .score-layout.is-fail .score-panel--fail { display: contents; }
+
+    /* ── Print certificate ─────────────────────────────────────────────── */
+    .certificate { display: none; }
+    @media print {
+      .slide, script { display: none !important; }
+      .certificate { display: block !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      @page { size: 8.5in 11in portrait; margin: 0; }
+      html, body { width: 8.5in; height: 11in; overflow: visible; transform: none !important; margin: 0 !important; }
+    }
+    .certificate {
+      position: relative;
+      width: 8.5in; height: 11in;
+      overflow: hidden;
+      font-family: "Porsche Next TT", "Arial Narrow", Arial, sans-serif;
+    }
+    .cert-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; display: block; }
+    .cert-overlay-name {
+      position: absolute; top: 36%; left: 50%; transform: translate(-50%, -100%);
+      margin: 0; font-size: 22pt; font-weight: 400; color: #1a1a1a;
+      text-align: center; white-space: nowrap; letter-spacing: 0.02em;
+    }
+    .cert-overlay-course {
+      position: absolute; top: 46%; left: 50%; transform: translateX(-50%);
+      margin: 0; font-size: 22pt; font-weight: 700; font-style: italic;
+      color: #1a1a1a; text-align: center; white-space: nowrap;
+    }
+    .cert-overlay-date {
+      position: absolute; top: 74%; left: 76.1%; transform: translate(-19%, -50%);
+      margin: 0; font-size: 13pt; font-weight: 700; color: #3d2000;
+      text-align: center; letter-spacing: 0.02em; padding: 5px 14px;
+      border-radius: 3px; white-space: nowrap;
+    }
 </style>
 </head>
 <body>
@@ -124,8 +157,8 @@
           <button class="score-btn score-btn--ghost" id="review-btn-pass" type="button">
             ↩ Review Module
           </button>
-          <button class="score-btn score-btn--primary" onclick="window.print()">
-            ↓ Go to Certificate
+          <button class="score-btn score-btn--primary" id="print-cert-btn" type="button">
+            Print / Save Certificate
           </button>
         </div>
       </div>
@@ -149,6 +182,14 @@
 
   </div>
 
+</div>
+
+<!-- Print-only certificate (outside .slide so @media print can swap them) -->
+<div class="certificate" id="certificate" aria-hidden="true">
+  <img class="cert-bg" src="../assets/images/certificate-template.jpg" alt="">
+  <p class="cert-overlay-name" id="cert-name">Porsche Technician</p>
+  <p class="cert-overlay-course" id="cert-course">{{MODULE_LABEL}}</p>
+  <p class="cert-overlay-date" id="cert-date">01/01/2026</p>
 </div>
 
 <script src="../assets/vendor/gsap/gsap.min.js"></script>
@@ -275,6 +316,47 @@ var SandboxRuntime = (function () {
   if (reviewBtnPass) reviewBtnPass.addEventListener('click', onReviewModule);
   var reviewBtnFail = document.getElementById('review-btn-fail');
   if (reviewBtnFail) reviewBtnFail.addEventListener('click', onReviewModule);
+
+  /* ── Certificate (print-only div toggled by @media print) ────────────── */
+  function getLearnerName() {
+    try {
+      if (window.parent && window.parent.API) {
+        var n = window.parent.API.LMSGetValue('cmi.core.student_name');
+        if (n && n !== '') return formatLearnerName(n);
+      }
+    } catch (_) {}
+    try {
+      if (window.parent && window.parent.API_1484_11) {
+        var n2 = window.parent.API_1484_11.GetValue('cmi.learner_name');
+        if (n2 && n2 !== '') return formatLearnerName(n2);
+      }
+    } catch (_) {}
+    return 'Porsche Technician';
+  }
+  function formatLearnerName(raw) {
+    var s = String(raw || '');
+    if (s.indexOf(',') === -1) return s;
+    var p = s.split(',').map(function (x) { return x.trim(); });
+    return (p[1] ? p[1] + ' ' : '') + (p[0] || '');
+  }
+  function populateCertificate() {
+    var now = new Date();
+    var mm   = String(now.getMonth() + 1).padStart(2, '0');
+    var dd   = String(now.getDate()).padStart(2, '0');
+    var yyyy = now.getFullYear();
+    var nameEl = document.getElementById('cert-name');
+    var dateEl = document.getElementById('cert-date');
+    if (nameEl) nameEl.textContent = getLearnerName();
+    if (dateEl) dateEl.textContent = mm + '/' + dd + '/' + yyyy;
+  }
+  function printCertificate() {
+    var layout = document.getElementById('score-layout');
+    if (!layout || !layout.classList.contains('is-pass')) return;
+    populateCertificate();
+    window.print();
+  }
+  var printBtn = document.getElementById('print-cert-btn');
+  if (printBtn) printBtn.addEventListener('click', printCertificate);
 })();
 </script>
 

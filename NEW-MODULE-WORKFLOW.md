@@ -185,13 +185,17 @@ Reads the VTT for each `learning-objectives` slide and writes `VO-Cue-N` timesta
 
 ## Step 9 — Final slide regeneration with cue times
 
+Regenerate only the slide(s) using the `learning-objectives` template (typically the Step 2 "What You'll Learn" slide). For CC09 that's `1S02`:
+
 ```bash
-npm run generate-slides -- --force
+node scripts/generate-slides.js --slide 1S02 --force
 ```
 
-Bakes the freshly-written `VO-Cue-N` values into the slide HTML.
+Bakes the freshly-written `VO-Cue-N` values into that slide's HTML.
 
-> **Rule PL5 — Important:** After this step, **do not run `generate-slides --force` again unless you explicitly want to wipe hand-edits**. Once slides are in active use, regeneration overwrites all manual HTML changes. If you need to fix a specific slide later, edit its HTML directly or update `course.md` and regenerate **only** that slide.
+> **Safety: bulk `--force` is blocked.** `generate-slides --force` without `--slide <ID>` errors out. To regen multiple slides, pass them as a comma-separated list: `--slide 1S02,1S07,2KC01 --force`. Every overwrite snapshots the previous version to `course/slides/.backup/<ID>-<timestamp>.html`, so accidental regens are recoverable.
+
+> **Rule PL5 — Important:** Once a slide has hand-edits (image positioning, layout tweaks, copy adjustments), avoid regenerating it. The Final-vs-Draft status convention is not yet enforced by the script; treat any slide you've touched as fragile until that lands.
 
 ---
 
@@ -309,7 +313,8 @@ npm run generate-slides
 npm run generate-vo
 npm run generate-vtt -- --whisper-local
 npm run extract-vo-cues
-npm run generate-slides -- --force
+# Step 9: regen ONLY the learning-objectives slide(s) to bake VO cues:
+node scripts/generate-slides.js --slide 1S02 --force
 # (drop image .jpg files into course/assets/images/)
 npm run start-player        # review
 npm run package             # ship

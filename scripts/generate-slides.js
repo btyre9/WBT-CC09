@@ -28,11 +28,17 @@ function parseArgs(argv) {
     dataDir:    path.join('course', 'data'),
     templatesDir: path.join('scripts', 'templates'),
     force: false,
+    onlySlides: null,   // null = process all; otherwise Set of Slide-IDs
   };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--storyboard') args.storyboard  = argv[++i];
     if (argv[i] === '--slides-dir') args.slidesDir   = argv[++i];
     if (argv[i] === '--force')      args.force        = true;
+    if (argv[i] === '--slide') {
+      // Accept comma-separated list: --slide 1S05 or --slide 1S05,1S07,2KC01
+      const ids = String(argv[++i] || '').split(',').map(s => s.trim()).filter(Boolean);
+      args.onlySlides = new Set(ids);
+    }
   }
   return args;
 }
@@ -106,6 +112,7 @@ const TEMPLATE_PREFERRED_RATIO = {
   'learning-objectives':            3/4,
   'step-sequence':                  4/3,
   'bar-chart-modal':                4/3,
+  'scenario-branch':                16/9,
 };
 
 const MAIN_IMAGE_TEMPLATES = new Set([
@@ -123,6 +130,7 @@ const MAIN_IMAGE_TEMPLATES = new Set([
   'knowledge-check',
   'step-sequence',
   'bar-chart-modal',
+  'scenario-branch',
 ]);
 
 const IMAGE_SLOT_RATIO = {
@@ -156,6 +164,11 @@ function resolveImagePath(slide, imageField, templateId, imageCatalog, options =
     return `../assets/images/${imageFile}`;
   }
 
+  const inferredImage = inferSlideImage(slide, imageField, options);
+  if (inferredImage && fs.existsSync(path.join(imagesDir, inferredImage))) {
+    return `../assets/images/${inferredImage}`;
+  }
+
   const picked = imageCatalog && imageCatalog.length
     ? pickImageForTemplate(imageCatalog, templateId, options.slotKey)
     : null;
@@ -177,6 +190,34 @@ function resolveImagePath(slide, imageField, templateId, imageCatalog, options =
   }
 
   return '../assets/images/placeholder.jpg';
+}
+
+function findImageByBase(baseName) {
+  if (!baseName) return null;
+  const imagesDir = path.resolve('course', 'assets', 'images');
+  const filename = `${baseName}.jpg`;
+  if (fs.existsSync(path.join(imagesDir, filename))) return filename;
+  return null;
+}
+
+function inferSlideImage(slide, imageField, options = {}) {
+  const slideId = slide['Slide-ID'];
+  if (!slideId) return null;
+
+  if (typeof options.sequenceIndex === 'number') {
+    const suffix = String.fromCharCode(97 + options.sequenceIndex);
+    const sequenced = findImageByBase(`${slideId}${suffix}`);
+    if (sequenced) return sequenced;
+  }
+
+  const requested = slide[imageField];
+  if (requested) {
+    const requestedBase = path.basename(String(requested), path.extname(String(requested)));
+    const extensionMatch = findImageByBase(requestedBase);
+    if (extensionMatch) return extensionMatch;
+  }
+
+  return findImageByBase(slideId);
 }
 
 // ---------------------------------------------------------------------------
@@ -357,7 +398,10 @@ function buildCardsHtml(triggers, slide, imageCatalog) {
       .map(s => `          <li>${escHtml(s)}</li>`)
       .join('\n') || `          <li><!-- Add Card-Bullets-${escHtml(t.label)} to course.md. --></li>`;
     const imageField = `Card-Image-${t.label}`;
-    const imagePath = resolveImagePath(slide, imageField, 'card-explore', imageCatalog, { slotKey: 'card-explore:card' });
+    const imagePath = resolveImagePath(slide, imageField, 'card-explore', imageCatalog, {
+      slotKey: 'card-explore:card',
+      sequenceIndex: idx,
+    });
     return (
       `    <article class="tile anim-block" data-card="${escAttr(t.label)}" id="card-${escAttr(t.label)}" role="button" tabindex="0" aria-label="Explore ${escAttr(title)}">\n` +
       `      <img class="tile-poster" src="${escAttr(imagePath)}" alt="" aria-hidden="true">\n` +
@@ -642,6 +686,30 @@ function buildKCChoicesHtml(slide) {
 }
 
 // ---------------------------------------------------------------------------
+// Scenario-branch choices: 3 buttons authored in fixed order.
+// data-choice keeps the original number (used to key per-choice consequences);
+// data-correct="true" marks the right answer; template JS shuffles DOM order.
+// ---------------------------------------------------------------------------
+
+function buildScenarioBranchChoicesHtml(slide) {
+  const correctIdx = parseInt(slide['Choice-Correct'], 10);
+  const items = [];
+  for (let i = 1; i <= 3; i++) {
+    const text        = slide[`Choice-${i}`] || `Choice ${i}`;
+    const consequence = slide[`Consequence-${i}`] || '';
+    const correct     = i === correctIdx ? ' data-correct="true"' : '';
+    items.push(
+      `      <button class="sb-choice" type="button" data-choice="${i}"${correct} data-consequence="${escAttr(consequence)}">\n` +
+      `        <span class="sb-choice__num">${i}</span>\n` +
+      `        <span class="sb-choice__text">${escHtml(text)}</span>\n` +
+      `        <span class="sb-choice__mark" aria-hidden="true"></span>\n` +
+      `      </button>`
+    );
+  }
+  return items.join('\n');
+}
+
+// ---------------------------------------------------------------------------
 // Stat value / label split
 // e.g. "94% Customer Satisfaction" → { value: "94%", label: "Customer Satisfaction" }
 // e.g. "Service excellence starts here" → { value: slide title, label: text }
@@ -774,10 +842,17 @@ function buildTokens(slide, allSlides, courseTitle, templateHtml, imageCatalog) 
     BULLET_ITEMS_HTML: buildBulletItemsHtml(slide),
     // KC / FQ templates
     QUESTION_TEXT:   escHtml(slide['Question'] || ''),
-    CHOICES_HTML:    buildChoicesHtml(slide, templateId),
+    CHOICES_HTML:    templateId === 'scenario-branch'
+      ? buildScenarioBranchChoicesHtml(slide)
+      : buildChoicesHtml(slide, templateId),
     CORRECT_ANSWER:  String(parseInt(slide['Correct-Answer'], 10) || 1),
     REVIEW_SLIDE:    slide['Review-Slide'] || '',
     QUESTION_NUMBER: String(fqQuestionNumber(allSlides, slideId)),
+    // scenario-branch template
+    SETUP_TEXT:        escHtml(slide['Setup-Text'] || ''),
+    CUSTOMER_LINE:     escHtml(slide['Customer-Line'] || ''),
+    REFLECTION_TEXT:   escHtml(slide['Reflection-Text'] || ''),
+    REFLECTION_HAS_TEXT: slide['Reflection-Text'] ? 'true' : 'false',
   };
 
   return tokens;
@@ -814,6 +889,21 @@ function camelToWords(str) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
 
+  // Safety: --force without --slide is blocked. Bulk force-regen has wiped
+  // hand-edits too many times. To regen every slide, run --slide with an
+  // explicit list of IDs (no shortcut).
+  if (args.force && !args.onlySlides) {
+    console.error('\nError: --force requires --slide <ID> (or a comma-separated list).');
+    console.error('Bulk force-regen is disabled to prevent wiping hand-edits.');
+    console.error('');
+    console.error('Examples:');
+    console.error('  node scripts/generate-slides.js --slide 1S05 --force');
+    console.error('  node scripts/generate-slides.js --slide 1S05,2KC01 --force');
+    console.error('');
+    console.error('Without --force the script skips slides that already exist on disk.');
+    process.exit(1);
+  }
+
   // Validate storyboard
   const sbPath = path.resolve(args.storyboard);
   if (!fs.existsSync(sbPath)) {
@@ -826,7 +916,20 @@ async function main() {
   console.log('─'.repeat(60));
 
   const { courseTitle, slides } = parseCourseMd(sbPath);
-  console.log(`Course: ${courseTitle}  |  Slides: ${slides.length}\n`);
+  console.log(`Course: ${courseTitle}  |  Slides: ${slides.length}`);
+
+  // --slide filter: validate IDs against the storyboard before doing any work
+  if (args.onlySlides) {
+    const knownIds = new Set(slides.map(s => s['Slide-ID']));
+    const unknown = Array.from(args.onlySlides).filter(id => !knownIds.has(id));
+    if (unknown.length) {
+      console.error(`\nError: --slide IDs not found in storyboard: ${unknown.join(', ')}`);
+      console.error(`Known IDs: ${Array.from(knownIds).join(', ')}`);
+      process.exit(1);
+    }
+    console.log(`Filtering to: ${Array.from(args.onlySlides).join(', ')} (other slide HTML files left untouched)`);
+  }
+  console.log('');
 
   // Load image catalog once — used to auto-pick aspect-ratio-appropriate
   // images for slides that don't specify Image-File.
@@ -865,6 +968,12 @@ async function main() {
       fqQuestionIds.push(slideId);
     }
 
+    // --slide filter: skip slides not in the requested list
+    // (data-file tracking above still runs so course.data.json stays accurate)
+    if (args.onlySlides && !args.onlySlides.has(slideId)) {
+      continue;
+    }
+
     // Skip if exists and not forced
     if (!args.force && fs.existsSync(outPath)) {
       console.log(`  SKIP   ${slideId}.html  (exists — use --force to overwrite)`);
@@ -899,6 +1008,22 @@ async function main() {
     // Build tokens and render
     const tokens   = buildTokens(slide, slides, courseTitle, templateHtml, imageCatalog);
     const rendered = renderTemplate(templateHtml, tokens);
+
+    // Auto-backup: if we're about to overwrite an existing slide, snapshot
+    // the previous version to course/slides/.backup/<ID>-<timestamp>.html so
+    // any accidental overwrite is recoverable.
+    if (fs.existsSync(outPath)) {
+      try {
+        const backupDir = path.resolve(args.slidesDir, '.backup');
+        fs.mkdirSync(backupDir, { recursive: true });
+        const stamp = new Date().toISOString().replace(/[:.]/g, '-').replace('T', '_').slice(0, 19);
+        const backupPath = path.join(backupDir, `${slideId}-${stamp}.html`);
+        fs.copyFileSync(outPath, backupPath);
+        console.log(`  BACKUP                  ←  ${path.relative('.', backupPath)}`);
+      } catch (err) {
+        console.warn(`  WARN   ${slideId} — backup failed: ${err.message}`);
+      }
+    }
 
     // Write slide file
     try {

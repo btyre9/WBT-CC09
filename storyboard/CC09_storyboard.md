@@ -7,7 +7,7 @@ Slide-ID: 1S01
 Template-ID: hero-title
 Slide-Title: Addressing Customer Concerns and Objections
 Hero-Subtitle: Module 9 of 12
-Image-File: 1S01.webp
+Image-File: 1S01.jpg
 Image: A Porsha technician and customer in a service bay, mid-conversation next to a 911. The customer's body language shows hesitation — arms loosely crossed, slight head tilt. The technician is calm, attentive, hands relaxed. Warm bay lighting, slight depth-of-field on the vehicle behind them.
 Voiceover-INTRO: Every objection is a question in disguise. The customer is not pushing back on you — they are processing information and looking for a reason to say yes. How you respond in those moments decides whether they trust your recommendation, whether they approve the work, and whether they come back next time. This module gives you two frameworks for the most common objections you will hear, and a way to handle the ones you cannot overcome.
 Caption-Text: Every objection is a question in disguise.
@@ -32,7 +32,7 @@ VO-Cue-3: 19
 VO-Cue-4: 28
 VO-Cue-5: 35
 VO-Clear-Time: 43
-Image-File: 1S02.webp
+Image-File: 1S02.jpg
 Image: Clean overhead view of a service write-up area — a tablet, a Porsha key fob, a notepad with checkmarks. Calm, organized, professional. Soft natural light from a service bay window.
 Voiceover-INTRO: Here is what you will be able to do by the end of this module. First, reframe customer objections as opportunities to educate and build trust. Second, apply the C P R framework — Clarify, Paraphrase, Respond — when an objection is unclear. Third, apply the R A C E framework — Respect, Align, Contrast, Elevate — when a customer mentions a competitor. Fourth, maintain professionalism when addressing customer concerns. And fifth, recognize when to accept "no" gracefully while preserving the relationship.
 Status: Draft
@@ -47,8 +47,8 @@ Caption-Text: An objection is a signal that the customer needs more information 
 On-Screen-Text: An objection is a signal that the customer needs more information. It is not a personal attack on your expertise. It means they are engaged enough to push back, which is a far better starting point than silence.
 Callout-Text: A customer who objects is still in the conversation. That is the only place you can do anything useful.
 Callout-Label: Reframe
-Image-File: 1S03.webp
-Image: A customer leaning slightly forward, brow furrowed in thought, looking at a tablet a technician is holding showing a brake pad measurement. Engaged, not hostile. Service drive setting, soft daylight.
+Image-File: 1S03.jpg
+Image: A customer leaning slightly forward at a Porsha service drive, brow furrowed in thought, looking at a tablet a Porsha technician is holding showing a brake pad measurement. The customer's Porsha 911 is parked just behind them on the drive, hood up. Engaged, not hostile. Soft morning daylight.
 Voiceover-INTRO: When a customer pushes back on a recommendation, something useful is happening. They are processing what you told them. They are weighing it against what they already believed coming in. And they are giving you a second chance to make the case clearly. Treat that as a problem and you get defensive. Treat it as engagement and you get a real conversation. The customers you should worry about are the quiet ones — the ones who nod, leave, and never come back.
 Status: Draft
 Notes: content-split chosen — single concept (the reframe) needs a callout to anchor the takeaway. Sets up Objective 1 before the misconception slide expands it.
@@ -66,8 +66,8 @@ Bullet-3: How you handle a concern matters more than the concern itself.
 Bullet-4: Follow-up is how you surface the problems that never made it to a complaint.
 Callout-Text: The customer talking to you is not the problem. The customer who left without talking is.
 Callout-Label: The Pattern
-Image-File: 1S04.webp
-Image: Two-panel composition. Left — a customer animatedly explaining something, a Porsha technician listening attentively, both engaged. Right — a customer silently driving away from a dealership, taillights only, ambiguous expression. Visual contrast between visible concern and invisible loss.
+Image-File: 1S04.jpg
+Image: Two-panel composition. Left — a customer animatedly explaining something to a Porsha technician at a service write-up counter, a Porsha Taycan visible on the service drive behind them, both engaged. Right — a different customer silently driving away from a Porsha dealership in a Porsha Macan, taillights only, ambiguous expression. Visual contrast between visible concern and invisible loss.
 Voiceover-INTRO: Two assumptions about customer behavior cause more damage than almost anything else. The first — angry customers are lost customers. Not true. Research on service recovery shows customers whose problems get resolved often end up more loyal than customers who never had a problem in the first place. The second — quiet customers are happy customers. Also not true. Most unhappy customers do not complain. They just leave, tell their friends, and you never know why. The visible concern in front of you is something you can work with. The invisible one is what costs you the long-term relationship.
 Status: Draft
 Notes: content-bullets chosen — two parallel misconception/reality pairs plus the two implications below them. Reinforces Objective 1 with the concrete reasoning behind the reframe.
@@ -81,8 +81,8 @@ Caption-Text: Even a clear explanation will not stop every objection — and tha
 On-Screen-Text: You already learned in the previous module how to explain technical issues using Feature, Function, and Benefit. That is your first line of defense. But even a clean explanation will not prevent every objection. People need time to process, time to talk it through, and sometimes time to voice the concern out loud before they can move past it.
 Callout-Text: An objection after a good explanation is not a failure. It is the conversation continuing.
 Callout-Label: Key Point
-Image-File: 1S05.webp
-Image: A technician and customer at a service write-up counter. The customer is looking down at a printed estimate, finger tracing one of the line items. The technician waits patiently, not interrupting. Quiet moment of consideration.
+Image-File: 1S05.jpg
+Image: A Porsha technician and customer at a service write-up counter. The customer is looking down at a printed estimate, finger tracing one of the line items. The technician waits patiently, not interrupting. Through the glass behind them a Porsha 911 GT3 sits on the service drive, hood open. Quiet moment of consideration.
 Voiceover-INTRO: A good explanation does prevent a lot of objections. F F B does most of the work most of the time. But people are not decision machines. They need to think out loud. They need to test what you told them against what they already believed when they walked in. And sometimes they just need to voice a concern before they feel ready to commit. When that happens, you do not start over — you keep the conversation going. Which is exactly what the next two frameworks are built for.
 Status: Draft
 Notes: content-split chosen — bridges from Module 8 content into the two frameworks. Acknowledges F F B is foundation, sets up why frameworks are still needed.
@@ -94,7 +94,7 @@ Template-ID: card-explore
 Slide-Title: The C P R Framework — When the Objection Is Unclear
 Caption-Text: C P R clarifies what the customer is actually worried about before you respond.
 On-Screen-Text: When a customer pushes back but you cannot tell exactly why, C P R buys you the information you need to respond to the real concern. Click each card to explore.
-Image-File: 1S06.webp
+Image-File: 1S06.jpg
 Image: Three connected cards or panels in a flow — a question mark icon, an ear or speech bubble icon, and a checkmark or response arrow. Clean infographic style on a neutral Porsha-grey background.
 Voiceover-INTRO: When the objection is vague, you cannot fix it until you know what it actually is. C P R — Clarify, Paraphrase, Respond — gives you three moves that pull the real concern to the surface before you try to answer it. Click each card to explore.
 Voiceover-CLICK-Clarify: Clarify means asking a question that narrows down what the customer is actually worried about. If they say "I am not sure about this," you ask whether it is cost, timing, or whether they think the work is necessary. You are not pushing — you are giving them a few options to react to. Their answer tells you which conversation to have next.
@@ -115,17 +115,17 @@ Notes: card-explore chosen — three parallel steps that each need individual ex
 ## Slide 07 — C P R in Action
 
 Slide-ID: 1S07
-Template-ID: content-split
+Template-ID: step-sequence
 Slide-Title: C P R in Action — The Brake Service Objection
-Caption-Text: Here is C P R applied to a real, vague brake-service pushback.
-On-Screen-Text: Customer: "I am just not sure I really need those brakes done today." Technician (Clarify): "When you say you are not sure — is it the cost, the timing, or are you not convinced the service is necessary?" Customer: "Well, the car seems to be stopping fine to me." Technician (Paraphrase): "So it sounds like you are questioning whether the service is needed right now, since you have not noticed a problem." Customer: "Exactly." Technician (Respond): "That makes sense. Let me show you what I found. Your pads are at 2 millimeters — that is Porsha's minimum specification. You have not noticed it yet because the wear has been gradual, but you are very close to metal-on-metal, which would damage your rotors and cost significantly more to repair."
-Callout-Text: The Respond step works because Clarify and Paraphrase already told you what to respond to.
-Callout-Label: Why It Works
-Image-File: 1S07.webp
+Caption-Text: Walk C P R through a real brake-service pushback, one step at a time.
+Image-File: 1S07.jpg
 Image: Close-up of a worn Porsha brake pad held in a gloved hand next to a measurement tool or a new pad for comparison. Clear visual evidence — the kind of thing a technician would show a customer during the Respond step.
-Voiceover-INTRO: Watch what is happening here. The customer's first sentence is vague — "I am not sure I really need those brakes." A weak response would be to start defending the recommendation, listing reasons. Instead, the technician Clarifies with a multiple-choice question. The customer's answer — "the car seems to be stopping fine" — tells you the real concern is perceived necessity, not cost or timing. The Paraphrase locks that in. And only then does the Respond happen — with physical evidence and a clear consequence. You did not guess. You did not over-explain. You answered the actual question.
+Voiceover-INTRO: Let's walk C P R through a real brake-service objection — one step at a time. Each step pulls a little more of the real concern to the surface. Use the button to advance when you're ready.
+Voiceover-STEP-01: Clarify. Customer: "I am just not sure I really need those brakes done today." Instead of defending the recommendation, the technician asks — "When you say you are not sure, is it the cost, the timing, or are you not convinced the service is necessary?" That multiple-choice question lets the customer point to the real concern without you putting words in their mouth.
+Voiceover-STEP-02: Paraphrase. Customer: "Well, the car seems to be stopping fine to me." Technician: "So it sounds like you are questioning whether the service is needed right now, since you have not noticed a problem." That restatement does two things — it proves you heard them, and it locks in what you are about to respond to. The customer confirms: "Exactly."
+Voiceover-STEP-03: Respond. Now the technician answers the real concern. "That makes sense. Let me show you what I found. Your pads are at 2 millimeters — that is Porsha's minimum specification. You have not noticed it yet because the wear has been gradual, but you are very close to metal-on-metal, which would damage your rotors and cost significantly more to repair." The response only works because Clarify and Paraphrase already told you what to respond to.
 Status: Draft
-Notes: content-split chosen — scripted dialogue is the cleanest way to show the framework in sequence. Learner reads the script while VO unpacks what each move accomplishes. Mirrors the Module 8 scripted-scenario pattern.
+Notes: Converted from content-split to step-sequence to satisfy passive-slide cap (COURSE-RULES S10) and turn the dialogue into an active sequence walk. Three steps map 1:1 to C, P, R. Each step's VO combines the on-screen exchange with the commentary that used to live in the INTRO. Four new audio files: 1S07-INTRO + STEP-1/2/3.
 
 ## Slide 08 — Knowledge Check
 
@@ -168,7 +168,7 @@ Template-ID: card-explore
 Slide-Title: The R A C E Framework — When a Customer Mentions a Competitor
 Caption-Text: R A C E lets you address competitor comparisons without going negative.
 On-Screen-Text: When a customer brings up an independent shop or a competitor by name, R A C E gives you a structure that respects their thinking and earns the right to make the Porsha case. Click each card to explore.
-Image-File: 1S08.webp
+Image-File: 1S08.jpg
 Image: A four-step horizontal flow graphic — handshake icon, two parallel arrows merging, a divider with "important differences" text, and an upward arrow. Clean visual hierarchy, Porsha brand styling.
 Voiceover-INTRO: R A C E — Respect, Align, Contrast, Elevate — is the four-step move for customers who see Porsha service and the shop down the street as essentially equivalent. The order matters. Skipping a step makes the whole thing feel like a sales pitch. Click each card to explore.
 Voiceover-CLICK-Respect: Respect means saying something genuinely positive about the competitor. Not sarcastic — actually positive. "Franz's has been around a long time" or "That's a reputable shop." This is where most technicians want to skip ahead. Don't. Skipping Respect signals defensiveness, and the customer will read it. Done right, it tells the customer you are not threatened — and that earns you the right to keep talking.
@@ -193,32 +193,51 @@ Notes: card-explore chosen — four parallel steps where order matters but each 
 ## Slide 11 — Verbal Erasers
 
 Slide-ID: 1S09
-Template-ID: content-quote
-Slide-Title: The Two Words That Undo Everything
-Caption-Text: "But" and "however" erase the respect you just built.
-Quote: "Franz's does good work, but…" — Everything before the "but" is gone.
-Quote-Attribution: The Verbal Eraser Principle
-Quote-Title: R A C E — Contrast step
-Image-File: 1S09.webp
-Image: A chalkboard or whiteboard with handwritten text — "Franz's does good work" — and a hand erasing it mid-sentence with a chalk eraser. Visual metaphor for "verbal eraser." Slightly cinematic, shallow depth of field.
-Voiceover-INTRO: There are two words that will undo the Respect and Align steps the moment they leave your mouth. "But" and "however." When a customer hears "Franz's does good work, but…" they do not hear a comparison. They hear "I just lied about them being good." It turns the conversation adversarial. The exact phrase — "There are some important differences" — does the opposite. It signals more information is coming, not a counter-argument. The wording is not stylistic preference. It is the whole reason the Contrast step works.
+Template-ID: tile-explore
+Slide-Title: Verbal Erasers — The Words That Undo Everything
+Slide-Subtitle: Three phrasings will erase the Respect and Align you just built. One keeps the conversation collaborative. Select each tile to explore.
+Caption-Text: Three phrasings erase the respect you just built — one keeps the conversation going.
+Image-File: 1S09.jpg
+Image: Tile poster artwork — each tile shows its phrase set in large, typographic style on a chalkboard or whiteboard texture, with the "right phrase" tile rendered as a clean Porsha brand-grey card. Visual identity per tile is the phrase itself.
+Voiceover-INTRO: There are three phrasings that will undo the Respect and Align steps the moment they leave your mouth — and one phrasing that keeps the conversation collaborative. Select each tile to see what each does to the customer's ear.
+Voiceover-CLICK-EraserBut: "Franz's does good work, but..." is the most common eraser in the shop. The customer does not hear a comparison — they hear "I just lied about them being good." Everything you said in Respect and Align is gone the second the word "but" lands. The customer goes defensive and the rest of the conversation is uphill.
+Tile-Title-EraserBut: "Franz's does good work, but..."
+Tile-Sig-EraserBut: But
+Tile-Bullets-EraserBut: Most common eraser in the shop | Erases Respect and Align instantly | Customer hears "I just lied about them"
+Image-EraserBut: 1S09-tile-but.jpg
+Voiceover-CLICK-EraserHowever: "Franz's is reputable, however..." sounds more formal — and customers read formality as defensive. Same outcome as "but." The customer hears the pivot coming and braces for a sales pitch. Whatever you say in Contrast then lands as adversarial, not informational.
+Tile-Title-EraserHowever: "Franz's is reputable, however..."
+Tile-Sig-EraserHowever: However
+Tile-Bullets-EraserHowever: Sounds formal — reads defensive | Same erasing effect as "but" | Triggers a sales-pitch posture
+Image-EraserHowever: 1S09-tile-however.jpg
+Voiceover-CLICK-EraserOnTheOther: "On the other hand..." feels polite, but it does the same job. It tells the customer the conversation just flipped sides. Anything in the Respect step is now framed as a setup. The customer leaves feeling negotiated with, not informed.
+Tile-Title-EraserOnTheOther: "On the other hand..."
+Tile-Sig-EraserOnTheOther: OnTheOther
+Tile-Bullets-EraserOnTheOther: Polite, but still a pivot | Frames Respect as a setup | Customer feels negotiated with
+Image-EraserOnTheOther: 1S09-tile-other.jpg
+Voiceover-CLICK-RightPhrase: "There are some important differences." That is the phrase. Notice what it does — it signals more information is coming, not a counter-argument. There is no pivot, no erasure, no "but." The customer's brain stays in learning mode instead of defensive mode. It is the reason the Contrast step works at all.
+Tile-Title-RightPhrase: "There are some important differences."
+Tile-Sig-RightPhrase: Differences
+Tile-Bullets-RightPhrase: Signals information, not counter-argument | No pivot, no erasure | Keeps the customer in learning mode
+Image-RightPhrase: 1S09-tile-right.jpg
 Status: Draft
-Notes: content-quote chosen — the verbal-eraser principle is the single most fragile point in R A C E and deserves its own slide. A quote treatment dramatizes the wrong-words example and anchors the right phrase in memory. No additional standalone slide needed for the principle elsewhere.
+Notes: Converted from content-quote to tile-explore to satisfy passive-slide cap (COURSE-RULES S10). Four phrases — three erasers and one correct — each as a tile showing the phrase and what it does to the customer's ear. Tile-explore fits because each phrase is a distinct visual identity (the phrase itself set in large type). Five new audio files: 1S09-INTRO + 4 CLICK clips. Four new tile poster images required (typographic, no vehicles).
 
 ## Slide 12 — R A C E in Action
 
 Slide-ID: 1S10
-Template-ID: content-split
+Template-ID: step-sequence
 Slide-Title: R A C E in Action — The Franz's Import Auto Objection
-Caption-Text: Here is R A C E applied to a real competitor objection.
-On-Screen-Text: Customer: "I am thinking I will just take my car to Franz's Import Auto. I mean, service is service, right?" Technician (Respect): "Franz's has been around for years and they work on a lot of European cars." Technician (Align): "They have experienced technicians who know their way around these vehicles. In some ways, you are right — basic service is similar." Technician (Contrast): "There are some important differences though." Customer: "Like what?" Technician (Elevate): "We only use Porsha Genuine Parts, engineered specifically for your vehicle and covered by warranty. Our technicians are factory-certified and put in over a hundred hours of Porsha-specific training every year. And we have the Porsha diagnostic equipment that can talk to all the systems on your car — things generic scan tools cannot access. For a high-performance car like yours, those differences matter for long-term reliability."
-Callout-Text: Notice how the customer asked "Like what?" — that is the framework working. You earned the right to elevate.
-Callout-Label: Why It Works
-Image-File: 1S10.webp
+Caption-Text: Walk R A C E through a real competitor objection, one step at a time.
+Image-File: 1S10.jpg
 Image: A Porsha technician at a service write-up area with a 911 in the background, showing a customer a Porsha Genuine Parts box and a printed inspection sheet. Calm, professional, evidence-based conversation.
-Voiceover-INTRO: Watch the move from Contrast to Elevate. The technician says "There are some important differences" — and the customer asks "Like what?" That question is the framework doing its job. The customer is now requesting the elevation. They have given you permission. Compare that to what happens if you skip Respect or use "but" — the customer goes defensive and the rest of the conversation is uphill. The Elevate step is loaded with specifics — Porsha Genuine Parts, factory training hours, Porsha diagnostic equipment. Not slogans. Concrete advantages a customer can verify.
+Voiceover-INTRO: Let's walk R A C E through a Franz's Import Auto objection — one step at a time. Order matters. Use the button to advance when you're ready.
+Voiceover-STEP-01: Respect. Customer: "I am thinking I will just take my car to Franz's Import Auto. I mean, service is service, right?" Technician: "Franz's has been around for years and they work on a lot of European cars." Notice — that is genuine respect, not sarcasm. Skipping this step signals defensiveness, and the customer will read it before you get to your second sentence.
+Voiceover-STEP-02: Align. Technician: "They have experienced technicians who know their way around these vehicles. In some ways, you are right — basic service is similar." You are not conceding anything. You are showing the customer you can see things clearly, which makes everything you say next more credible.
+Voiceover-STEP-03: Contrast. Technician: "There are some important differences though." Exact phrase. No "but," no "however." Watch what the customer does — they ask "Like what?" That question is the framework doing its job. The customer just gave you permission to elevate.
+Voiceover-STEP-04: Elevate. Technician: "We only use Porsha Genuine Parts, engineered specifically for your vehicle and covered by warranty. Our technicians are factory-certified and put in over a hundred hours of Porsha-specific training every year. And we have the Porsha diagnostic equipment that can talk to all the systems on your car — things generic scan tools cannot access. For a high-performance car like yours, those differences matter for long-term reliability." Concrete advantages. Not slogans.
 Status: Draft
-Notes: content-split chosen — scripted scenario delivered as on-screen dialogue with VO commentary. Mirrors the C P R example pattern. No video assets required.
+Notes: Converted from content-split to step-sequence to satisfy passive-slide cap (COURSE-RULES S10). Four steps map 1:1 to R, A, C, E. Each step's VO combines the exchange with the commentary that used to live in the INTRO. Five new audio files: 1S10-INTRO + STEP-1/2/3/4.
 
 ## Slide 13 — Match the Objection to the Framework
 
@@ -229,7 +248,7 @@ Caption-Text: Drag each customer objection to the framework that fits it best.
 On-Screen-Text: Drag each customer objection to the framework that fits it best.
 Match-Col-Left: Customer Objection
 Match-Col-Right: Framework to Use
-Image-File: 1S11.webp
+Image-File: 1S11.jpg
 Image: A service write-up counter from above — clipboard with notes, a Porsha key fob, two coffee cups, hands sketching in the margin. Suggests two people working through a decision together.
 Voiceover-INTRO: Picking the right framework is half the battle. C P R is for unclear objections — vague pushback where you do not know the real concern. R A C E is for competitor comparisons — when the customer sees another shop as equivalent. Drag each objection to the framework that fits it.
 Match-1-Item: "I'm just not sure about this"
@@ -286,7 +305,7 @@ Template-ID: tab-panel
 Slide-Title: Professionalism Under Pressure
 Caption-Text: Four principles for staying professional when a customer pushes back.
 On-Screen-Text: Frameworks help you respond. Professionalism is how you carry yourself while you do it. Select each tab to explore.
-Image-File: 1S12.webp
+Image-File: 1S12.jpg
 Image: A Porsha technician in service uniform, calm posture, listening to a customer at a write-up counter. Neutral expression, confident body language. The customer is gesturing — the technician is steady. Service center interior, warm light.
 Voiceover-INTRO: How you handle an objection matters more than the framework you choose. Four principles keep the conversation professional even when the customer is frustrated or skeptical. Select each tab to explore.
 Voiceover-TAB-StayCalm: Stay calm and confident. Questions are not attacks. The customer is doing what informed customers do — they are checking your work, weighing the cost, and making sure the recommendation makes sense. Your tone should stay helpful, not defensive. Confidence comes from knowing your expertise, not from raising your voice or speaking faster.
@@ -303,17 +322,22 @@ Notes: tab-panel chosen — four parallel professionalism principles that learne
 ## Slide 17 — When the Answer Is No
 
 Slide-ID: 1S13
-Template-ID: content-split
+Template-ID: tab-panel
 Slide-Title: When the Answer Is No — and Why That's Okay
-Caption-Text: Not every objection can be overcome — and pushing past "no" damages the relationship.
-On-Screen-Text: Sometimes the customer genuinely cannot afford the service today. Sometimes they have already decided to go elsewhere. Sometimes the timing is just wrong. You do not always know what is happening in their life. When that becomes clear, the move is to accept "no" without becoming cold, dismissive, or pushy — and to leave the door wide open for next time.
-Callout-Text: How you handle "no" today decides whether they come back when "no" becomes "yes."
-Callout-Label: Remember
-Image-File: 1S13.webp
-Image: A Porsha technician shaking hands with a customer at the service drive, both relaxed, the customer's car visible behind them. Friendly, mutual respect — no transaction tension. End-of-conversation moment, not a sales loss.
-Voiceover-INTRO: Not every objection can or should be overcome. Customers have lives you do not see. Maybe they just took a hit on something else. Maybe they want a second opinion. Maybe they have decided, for reasons of their own, that today is not the day. Pushing past that "no" — even gently — damages the relationship and makes them less likely to come back. Accept it professionally. Stay warm. Offer one helpful piece of information for the road. That is what brings them back when the situation changes.
+Caption-Text: Four reasons a customer says "no" — and what each one is really telling you.
+Image-File: 1S13.jpg
+Image: A Porsha technician and customer at the service drive, both relaxed, the customer's car visible behind them. Friendly, mutual respect — no transaction tension. End-of-conversation moment, not a sales loss.
+Voiceover-INTRO: Not every "no" means the same thing. There are four common reasons a customer declines today — and each one needs a slightly different read. Explore each tab to see what is really happening underneath the word "no."
+Voiceover-TAB-CostConstraint: Sometimes "no" means "not this month." The customer just had an unexpected expense, or the timing is wrong for a four-figure repair. Pushing past this kind of "no" — even gently — turns into pressure the customer will remember. Accept it, tell them what to watch for, and leave a clear path back when the constraint lifts.
+Tab-Body-CostConstraint: "Not this month." A financial constraint you cannot see. Accept gracefully, tell them what to watch for, leave a clear path back.
+Voiceover-TAB-SecondOpinion: Sometimes "no" means "I want to think about it." That is not a rejection — it is a customer doing exactly what you would want them to do with a meaningful repair. Hand them the inspection sheet, offer to answer questions when they get them, and resist the urge to close on the spot. Customers who get to think come back at a higher rate than customers who got talked into a yes.
+Tab-Body-SecondOpinion: "I want to think about it." A customer doing due diligence. Hand them the inspection sheet, offer follow-up, do not close.
+Voiceover-TAB-Timing: Sometimes "no" means "not today." A business trip tomorrow, a family obligation, a rental car they cannot afford while their car is in the bay. The repair is fine — the timing is not. Acknowledge the constraint, schedule the follow-up, and make the next visit easy. This is the easiest "no" to convert into a future "yes."
+Tab-Body-Timing: "Not today." A schedule conflict, not a service objection. Acknowledge, schedule the follow-up, make the next visit easy.
+Voiceover-TAB-DecisionMade: Sometimes "no" means "I have already decided to go elsewhere." You may not know why — and you may never find out. The temptation here is to push, defend, or relitigate the R A C E conversation. Do not. The way you handle this "no" decides whether the customer ever comes back. Stay warm, thank them for considering Porsha service, and leave the door open without any tone of disappointment.
+Tab-Body-DecisionMade: "I've decided." Customer is going elsewhere. Do not relitigate. Stay warm, leave the door open, no disappointment in your tone.
 Status: Draft
-Notes: content-split chosen — Objective 5 needs framing before the practical "preserve the relationship" bullets. Callout anchors the long-term frame.
+Notes: Converted from content-split to tab-panel to satisfy passive-slide cap (COURSE-RULES S10) and fix the 17→18 consecutive-passive violation. Four tabs cover the four common reasons a "no" actually happens — each needs a different read. Sets up slide 18's practical "how to handle no" bullets. Five new audio files: 1S13-INTRO + 4 TAB clips.
 
 ## Slide 18 — Preserve the Relationship
 
@@ -328,8 +352,8 @@ Bullet-3: Leave the door open. "When you are ready to address this, we are here.
 Bullet-4: Stay just as warm as you were before the "no." How you say goodbye is what they will remember.
 Callout-Text: Today's "no" becomes tomorrow's "yes" when the relationship survives the conversation.
 Callout-Label: The Pattern
-Image-File: 1S14.webp
-Image: A customer driving a Porsha 911 out of a dealership service drive — taillights, daylight, no visible tension. Sense of an open-ended, positive parting.
+Image-File: 1S14.jpg
+Image: A customer driving a Porsha 911 Carrera out of a Porsha dealership service drive — three-quarter rear view, taillights and signature LED light bar visible, golden-hour daylight, no visible tension. A second Porsha — a Cayenne — is parked in the background bay. Sense of an open-ended, positive parting.
 Voiceover-INTRO: When a customer declines, you have a small window to set up the next conversation. First — accept the "no" without pressure or guilt. Customers can tell the difference between a gracious goodbye and a passive-aggressive one. Second — give them one piece of useful information. "If you do wait, watch for this. You should be okay for the next thousand miles." Third — leave the door open with a specific invitation. And fourth — stay warm. The tone you use after the "no" is what they will remember when they decide whether to come back.
 Status: Draft
 Notes: content-bullets chosen — four practical actions for the post-"no" moment. Translates Objective 5 from framing into concrete behavior.
@@ -341,7 +365,7 @@ Template-ID: closing
 Slide-Title: Module 9 Complete
 Caption-Text: Every objection is a question in disguise — and now you have the tools to answer them.
 On-Screen-Text: You can now reframe objections as engagement signals, apply C P R when the concern is unclear, apply R A C E when a competitor enters the conversation, stay professional under pressure, and preserve the relationship when the answer is "no."
-Image-File: 1S15.webp
+Image-File: 1S15.jpg
 Image: Wide shot of a Porsha 911 driving away on an open road, golden-hour light. Forward momentum, brand pride, sense of relationship continuing past the immediate transaction.
 Voiceover-INTRO: You started this module with a different way of looking at objections — not as rejection, but as the customer still being in the conversation. You now have two frameworks. C P R when the concern is unclear. R A C E when the customer sees a competitor as equivalent. You have four principles for staying professional when the pressure goes up. And you have a way to handle "no" that keeps the door open for next time. In the next module, you will keep building on these skills. When you're ready, click the next button to start the Quiz. You will need to score 80% or more to pass.
 Status: Draft

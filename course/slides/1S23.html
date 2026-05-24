@@ -58,6 +58,32 @@
       color: rgba(251, 252, 255, 0.74);
     }
 
+    .closing-bullets {
+      list-style: none;
+      margin: 0 0 36px 0;
+      padding: 0;
+      max-width: 840px;
+    }
+    .closing-bullets li {
+      position: relative;
+      padding: 0 0 0 28px;
+      margin: 0 0 14px 0;
+      font-family: var(--pds-font-family);
+      font-size: 19px;
+      line-height: 1.45;
+      color: var(--pds-text-primary);
+    }
+    .closing-bullets li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 12px;
+      width: 14px; height: 2px;
+      background: var(--pds-accent);
+    }
+    .closing-bullets strong {
+      font-weight: var(--pds-font-weight-semibold);
+    }
+
     .closing-callout {
       max-width: 760px;
       margin: 0 0 30px 0;
@@ -68,6 +94,14 @@
       font-weight: var(--pds-font-weight-semibold);
       line-height: 1.35;
       color: var(--pds-text-primary);
+    }
+    @keyframes callout-emphasize {
+      0%, 100% { transform: scale(1); }
+      20%, 80% { transform: scale(1.1); }
+    }
+    .closing-callout.is-emphasized {
+      transform-origin: left center;
+      animation: callout-emphasize 2s ease-in-out;
     }
 
     .up-next {
@@ -177,6 +211,13 @@
       <div class="closing-accent anim-block" id="el-accent"></div>
       <h2 class="closing-headline anim-block" id="el-headline">Put the Concern to Work</h2>
       <p class="closing-body anim-block" id="el-body">Customer concerns are opportunities to listen, clarify, educate, and protect the relationship.</p>
+      <ul class="closing-bullets anim-block" id="el-bullets">
+        <li>Reframe objections as <strong>engagement</strong> — the conversation continuing, not a rejection.</li>
+        <li>Use <strong>CPR</strong> when the concern is unclear: Clarify, Paraphrase, Respond.</li>
+        <li>Use <strong>RACE</strong> when a competitor enters the conversation: Respect, Align, Contrast, Elevate.</li>
+        <li>Stay professional under pressure — no badmouthing, exaggeration, or scare tactics.</li>
+        <li>Accept "no" gracefully so today's no can become tomorrow's yes.</li>
+      </ul>
       <p class="closing-callout anim-block" id="el-callout">Stay calm. Stay accurate. Keep the door open.</p>
       <div class="up-next anim-block" id="el-next">
         <div class="up-next__icon" aria-hidden="true">&#8594;</div>
@@ -260,8 +301,8 @@ var SandboxRuntime = (function () {
 })();
 
 (function () {
-  var ids = ['el-accent', 'el-headline', 'el-body', 'el-callout', 'el-next', 'el-image'];
-  var delays = [0, 160, 280, 390, 520, 240];
+  var ids = ['el-accent', 'el-headline', 'el-body', 'el-bullets', 'el-callout', 'el-next', 'el-image'];
+  var delays = [0, 160, 280, 380, 480, 620, 240];
 
   ids.forEach(function (id, i) {
     var el = document.getElementById(id);
@@ -272,6 +313,18 @@ var SandboxRuntime = (function () {
   SandboxRuntime.voAudio.addEventListener('ended', function () {
     SandboxRuntime.interactionAudio.src = '../assets/audio/vo/Click_Start_Quiz.mp3';
     SandboxRuntime.interactionAudio.play();
+  });
+
+  var calloutFired = false;
+  SandboxRuntime.voAudio.addEventListener('timeupdate', function () {
+    if (calloutFired) return;
+    if (SandboxRuntime.voAudio.currentTime >= 19) {
+      calloutFired = true;
+      var callout = document.getElementById('el-callout');
+      if (!callout) return;
+      callout.classList.add('is-emphasized');
+      setTimeout(function () { callout.classList.remove('is-emphasized'); }, 2100);
+    }
   });
 })();
 </script>

@@ -9,91 +9,195 @@
   <link rel="stylesheet" href="../assets/css/animations.css">
   <script>(function(){function s(){document.documentElement.style.setProperty('--scale',Math.min(window.innerWidth/1920,window.innerHeight/920));}s();window.addEventListener('resize',s);})();</script>
   <style>
-    .fq-layout {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      padding: var(--pds-slide-pad-y) var(--pds-slide-pad-x);
-      gap: var(--pds-space-xl);
-      max-width: 1200px;
-      margin: 0 auto;
-      width: 100%;
+    /* ── Backdrop ─────────────────────────────────────────────────────────── */
+    .fq-backdrop {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(1400px 700px at 10% -10%, #343a48 0%, transparent 60%),
+        linear-gradient(140deg, #111317 0%, #1e2128 48%, #2a2f39 100%);
+      z-index: 0;
     }
-    .fq-header {
+    .fq-backdrop::before {
+      content: ""; position: absolute; inset: -100%;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      transform: rotate(45deg);
+      pointer-events: none;
+    }
+    .fq-backdrop::after {
+      content: ""; position: absolute; inset: 0;
+      background: rgba(0,0,0,0.52);
+    }
+
+    /* ── Slide container centers the modal ───────────────────────────────── */
+    .slide {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* ── Modal card ──────────────────────────────────────────────────────── */
+    .fq-modal {
+      position: relative;
+      z-index: 1;
+      width: 1060px;
+      max-height: 840px;
+      background: rgba(17,19,23,0.96);
+      border-radius: 20px;
       display: flex;
       flex-direction: column;
-      gap: var(--pds-space-md);
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.72);
+      opacity: 0;
+      transform: translateY(24px) scale(0.98);
+      transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22,1,0.36,1);
+    }
+    .fq-modal.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* ── Modal header (checkered flag + accent + title) ──────────────────── */
+    .fq-modal__header {
       flex-shrink: 0;
+      display: flex;
+      align-items: stretch;
+      background: #111317;
+      border-radius: 20px 20px 0 0;
+      overflow: hidden;
+      min-height: 80px;
     }
-    .fq-question {
+    .fq-modal__flag {
+      flex-shrink: 0;
+      width: 80px;
+      background: repeating-conic-gradient(#d8d8d8 0% 25%, #1a1c21 0% 50%) 0 0 / 16px 16px;
+    }
+    .fq-modal__divider {
+      flex-shrink: 0;
+      width: 4px;
+      background: var(--pds-accent);
+    }
+    .fq-modal__header-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 16px 32px;
+      gap: 3px;
+    }
+    .fq-modal__eyebrow {
       font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-xl);
-      font-weight: var(--pds-font-weight-semibold);
-      line-height: var(--pds-line-height);
+      font-size: 11px;
+      font-weight: var(--pds-font-weight-bold);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--pds-accent);
+      opacity: 0.88;
+    }
+    .fq-modal__title {
+      margin: 0;
+      font-family: var(--pds-font-family);
+      font-size: 30px;
+      font-weight: var(--pds-font-weight-bold);
+      letter-spacing: 0.01em;
       color: var(--pds-text-primary);
     }
-    .fq-choices {
+
+    /* ── Body: question stem + options list ──────────────────────────────── */
+    .fq-modal__body {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: var(--pds-space-md);
-      flex: 1;
+      gap: 16px;
+      padding: 32px 36px 28px;
+    }
+    .fq-stem {
+      flex-shrink: 0;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+    .fq-stem__text {
+      margin: 0;
+      font-family: var(--pds-font-family);
+      font-size: 21px;
+      line-height: 1.5;
+      color: var(--pds-text-primary);
+    }
+
+    .fq-choices {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     .fq-choice {
       display: flex;
       align-items: center;
-      gap: var(--pds-space-md);
-      padding: var(--pds-space-md) var(--pds-space-lg);
-      background: var(--pds-bg-surface);
-      border: 2px solid var(--pds-border);
-      border-radius: var(--pds-radius-lg);
+      gap: 18px;
+      padding: 16px 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1.5px solid rgba(255,255,255,0.10);
+      border-radius: 10px;
       cursor: pointer;
-      transition:
-        background  var(--dur-fast) var(--ease-out),
-        border-color var(--dur-fast) var(--ease-out);
+      user-select: none;
+      transition: border-color 0.18s ease, background 0.18s ease, transform 0.12s ease;
     }
     .fq-choice:hover:not(.is-locked) {
-      background: var(--pds-bg-surface-hover);
-      border-color: var(--pds-border-strong);
+      border-color: rgba(255,255,255,0.28);
+      background: rgba(255,255,255,0.07);
     }
+    .fq-choice:active:not(.is-locked) { transform: scale(0.995); }
     .fq-choice.is-selected {
       border-color: rgba(255,255,255,0.50);
       background: rgba(255,255,255,0.08);
     }
     .fq-choice-letter {
+      flex-shrink: 0;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.05);
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
-      border-radius: var(--pds-radius-md);
-      background: var(--pds-bg-overlay);
       font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-sm);
+      font-size: 16px;
       font-weight: var(--pds-font-weight-bold);
       color: var(--pds-text-muted);
-      flex-shrink: 0;
-      transition: background var(--dur-fast), color var(--dur-fast);
+      transition: background 0.18s, border-color 0.18s, color 0.18s;
     }
-    .fq-choice.is-selected .fq-choice-letter { background: var(--pds-accent); color: var(--pds-brand-white); }
+    .fq-choice.is-selected .fq-choice-letter {
+      border-color: rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.10);
+      color: var(--pds-text-primary);
+    }
     .fq-choice-text {
       font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-md);
-      color: var(--pds-text-secondary);
-      line-height: var(--pds-line-height);
+      font-size: 18px;
+      font-weight: var(--pds-font-weight-semibold);
+      color: rgba(255,255,255,0.9);
+      line-height: 1.35;
     }
     .fq-choices.is-locked .fq-choice { pointer-events: none; }
-    .fq-footer {
+
+    /* ── Footer: submit ──────────────────────────────────────────────────── */
+    .fq-modal__footer {
+      flex-shrink: 0;
       display: flex;
+      align-items: center;
       justify-content: flex-end;
-      padding-top: var(--pds-space-sm);
+      padding: 16px 36px 28px;
     }
     .fq-submit {
       padding: 13px 38px;
       background: var(--pds-accent);
       border: 0;
-      border-radius: var(--pds-radius-md);
+      border-radius: 7px;
       font-family: var(--pds-font-family);
-      font-size: var(--pds-font-size-sm);
+      font-size: 16px;
       font-weight: var(--pds-font-weight-bold);
       letter-spacing: 0.03em;
       color: var(--pds-brand-white);
@@ -106,7 +210,7 @@
       opacity: 1;
       pointer-events: auto;
     }
-    .fq-submit.is-ready:hover { background: var(--pds-accent-hover); }
+    .fq-submit.is-ready:hover { background: var(--pds-accent-hover, #b8001a); }
     .fq-submit.is-ready:active { transform: scale(0.98); }
     .fq-submit.is-submitted {
       background: rgba(255,255,255,0.08);
@@ -120,22 +224,30 @@
 
 <div class="slide" data-slide-id="{{SLIDE_ID}}">
 
-  <div class="fq-layout">
+  <div class="fq-backdrop" aria-hidden="true"></div>
 
-    <div class="fq-header anim-fade-up">
-      <div style="display:flex; align-items:center; gap:var(--pds-space-md);">
-        <span class="pds-badge">Final Assessment</span>
-        <span class="pds-caption" id="modal-title">Question {{QUESTION_NUMBER}}</span>
+  <div class="fq-modal" id="fq-modal" role="dialog" aria-modal="true" aria-labelledby="fq-title">
+
+    <div class="fq-modal__header">
+      <div class="fq-modal__flag" aria-hidden="true"></div>
+      <div class="fq-modal__divider" aria-hidden="true"></div>
+      <div class="fq-modal__header-text">
+        <span class="fq-modal__eyebrow">Final Assessment</span>
+        <h2 class="fq-modal__title" id="fq-title">Question {{QUESTION_NUMBER}}</h2>
       </div>
-      <div class="pds-accent-bar anim-bar-grow" style="--anim-delay:0.1s;"></div>
-      <p class="fq-question">{{QUESTION_TEXT}}</p>
     </div>
 
-    <div class="fq-choices stagger-children is-visible" id="fq-choices">
-      {{CHOICES_HTML}}
+    <div class="fq-modal__body">
+      <div class="fq-stem">
+        <p class="fq-stem__text">{{QUESTION_TEXT}}</p>
+      </div>
+
+      <div class="fq-choices" id="fq-choices" role="radiogroup" aria-label="Answer options">
+        {{CHOICES_HTML}}
+      </div>
     </div>
 
-    <div class="fq-footer">
+    <div class="fq-modal__footer">
       <button class="fq-submit" id="fq-submit" disabled aria-disabled="true">Submit Answer</button>
     </div>
 
@@ -207,14 +319,15 @@ var SandboxRuntime = (function () {
   return { voAudio: makeFakeVO(), interactionAudio: makeInteraction() };
 })();
 
+/* ── Modal reveal ────────────────────────────────────────────────────────── */
+setTimeout(function () {
+  var m = document.getElementById('fq-modal');
+  if (m) m.classList.add('is-visible');
+}, 120);
+
 /* ── FQ logic ────────────────────────────────────────────────────────────── */
 (function () {
   var CORRECT_ANSWER = {{CORRECT_ANSWER}};
-
-  // Entrance animations
-  document.querySelectorAll('.anim-fade-up, .anim-bar-grow').forEach(function (el) {
-    el.classList.add('is-visible');
-  });
 
   var selectedChoice = null;
   var selectedValue = null;
@@ -268,6 +381,13 @@ var SandboxRuntime = (function () {
       e.preventDefault();
       submitAnswer();
     }
+  });
+
+  /* Player sends fq-position so we can show "Question N of M" once loaded */
+  window.addEventListener('message', function (e) {
+    if (!e.data || e.data.type !== 'fq-position') return;
+    var titleEl = document.getElementById('fq-title');
+    if (titleEl) titleEl.textContent = 'Question ' + e.data.position + ' of ' + e.data.total;
   });
 })();
 </script>

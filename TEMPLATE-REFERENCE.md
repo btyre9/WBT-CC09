@@ -22,7 +22,7 @@ Every slide should carry an image wherever the template supports one. Never leav
 | Field | Purpose | When to use |
 |-------|---------|-------------|
 | `Image` | Art direction | Always include. Describe the ideal image: subject, mood, composition, setting. This is what the asset team uses to source or generate the image. |
-| `Image-File` | Production filename or existing catalog asset | Use the intended final name (`1S03.jpg`, `1S03a.jpg`) even before the asset exists, or use an existing descriptive file from `course/assets/images/`. See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md). |
+| `Image-File` | Production filename or existing catalog asset | Use the intended final `.jpg` name (`1S03.jpg`, `1S03a.jpg`) even before the asset exists, or use an existing `.jpg` file from `course/assets/images/`. See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md). |
 
 **Draft placeholder rule:** When `Image-File` is absent or points to a production file that does not exist yet, `generate-slides` picks a real image from `course/assets/images/` whose aspect ratio fits the template. The console prints an `auto-image` line so the temporary asset is visible during review.
 
@@ -98,7 +98,7 @@ Open with the module topic. State what the learner will gain. End with energy �
 Slide-ID: 1S01
 Template-ID: hero-title
 Slide-Title: The Art of Communication
-Image-File: porsche_advisor_greeting_CC00.jpg
+Image-File: 1S01.jpg
 Hero-Subtitle: Turn everyday conversations into trust-building service moments.
 >> On slide load → 1S01-INTRO.mp3
 Voiceover-INTRO: Welcome to Module 3 — The Art of Communication. In every service interaction, the words you choose, the way you listen, and the energy you bring determine whether a customer leaves satisfied — or simply leaves. In this module, you'll learn the communication skills that set Porsche service professionals apart from the rest.
@@ -158,7 +158,7 @@ Objective-1: Explain why communication breaks down in service interactions
 Objective-2: Identify the four active listening techniques used by top advisors
 Objective-3: Apply the FACE framework to your next customer conversation
 Objective-4: Recognize common barriers to listening and how to overcome them
-Image-File: learning_objectives_CC00.jpg
+Image-File: 1S02.jpg
 Image: A Porsche service advisor in a clean, professional environment. Attentive and approachable.
 Voiceover-INTRO: By the end of this module, you will be able to do four things. First — explain why communication breaks down even when both parties are trying. Second — identify the four active listening techniques used by the most effective Porsche service advisors. Third — apply the FACE framework in your next customer conversation. And fourth — recognize the most common barriers to listening and know what to do about them.
 Status: Draft
@@ -207,7 +207,7 @@ Slide-ID: 1S04
 Template-ID: content-split
 Slide-Title: Why Communication Fails
 On-Screen-Text: Communication breaks down not because people aren't trying — but because most conversations are built on assumptions about what the other person already understands.
-Image-File: crossed_signals_CC00.jpg
+Image-File: 1S03.jpg
 >> On slide load → 1S04-INTRO.mp3
 Voiceover-INTRO: Here's the paradox of communication failures — they almost never happen because people stop trying. They happen because both parties assume they're already aligned. In a service context, you might assume the customer knows what a specific repair involves. They assume you know exactly what they mean by "it feels off." Those assumptions stack, and suddenly a simple service appointment becomes a complaint. Closing that gap is what this module is about.
 Caption-Text: Communication breaks down not because people aren't trying.
@@ -224,7 +224,7 @@ Slide-ID: 1S05
 Template-ID: content-split
 Slide-Title: The First Impression Window
 Pull-Quote: You have about seven seconds to establish trust — after that, the customer has already decided how they feel about you.
-Image-File: advisor_greeting_CC00.jpg
+Image-File: 1S04.jpg
 >> On slide load → 1S05-INTRO.mp3
 Voiceover-INTRO: Research on first impressions consistently points to a seven-second window. In those seven seconds, a customer has already formed a judgment about whether you're trustworthy, whether you listen, and whether they'll be comfortable with you managing their vehicle. You can recover from a weak first impression — but it takes the rest of the appointment to do it. Getting it right from the start is always worth the effort.
 Caption-Text: You have about seven seconds to establish trust.
@@ -320,7 +320,7 @@ Slide-ID: 1S08
 Template-ID: content-bullets
 Slide-Title: The FACE Framework
 On-Screen-Text: Top Porsche service advisors structure every intake conversation using four steps.
-Image-File: face_framework_overview_CC00.jpg
+Image-File: 1S05.jpg
 Bullet-1: Focus — begin every intake with your full, undivided attention on the customer
 Bullet-2: Acknowledge — confirm what the customer said before moving forward
 Bullet-3: Clarify — ask the one follow-up question that fills in the biggest gap
@@ -369,7 +369,7 @@ Template-ID: content-quote
 Quote: The customer doesn't remember what you fixed — they remember how you made them feel.
 Quote-Attribution: Tara Reyes
 Quote-Title: Director of Customer Experience, Porsche Cars North America
-Image-File: porsche_mountain_road_CC00.jpg
+Image-File: 1S07.jpg
 >> On slide load → 1S09-INTRO.mp3
 Voiceover-INTRO: "The customer doesn't remember what you fixed — they remember how you made them feel." This insight captures something essential about the Porsche service experience. The technical work is the baseline — it's expected. What separates great Porsche advisors is the human layer on top of it. The tone of voice, the follow-up call, the way you delivered difficult news — that's what the customer carries with them.
 Caption-Text: The customer doesn't remember what you fixed — they remember how you made them feel.
@@ -435,7 +435,7 @@ Template-ID: card-explore
 Slide-Title: The Three Channels of Communication
 On-Screen-Text: Every message you send travels through three channels at once. Click each card to explore them.
 Caption-Text: Every message you send travels through three channels simultaneously.
-Image-File: communication_channels_CC00.jpg
+Image-File: 1S08.jpg
 Voiceover-INTRO: Every message you send travels through three channels simultaneously. Understanding each one gives you more control over how you're perceived. Click each card to explore the three channels.
 Voiceover-CLICK-BodyLanguage: Body language carries more of your message than most people realize — posture, eye contact, facial expression, and proximity all communicate before you speak. In a service interaction, an open stance and steady eye contact signal confidence and engagement. A glance at your screen or crossed arms signal the opposite, even when that's not your intent.
 Card-Title-BodyLanguage: What Your Body Says
@@ -624,7 +624,7 @@ Template-ID: closing
 Slide-Title: Module Complete
 On-Screen-Text: You've explored the communication skills that separate good service from great service — and learned how to apply them in every customer interaction.
 Callout-Text: Stay calm. Stay accurate. Keep the door open.
-Image-File: porsche_handshake_closing_CC00.jpg
+Image-File: 1S15.jpg
 >> On slide load → 1S16-INTRO.mp3
 Voiceover-INTRO: You've covered a lot of ground in this module. You now understand why communication breaks down, how the three channels shape every message you send, and how to use the FACE framework to structure every intake conversation. In the next section, you'll complete a short assessment to confirm your understanding. Take your time and trust what you've learned.
 Caption-Text: You've explored the communication skills that separate good service from great service.
@@ -665,7 +665,7 @@ Horizontal row of 3–5 tiles. Each tile shows a full-bleed poster image at rest
 | `Tile-Title-Label` | One per tile — full display title | e.g. `Tile-Title-AccurateDiagnosis: Accurate Diagnosis Starts Here` |
 | `Tile-Sig-Label` | One per tile — short keyword | e.g. `Tile-Sig-AccurateDiagnosis: Accuracy` — sequence number auto-prepended by order |
 | `Tile-Bullets-Label` | One per tile — exactly 3 bullets, pipe-separated | e.g. `Tile-Bullets-AccurateDiagnosis: First bullet \| Second bullet \| Third bullet` |
-| `Image-Label` | One per tile — filename or art direction | e.g. `Image-AccurateDiagnosis: technician_listening_CC00.jpg` |
+| `Image-Label` | One per tile — `.jpg` filename or art direction | e.g. `Image-AccurateDiagnosis: 1S07a.jpg` |
 | `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
 
 **Audio file naming:** `{Slide-ID}-CLICK-{Label}.mp3`
@@ -696,19 +696,19 @@ Voiceover-CLICK-AccurateDiagnosis: Customers describe what they experience — a
 Tile-Title-AccurateDiagnosis: Accurate Diagnosis Starts Here
 Tile-Sig-AccurateDiagnosis: Accuracy
 Tile-Bullets-AccurateDiagnosis: Customers bring a feeling, a sound, or a behavior — not a diagnosis | Descriptions are often imprecise, but they're your starting point | Careful listening to that description is what gets you to the real problem efficiently
-Image-AccurateDiagnosis: technician_listening_01_CC00.jpg
+Image-AccurateDiagnosis: 1S07a.jpg
 >> User clicks TrustBuilding tile → 1S04-CLICK-TrustBuilding.mp3
 Voiceover-CLICK-TrustBuilding: Trust forms fast — customers decide within the first few moments of your intake whether you're genuinely engaged or just going through the motions. They may not be able to evaluate your technical skills, but they can absolutely tell whether you're listening. That perception shapes every conversation that follows, including how willing they are to approve your recommendations.
 Tile-Title-TrustBuilding: Trust Is Built in the Listening
 Tile-Sig-TrustBuilding: Trust
 Tile-Bullets-TrustBuilding: Trust forms fast — customers can tell within moments whether you're genuinely engaged | Going through the motions is easy to detect | That perception shapes how willing they are to approve your recommendations
-Image-TrustBuilding: technician_listening_02_CC00.jpg
+Image-TrustBuilding: 1S07b.jpg
 >> User clicks ApprovedWork tile → 1S04-CLICK-ApprovedWork.mp3
 Voiceover-CLICK-ApprovedWork: There's a direct line between listening and approved work. When a customer feels heard, they trust your judgment — and when they trust your judgment, they say yes to recommended services. This isn't about sales technique. It's about the natural outcome of a conversation where the customer feels respected and understood.
 Tile-Title-ApprovedWork: Listening Leads to More Approved Work
 Tile-Sig-ApprovedWork: Approval
 Tile-Bullets-ApprovedWork: The connection between listening and approved work is direct | Customers who feel heard are far more likely to approve recommended repairs | Listening is a business skill as much as it is a communication skill
-Image-ApprovedWork: technician_listening_03_CC00.jpg
+Image-ApprovedWork: 1S07c.jpg
 Status: Draft
 Notes: tile-explore chosen — three parallel concepts with distinct visual identities and substantive per-tile content. Reference implementation: 1S04.html.
 ```
@@ -760,7 +760,7 @@ Slide-Title: Active Listening Techniques
 >> On slide load → 1S13-INTRO.mp3
 Voiceover-INTRO: There are four active listening techniques that top Porsche service advisors use consistently. Explore each tab to understand how and when to apply it.
 Caption-Text: There are four active listening techniques top Porsche advisors use consistently.
-Image-File: advisor_listening_CC00.jpg
+Image-File: 1S09.jpg
 >> User opens Paraphrase tab → 1S13-TAB-Paraphrase.mp3
 Voiceover-TAB-Paraphrase: Paraphrasing is restating what the customer said in your own words — "So what I'm hearing is that the noise happens mostly at highway speeds, especially when you accelerate. Is that right?" It confirms understanding, gives the customer a chance to correct anything, and signals that you were fully listening. Use it before you start writing the work order.
 Tab-Body-Paraphrase: Restate what the customer said in your own words. It confirms understanding and signals you were fully listening. Use it before writing the work order.
@@ -893,6 +893,81 @@ Notes: video-scenario chosen — scenario demonstrates FACE framework applicatio
 
 ---
 
+### `scenario-branch`
+
+**Status:** Emerging — no reference implementation yet
+**Use when:** A concept is best learned by feeling the consequence of a choice — handling an objection, picking a response under pressure, deciding between two professional moves. Formative practice before a graded Knowledge Check.
+**Avoid when:** Content is informational rather than decision-based (use `card-explore` or `step-sequence`), or the situation warrants a graded check (use `knowledge-check`).
+
+**What the learner sees:**
+A two-column layout above a wide-screen image strip. Left column: a short framing line plus the customer's quoted objection in a red-accented speech bubble. Right column: a "What do you say?" prompt and three response choices as buttons. While the slide INTRO VO plays, the choices are locked and a pulsing "Voiceover playing…" indicator is shown. When INTRO VO ends, the choices unlock. The learner picks one. The chosen button gets a green ✓ if correct, red ✗ if not. A consequence card slides in showing what happens (on-screen text only — no per-choice VO). A wrong-picked button stays disabled; un-picked choices remain clickable. Clicking any blank area of the slide resets a wrong pick so the learner can try again. On the correct pick, all other choices lock, an optional reflection card appears, and the player's Next button unlocks. The scenario does **not** count toward the module score — it is formative only.
+
+**Required fields:**
+
+| Field | Format | Notes |
+|-------|--------|-------|
+| `Slide-Title` | Section heading | |
+| `Setup-Text` | One sentence | On-screen framing line above the customer line, e.g. "A customer at the service counter says:" |
+| `Customer-Line` | Quoted line, ≤220 chars | The customer's objection, displayed in a speech-bubble card. Spoken in-character during INTRO VO. |
+| `Voiceover-INTRO` | 2–3 sentences | The only voiced audio on the slide. Set up the scenario; speak the customer line in-character; instruct learner to pick the best response. Do not hint at the correct answer. |
+| `Choice-1`, `Choice-2`, `Choice-3` | Short phrase, ≤80 chars each | Button label for each response option. Authored in fixed order; DOM order is randomized at render time so position doesn't telegraph the answer. |
+| `Choice-Correct` | Integer 1, 2, or 3 | Which authored choice is the best response. Must match exactly one choice number. |
+| `Consequence-1`, `Consequence-2`, `Consequence-3` | 1–2 sentences each | On-screen consequence text (no audio). For wrong picks, describe what visibly happens — the customer's reaction, the felt consequence. For the correct pick, this is the immediate outcome. |
+| `Image-File` | `1SNN.jpg` | Wide-screen image strip at the bottom of the slide — typically the service-bay or counter setting |
+| `Caption-Text` | ≤120 chars | First sentence of INTRO VO |
+
+**Optional fields:**
+
+| Field | Notes |
+|-------|-------|
+| `Image` | Art direction for the ideal final image. Missing/not-yet-sourced image files fall back to catalog assets during generation. |
+| `Reflection-Text` | 1 sentence shown after the correct pick lands, summarizing the takeaway. Optional but recommended for module-level reinforcement. |
+
+**Audio file naming:** `{Slide-ID}-INTRO.mp3` (INTRO VO is the only audio on this template — no per-choice clips).
+
+**Interaction model:**
+- INTRO VO plays on load. Choices locked + "Voiceover playing…" indicator visible until INTRO VO ends.
+- Choice click → consequence card appears immediately + button gets ✓ (correct) or ✗ (wrong). No audio.
+- **Wrong pick:** that button stays disabled and marked ✗. Un-picked choices remain clickable. Consequence text stays visible until the learner picks again or clicks any blank area of the slide (which resets the wrong pick).
+- **Correct pick:** all other choices lock. Outcome text stays visible. Optional `Reflection-Text` appears below. Player's Next button unlocks.
+- No scoring — first-attempt result is not recorded.
+
+**VO guidance:**
+- INTRO (2–3 sentences): Establish the setting briefly. Speak the customer line in-character with appropriate emotional tone (frustrated, confused, dismissive). End with a clear instruction: "What do you say?" or "Pick the best response." This is the **only** VO on the slide.
+
+**Authoring guidance:**
+- One choice should be the best — clearly aligned to the module's framework (e.g., the CPR or RACE step).
+- Two distractors should be **plausible** moves a real technician might make under pressure — defensive, dismissive, or skipping a framework step. Avoid obvious-wrong joke answers.
+- Consequence text must be specific and observable — "The customer's shoulders relax" beats "The customer feels better." Keep each consequence to 1–2 sentences since it appears on screen without VO support.
+
+**Example:**
+```
+## Slide 05 — Why Objections Still Happen
+
+Slide-ID: 1S05
+Template-ID: scenario-branch
+Slide-Title: Why Objections Still Happen
+Setup-Text: A customer is reviewing the work order at the counter. He pauses, then says:
+Customer-Line: "Twelve hundred dollars for brakes? I just paid eight hundred at the place down the road last year."
+Image-File: 1S05.jpg
+Image: A Porsche customer at the service counter, work order in hand, mid-sentence. The technician's hands are visible across the counter, calm and steady. Slight depth-of-field on the service bay behind them. Natural warm lighting.
+>> On slide load → 1S05-INTRO.mp3
+Voiceover-INTRO: A customer is reviewing the work order at the counter. He pauses, then says, "Twelve hundred dollars for brakes? I just paid eight hundred at the place down the road last year." What do you say?
+Caption-Text: Twelve hundred for brakes? I just paid eight hundred last year.
+Choice-1: Explain why our brakes cost more than the shop down the road.
+Choice-2: Ask what was included in the eight-hundred-dollar service.
+Choice-3: Acknowledge it's a real difference and offer to walk him through the line items.
+Choice-Correct: 2
+Consequence-1: His arms cross. The conversation is now about price defense, not the work.
+Consequence-2: He pauses. "Honestly... I think they just did pads." The comparison falls apart on its own.
+Consequence-3: You're answering a question he hasn't fully asked yet. The line items won't land.
+Reflection-Text: Clarify before you respond. The first move on an unclear objection is always a question, not an answer.
+Status: Draft
+Notes: scenario-branch chosen — abstract "why objections happen" lands harder as a felt experience. Correct answer is Choice 2 (Clarify step of CPR). Distractor 1 is the defensive instinct most technicians fight. Distractor 3 is a plausible-but-premature move that skips Clarify.
+```
+
+---
+
 ### `bar-chart-modal`
 
 **Status:** Emerging — reference implementation: `1S06.html`
@@ -933,7 +1008,7 @@ Slide-ID: 1S07
 Template-ID: bar-chart-modal
 Slide-Title: How Communication Really Works
 On-Screen-Text: Research shows that how we say something matters far more than what we say.
-Image-File: communication_research_CC00.jpg
+Image-File: 1S12.jpg
 >> On slide load → 1S07-INTRO.mp3
 Voiceover-INTRO: Here's a striking breakdown of how communication actually works. Most people assume the words carry the message — but the data tells a very different story. Click each bar to understand what that channel really means in a service conversation.
 Caption-Text: Research shows that how we say something matters far more than what we say.
@@ -996,7 +1071,7 @@ Caption-Text: Every strong technical explanation follows the same seven steps.
 On-Screen-Text: Every strong technical explanation follows the same seven steps. Drag each step name to its matching description.
 Match-Col-Left: Steps
 Match-Col-Right: Descriptions
-Image-File: technician_explaining_CC08.jpg
+Image-File: 1S14.jpg
 Image: A Porsche technician at a service counter, gesturing calmly toward a printed inspection sheet as the customer listens.
 Voiceover-INTRO: Every strong technical explanation follows the same structure. On the left — seven step names. On the right — what each step actually does. Drag each step to its matching description.
 Match-1-Item: Name the Part
@@ -1050,7 +1125,7 @@ Slide-ID: 1S09
 Template-ID: hotspot
 Slide-Title: Reading the Moment
 On-Screen-Text: Select each marker to explore a signal that tells you how to frame your recommendation.
-Image-File: service_counter_CC08.jpg
+Image-File: 1S16.jpg
 Image: Wide shot of a Porsche service counter. Customer standing at the left, technician facing them on the right. Four clearly distinct zones: customer's face/body language (upper left), the printed inspection sheet on the counter (center), the technician's hands (lower right), the service bay visible through the glass behind (background center).
 Voiceover-INTRO: Reading the moment means knowing which framing your customer needs before you speak. There are four signals that tell you. Select each marker to explore them.
 Hotspot-1-X: 22
@@ -1093,7 +1168,7 @@ These IDs appear in the system's field reference but have no implementation or d
 | `Quote` | `content-quote` | ≤25 words for visual impact |
 | `Quote-Attribution` | `content-quote` | Speaker first and last name |
 | `Quote-Title` | `content-quote` | Speaker role or context |
-| `Image-File` | All image-slot templates except `final-quiz`, `quiz-score` | Intended final name (`1S03.jpg`, `1S03a.jpg`) or an existing descriptive file from `course/assets/images/`. See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md). |
+| `Image-File` | All image-slot templates except `final-quiz`, `quiz-score` | Intended final `.jpg` name (`1S03.jpg`, `1S03a.jpg`) or an existing `.jpg` file from `course/assets/images/`. See [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md). |
 | `Image` | All image-slot templates except `final-quiz`, `quiz-score` | Art direction: subject, mood, composition, setting. **Always include.** Missing/not-yet-sourced image files fall back to catalog assets during generation. |
 | `Video-File` | `video-scenario` | `filename_CCxx.mp4` — dual-clip: two filenames comma-separated |
 | `Voiceover-INTRO` | All slides with audio | Full VO script — see per-template length guidance below |
@@ -1110,7 +1185,7 @@ These IDs appear in the system's field reference but have no implementation or d
 | `Tile-Title-Label` | `tile-explore` | Per-tile full display title: `Tile-Title-AccurateDiagnosis: Accurate Diagnosis Starts Here` |
 | `Tile-Sig-Label` | `tile-explore` | Per-tile short keyword for badge: `Tile-Sig-AccurateDiagnosis: Accuracy` — sequence number auto-prepended |
 | `Tile-Bullets-Label` | `tile-explore` | Exactly 3 bullets pipe-separated: `Tile-Bullets-AccurateDiagnosis: Bullet 1 \| Bullet 2 \| Bullet 3` |
-| `Image-Label` | `tile-explore` | Per-tile image: `Image-AccurateDiagnosis: technician_CC00.jpg` |
+| `Image-Label` | `tile-explore` | Per-tile image: `Image-AccurateDiagnosis: 1S07a.jpg` |
 | `Voiceover-TAB-Label` | `tab-panel` | PascalCase label: `Paraphrase` — follow immediately with `Tab-Body-Label` |
 | `Tab-Body-Label` | `tab-panel` | On-screen display text for each tab. 1–3 sentences. Must match the Label in `Voiceover-TAB-Label`. |
 | `Voiceover-STEP-NN` | `step-sequence` | Zero-padded: `01`, `02`, `03` |

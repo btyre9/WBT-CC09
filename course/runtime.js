@@ -583,7 +583,31 @@
     state.nextLockedByAudio = !!slideAudio && !state.devMode;
     var slideSrc = "./slides/" + slides[i].id + ".html";
     if (forceReplay) slideSrc += "?replay=" + Date.now();
-    $("slide-frame").src = slideSrc;
+    var slideFrame = $("slide-frame");
+    slideFrame.src = slideSrc;
+
+    // FQ slides display "Question N of M" — push position after the iframe
+    // loads, since the slide's listener attaches on DOMContentLoaded.
+    if (
+      isFQSlide(slides[i].id) &&
+      !/[_-]SCORE$/i.test(slides[i].id) &&
+      state.activeFQIds &&
+      state.activeFQIds.length > 0
+    ) {
+      var fqPos = state.activeFQIds.indexOf(slides[i].id);
+      if (fqPos >= 0) {
+        var sendFQPosition = function () {
+          slideFrame.removeEventListener("load", sendFQPosition);
+          postMessageToSlide({
+            type: "fq-position",
+            position: fqPos + 1,
+            total: state.finalTotal
+          });
+        };
+        slideFrame.addEventListener("load", sendFQPosition);
+      }
+    }
+
     updateNavButtons();
     updateMenuActiveSlide();
     if (!isModuleFirstSlide(slides[i]) || state.audioStartPromptShown[slides[i].id]) setAudioStartOverlayVisible(false);
@@ -702,8 +726,17 @@
 
       button.addEventListener("click", (function (idx, fqEntry) {
         return function () {
-          if (fqEntry) { initFinalQuiz(); }
-          showSlide(idx);
+          var targetIdx = idx;
+          if (fqEntry) {
+            initFinalQuiz();
+            // Land on the FIRST slide in the shuffled active list so the
+            // injected counter starts at "Question 1 of N".
+            if (state.activeFQIds.length > 0) {
+              var firstIdx = findSlideIndexById(state.activeFQIds[0]);
+              if (firstIdx >= 0) targetIdx = firstIdx;
+            }
+          }
+          showSlide(targetIdx);
           closeMenu();
         };
       })(index, isFQ));
@@ -944,8 +977,26 @@
       state.interactionAudioShouldResumeNarration = resumeNarration;
     }
 
+    // Hand the progress bar over to the interaction clip: reset to 0 and
+    // visually enable while the clip plays.
+    setAudioProgressEnabled(true);
+    setAudioProgressRatio(0);
+
     var channel = new Audio(url);
     var done = false;
+
+    function syncClipProgress() {
+      var dur = Number(channel.duration);
+      var cur = Number(channel.currentTime);
+      var clipStart = Number.isFinite(start) ? start : 0;
+      var clipEnd = end != null && Number.isFinite(end) ? end : (Number.isFinite(dur) ? dur : 0);
+      var span = clipEnd - clipStart;
+      if (!Number.isFinite(span) || span <= 0 || !Number.isFinite(cur)) {
+        setAudioProgressRatio(0);
+        return;
+      }
+      setAudioProgressRatio((cur - clipStart) / span);
+    }
 
     function finish(allowResume) {
       if (done) return;
@@ -964,11 +1015,14 @@
       }
       if (allowResume !== false) maybeResumeNarrationAfterInteraction();
       else state.interactionAudioShouldResumeNarration = false;
+      // Hand the progress bar back to the narration display.
+      updateAudioUi();
     }
 
     function onEnded() { finish(true); }
     function onError() { finish(false); }
     function onTimeUpdate() {
+      syncClipProgress();
       if (end == null) return;
       if (channel.currentTime >= end) finish(true);
     }
@@ -976,6 +1030,7 @@
       if (start > 0) {
         try { channel.currentTime = start; } catch (_e) {}
       }
+      syncClipProgress();
       channel.play().catch(function () { finish(false); });
     }
 
@@ -1656,7 +1711,49 @@
 
   function getNextSlideIndex(fromIndex) {
     var slides = state.data && state.data.slides || [];
-    var nextI  = fromIndex + 1;
+    var fromSlide = slides[fromIndex];
+    var fromIsActiveFQ =
+      fromSlide &&
+      isFQSlide(fromSlide.id) &&
+      !/[_-]SCORE$/i.test(fromSlide.id) &&
+      state.activeFQIds.indexOf(fromSlide.id) >= 0;
+
+    // If we're currently on an active FQ slide, advance through the
+    // shuffled active list (the order the learner should see them in),
+    // not the manifest's author order. Without this the FQ counter
+    // ("Question N of M") disagrees with the presentation order.
+    if (fromIsActiveFQ) {
+      var curFQPos = state.activeFQIds.indexOf(fromSlide.id);
+      if (curFQPos + 1 < state.activeFQIds.length) {
+        var nextFQIdx = findSlideIndexById(state.activeFQIds[curFQPos + 1]);
+        if (nextFQIdx >= 0) return nextFQIdx;
+      }
+      // Past the last active FQ — walk forward past the entire FQ block
+      // to the next non-FQ slide (typically the SCORE slide).
+      var afterFQ = fromIndex + 1;
+      while (afterFQ < slides.length) {
+        var sa = slides[afterFQ];
+        if (isFQSlide(sa.id) && !/[_-]SCORE$/i.test(sa.id)) { afterFQ++; continue; }
+        return afterFQ;
+      }
+      return afterFQ;
+    }
+
+    var nextI = fromIndex + 1;
+    // Entering the FQ block from a non-FQ slide: jump to activeFQIds[0]
+    // so the first FQ the learner sees is also slot 1 in the shuffled list.
+    if (nextI < slides.length) {
+      var sNext = slides[nextI];
+      if (
+        isFQSlide(sNext.id) &&
+        !/[_-]SCORE$/i.test(sNext.id) &&
+        state.activeFQIds.length > 0
+      ) {
+        var firstActiveIdx = findSlideIndexById(state.activeFQIds[0]);
+        if (firstActiveIdx >= 0) return firstActiveIdx;
+      }
+    }
+
     while (nextI < slides.length) {
       var s = slides[nextI];
       if (isFQSlide(s.id) && !/[_-]SCORE$/i.test(s.id)) {
@@ -1667,6 +1764,14 @@
       }
     }
     return nextI;
+  }
+
+  function findSlideIndexById(id) {
+    var slides = state.data && state.data.slides || [];
+    for (var i = 0; i < slides.length; i += 1) {
+      if (slides[i] && slides[i].id === id) return i;
+    }
+    return -1;
   }
 
   /* ================================================================

@@ -227,7 +227,7 @@ The art-direction `Image:` prose still describes the *ideal* asset for future re
 
 | Path | Purpose | Visible to generator? |
 |---|---|---|
-| `course/assets/images/` (root) | Live catalog. Any `.jpg`/`.jpeg` here is eligible as an `auto-image` fallback and as a real production asset. | **Yes** — scanned by `loadImageCatalog`. |
+| `course/assets/images/` (root) | Live catalog. Only lowercase `.jpg` files here are eligible as `auto-image` fallbacks and production slide assets. | **Yes** — scanned by `loadImageCatalog`. |
 | `course/assets/images/placeholders/` | Stash for descriptive draft images (e.g. `Cayenne-Electric.jpg`) that should not appear in finished slides. | **No** — the catalog scan is non-recursive. |
 | `course/assets/images/reference/` | Reference photography (e.g. `Ptech-*.jpeg` people shots) used for art direction only, never as a slide asset. | **No** — non-recursive. |
 

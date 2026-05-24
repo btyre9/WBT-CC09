@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
-  <title>When the Customer Mentions Competition</title>
+  <title>{{SLIDE_TITLE}}</title>
   <link rel="stylesheet" href="../assets/css/pds-tokens.css">
   <link rel="stylesheet" href="../assets/css/slide-base.css">
   <link rel="stylesheet" href="../assets/css/animations.css">
@@ -232,7 +232,7 @@
     .sb-imagestrip img {
       width: 100%; height: 100%;
       object-fit: cover;
-      object-position: center 50%;
+      object-position: center 45%;
       filter: saturate(1.05) contrast(1.02);
     }
     .sb-imagestrip::after {
@@ -266,19 +266,19 @@
 </head>
 <body>
 
-<div class="slide" data-slide-id="1S10">
+<div class="slide" data-slide-id="{{SLIDE_ID}}">
 
   <div class="sb-bg"></div>
 
   <header class="sb-header">
-    <h1 class="sb-header__title">When the Customer Mentions Competition</h1>
+    <h1 class="sb-header__title">{{SLIDE_TITLE}}</h1>
   </header>
 
   <div class="sb-layout">
     <section class="sb-setup">
-      <p class="sb-setup__intro">A customer comparing estimates looks up from your quote and says:</p>
+      <p class="sb-setup__intro">{{SETUP_TEXT}}</p>
       <div class="sb-speech">
-        &quot;Franz's Import down the street will do the same service for two hundred less.&quot;
+        {{CUSTOMER_LINE}}
         <div class="sb-speech__attr">— Customer</div>
       </div>
     </section>
@@ -289,35 +289,21 @@
         <span id="sb-prompt-text">Voiceover playing…</span>
       </p>
 
-            <button class="sb-choice" type="button" data-choice="1" data-consequence="His arms cross. You went straight to Contrast — and it lands as a sales pitch.">
-        <span class="sb-choice__num">1</span>
-        <span class="sb-choice__text">Explain the things Porsche-trained technicians do that Franz's doesn't.</span>
-        <span class="sb-choice__mark" aria-hidden="true"></span>
-      </button>
-      <button class="sb-choice" type="button" data-choice="2" data-correct="true" data-consequence="He nods. The tension drops. Now he&#39;s open to hearing what&#39;s actually different.">
-        <span class="sb-choice__num">2</span>
-        <span class="sb-choice__text">&quot;Franz's has been around a long time — they have a good reputation in town.&quot;</span>
-        <span class="sb-choice__mark" aria-hidden="true"></span>
-      </button>
-      <button class="sb-choice" type="button" data-choice="3" data-consequence="He half-smiles. &quot;I&#39;m sure it is.&quot; The conversation is polite but closed.">
-        <span class="sb-choice__num">3</span>
-        <span class="sb-choice__text">Walk him through why the Porsche dealership experience is worth the difference.</span>
-        <span class="sb-choice__mark" aria-hidden="true"></span>
-      </button>
+      {{CHOICES_HTML}}
 
       <div class="sb-consequence" id="sb-consequence">
         <span class="sb-consequence__label" id="sb-conseq-label">Consequence</span>
         <div id="sb-conseq-text">Pick a response to see what happens.</div>
       </div>
 
-      <div class="sb-reflection" id="sb-reflection" data-has-text="true">
-        Respect first. Genuine acknowledgment of the competitor is what unlocks the rest of RACE.
+      <div class="sb-reflection" id="sb-reflection" data-has-text="{{REFLECTION_HAS_TEXT}}">
+        {{REFLECTION_TEXT}}
       </div>
     </section>
   </div>
 
   <div class="sb-imagestrip">
-    <img src="../assets/images/1S10.jpg" alt=""
+    <img src="{{IMAGE_PATH}}" alt=""
          onerror="this.onerror=null;this.style.display='none';">
   </div>
 

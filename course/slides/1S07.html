@@ -9,20 +9,258 @@
   <link rel="stylesheet" href="../assets/css/animations.css">
   <script>(function(){function s(){document.documentElement.style.setProperty('--scale',Math.min(window.innerWidth/1920,window.innerHeight/920));}s();window.addEventListener('resize',s);})();</script>
   <style>
-    .split-media-panel {
-      width: 100%;
-      height: 620px;
-      overflow: hidden;
-      border-radius: var(--pds-radius-xl);
-      box-shadow: var(--pds-shadow-card);
+    /* ── Header ─────────────────────────────────────────────────── */
+    .sb-header {
+      position: absolute; top: 0; left: 0; right: 0;
+      padding: 32px 80px 0;
+      z-index: 5;
     }
-    .split-media-panel img,
-    .split-media-panel video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
+    .sb-header__title {
+      margin: 0;
+      font-size: 44px;
+      font-weight: var(--pds-font-weight-bold, 700);
+      letter-spacing: -0.01em;
+      color: var(--pds-text-primary);
+    }
+
+    /* ── Main 2-column layout (above the image strip) ─────────── */
+    .sb-layout {
+      position: absolute;
+      top: 130px; height: 450px;
+      left: 80px; right: 80px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      column-gap: 64px;
+      z-index: 5;
+    }
+
+    /* ── Left column: setup ─────────────────────────────────────── */
+    .sb-setup {
+      display: flex; flex-direction: column;
+      gap: 20px; justify-content: flex-start;
+    }
+    .sb-setup__intro {
+      font-size: 22px;
+      color: var(--pds-text-secondary);
+      line-height: 1.5;
+    }
+    .sb-speech {
+      position: relative;
+      background: var(--pds-bg-surface);
+      border: 1px solid var(--pds-border-strong);
+      border-left: 4px solid var(--pds-accent);
+      padding: 28px 36px;
+      border-radius: 16px;
+      font-size: 28px; line-height: 1.35;
+      color: var(--pds-text-primary);
+      font-style: italic;
+      max-width: 720px;
+    }
+    .sb-speech::before {
+      content: '\201C';
+      position: absolute;
+      top: -28px; left: 24px;
+      font-size: 110px; line-height: 1;
+      font-family: Georgia, serif;
+      color: var(--pds-accent);
+      font-style: normal;
+    }
+    .sb-speech__attr {
+      margin-top: 18px;
+      font-style: normal;
+      font-size: 16px;
+      color: var(--pds-text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ── Right column: prompt + choices + consequence ────────────
+       Structurally mirrors the left column (one "header" element
+       above the first interactive item) so the first choice aligns
+       with the top of the speech bubble. */
+    .sb-right {
+      display: flex; flex-direction: column;
+      gap: 20px; justify-content: flex-start;
+      position: relative;
+    }
+    .sb-prompt {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-size: 22px; line-height: 1.5;
+      color: var(--pds-text-secondary);
+      margin: 0;
+    }
+    .sb-prompt__dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--pds-accent);
+      flex-shrink: 0;
+      animation: sb-vo-pulse 1.2s ease-in-out infinite;
+    }
+    .sb-prompt.is-ready .sb-prompt__dot { display: none; }
+    @keyframes sb-vo-pulse {
+      0%, 100% { opacity: 0.35; transform: scale(0.85); }
+      50%      { opacity: 1;    transform: scale(1); }
+    }
+
+    /* ── Choice buttons ────────────────────────────────────────── */
+    .sb-choice {
+      display: flex; align-items: center; gap: 18px;
+      text-align: left;
+      background: var(--pds-bg-surface);
+      border: 1px solid var(--pds-border);
+      color: var(--pds-text-primary);
+      font-family: var(--pds-font-family);
+      font-size: 19px; line-height: 1.35;
+      padding: 16px 22px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.18s, border-color 0.18s,
+                  transform 0.18s, opacity 0.25s;
+    }
+    .sb-choice:hover:not(:disabled) {
+      background: var(--pds-bg-surface-hover, #2A2B2F);
+      border-color: var(--pds-border-strong);
+      transform: translateX(4px);
+    }
+    .sb-choice:disabled {
+      cursor: not-allowed; opacity: 0.45; transform: none;
+    }
+    .sb-choice__num {
+      flex-shrink: 0;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      font-size: 16px;
+      font-weight: var(--pds-font-weight-bold, 700);
+      color: var(--pds-text-muted);
+      transition: background 0.18s, color 0.18s;
+    }
+    .sb-choice__text { flex: 1; }
+    .sb-choice__mark {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      font-size: 18px;
+      font-weight: var(--pds-font-weight-bold, 700);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .sb-choice.is-correct {
+      border-color: var(--pds-success);
+      background: rgba(9,208,135,0.08);
+      opacity: 1;
+    }
+    .sb-choice.is-correct .sb-choice__num {
+      background: var(--pds-success); color: #000;
+    }
+    .sb-choice.is-correct .sb-choice__mark {
+      background: var(--pds-success); color: #000; opacity: 1;
+    }
+    .sb-choice.is-wrong {
+      border-color: var(--pds-error);
+      background: rgba(252,64,64,0.06);
+    }
+    .sb-choice.is-wrong .sb-choice__num {
+      background: var(--pds-error); color: #fff;
+    }
+    .sb-choice.is-wrong .sb-choice__mark {
+      background: var(--pds-error); color: #fff; opacity: 1;
+    }
+
+    /* ── Consequence card ──────────────────────────────────────── */
+    .sb-consequence {
+      display: none;   /* hidden in layout until a pick is made */
+      margin-top: 4px;
+      background: var(--pds-bg-surface);
+      border: 1px solid var(--pds-border-strong);
+      border-left: 4px solid var(--pds-text-muted);
+      padding: 16px 22px;
+      border-radius: 12px;
+      font-size: 17px; line-height: 1.45;
+      color: var(--pds-text-secondary);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.3s, transform 0.3s, border-color 0.3s;
+    }
+    .sb-consequence.is-visible {
       display: block;
+      opacity: 1;
+      transform: none;
+    }
+    .sb-consequence.is-correct { border-left-color: var(--pds-success); }
+    .sb-consequence.is-wrong   { border-left-color: var(--pds-error); }
+    .sb-consequence__label {
+      display: block;
+      font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--pds-text-muted);
+      margin-bottom: 8px;
+    }
+
+    /* ── Reflection (post-correct takeaway) ──────────────────────
+       Authored slides without a Reflection-Text render the wrapper
+       with the `sb-reflection--absent` class so it's removed from
+       layout entirely. Reflection slides keep the wrapper but hide
+       it via `display: none` until the correct pick lands. */
+    .sb-reflection {
+      display: none;
+      margin-top: 16px;
+      padding: 16px 24px;
+      background: rgba(9,208,135,0.08);
+      border: 1px solid rgba(9,208,135,0.3);
+      border-radius: 8px;
+      font-size: 18px;
+      color: var(--pds-text-primary);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.4s 0.2s, transform 0.4s 0.2s;
+    }
+    .sb-reflection.is-visible {
+      display: block;
+      opacity: 1;
+      transform: none;
+    }
+    .sb-reflection--absent { display: none !important; }
+
+    /* ── Wide-screen image strip at the bottom ─────────────────── */
+    .sb-imagestrip {
+      position: absolute;
+      left: 0; right: 0;
+      top: 600px; bottom: 0;
+      z-index: 4;
+      overflow: hidden;
+    }
+    .sb-imagestrip img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 57%;
+      filter: saturate(1.05) contrast(1.02);
+    }
+    .sb-imagestrip::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(14,14,18,0.85) 0%,
+        rgba(14,14,18,0.0) 22%,
+        rgba(14,14,18,0.0) 100%
+      );
+      pointer-events: none;
+    }
+
+    /* ── Background dim above the image strip ──────────────────── */
+    .sb-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse at 70% 30%, rgba(213,0,28,0.10), transparent 60%),
+        linear-gradient(135deg, #1A1A1F 0%, var(--pds-bg-base) 60%);
+    }
+    .sb-bg::after {
+      content: ''; position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -30,21 +268,57 @@
 
 <div class="slide" data-slide-id="1S07">
 
-  <div class="slide__split">
+  <div class="sb-bg"></div>
 
-    <!-- Left: text -->
-    <div class="slide__split--text">
-      <div class="pds-accent-bar anim-bar-grow" style="--anim-delay: 0.1s;"></div>
-      <h2 class="pds-heading-display anim-fade-right" style="--anim-delay: 0.2s;">When the Objection Is Unclear</h2>
-      <p class="pds-body anim-fade-right" style="--anim-delay: 0.35s;">Vague objections are easy to answer too quickly. If you respond before you understand the real concern, you may solve the wrong problem.</p>
-      <div class="pds-callout anim-fade-right" style="--anim-delay:0.45s;"><strong>Use CPR</strong><span>Clarify, paraphrase, then respond.</span></div>
-    </div>
+  <header class="sb-header">
+    <h1 class="sb-header__title">When the Objection Is Unclear</h1>
+  </header>
 
-    <!-- Right: image/video -->
-    <div class="slide__split--media anim-fade-left" style="--anim-delay: 0.25s; height: 620px;">
-      <img src="../assets/images/1S07.jpg" alt="" onerror="this.style.display='none'">
-    </div>
+  <div class="sb-layout">
+    <section class="sb-setup">
+      <p class="sb-setup__intro">A customer at the service write-up counter looks at the recommended service list and says, hesitantly:</p>
+      <div class="sb-speech">
+        &quot;I don't know... I'm just not sure about all of this today.&quot;
+        <div class="sb-speech__attr">— Customer</div>
+      </div>
+    </section>
 
+    <section class="sb-right">
+      <p class="sb-prompt" id="sb-prompt">
+        <span class="sb-prompt__dot" aria-hidden="true"></span>
+        <span id="sb-prompt-text">Voiceover playing…</span>
+      </p>
+
+            <button class="sb-choice" type="button" data-choice="1" data-consequence="He nods politely, but his eyes glaze over. You&#39;re answering questions he hasn&#39;t asked.">
+        <span class="sb-choice__num">1</span>
+        <span class="sb-choice__text">Walk him through why every item on the list matters.</span>
+        <span class="sb-choice__mark" aria-hidden="true"></span>
+      </button>
+      <button class="sb-choice" type="button" data-choice="2" data-correct="true" data-consequence="He pauses. &quot;Honestly, it&#39;s the timing — I&#39;ve got a trip Friday.&quot; Now you know exactly what to respond to.">
+        <span class="sb-choice__num">2</span>
+        <span class="sb-choice__text">Ask whether it's the cost, the timing, or whether he thinks the work is necessary.</span>
+        <span class="sb-choice__mark" aria-hidden="true"></span>
+      </button>
+      <button class="sb-choice" type="button" data-choice="3" data-consequence="He shrugs. &quot;Maybe — I don&#39;t know.&quot; You paraphrased something he never said.">
+        <span class="sb-choice__num">3</span>
+        <span class="sb-choice__text">Tell him, &quot;It sounds like you're not convinced this is needed.&quot;</span>
+        <span class="sb-choice__mark" aria-hidden="true"></span>
+      </button>
+
+      <div class="sb-consequence" id="sb-consequence">
+        <span class="sb-consequence__label" id="sb-conseq-label">Consequence</span>
+        <div id="sb-conseq-text">Pick a response to see what happens.</div>
+      </div>
+
+      <div class="sb-reflection" id="sb-reflection" data-has-text="true">
+        Clarify before you respond. On an unclear objection, your first move is a narrowing question, not an answer.
+      </div>
+    </section>
+  </div>
+
+  <div class="sb-imagestrip">
+    <img src="../assets/images/1S07.jpg" alt=""
+         onerror="this.onerror=null;this.style.display='none';">
   </div>
 
 </div>
@@ -89,36 +363,118 @@ var SandboxRuntime = (function () {
     return obj;
   }
 
-  function makeInteraction() {
-    return {
-      src: '',
-      play: function () {
-        if (CR && CR.playInteractionAudio) {
-          CR.playInteractionAudio({ src: this.src });
-        } else {
-          var a = new Audio(this.src);
-          a.play().catch(function () {});
-        }
-        return Promise.resolve();
-      }
-    };
-  }
-
-  window.addEventListener('message', function (e) {
-    if (!e.data || e.data.type !== 'player-play-state') return;
-    var s = document.querySelector('.slide');
-    if (s) s.classList.toggle('is-paused', e.data.state === 'paused');
-  });
-
-  return { voAudio: makeFakeVO(), interactionAudio: makeInteraction() };
+  return { voAudio: makeFakeVO() };
 })();
 
-/* ── Slide logic ─────────────────────────────────────────────────────────── */
+/* ── Scenario-branch slide logic ─────────────────────────────────────────── */
 (function () {
-  document.querySelectorAll('.anim-fade-right, .anim-fade-left, .anim-bar-grow').forEach(function (el) {
-    el.classList.add('is-visible');
+  // Lock player Next on entry — only the correct choice unlocks it
+  try { window.parent.postMessage({ type: 'sandbox-lock-next' }, '*'); } catch (_) {}
+
+  var promptEl    = document.getElementById('sb-prompt');
+  var promptText  = document.getElementById('sb-prompt-text');
+  var conseqEl    = document.getElementById('sb-consequence');
+  var conseqLabel = document.getElementById('sb-conseq-label');
+  var conseqText  = document.getElementById('sb-conseq-text');
+  var reflectEl   = document.getElementById('sb-reflection');
+  var choiceEls   = Array.prototype.slice.call(document.querySelectorAll('.sb-choice'));
+
+  // Consequence text is stored on each button as a data-consequence attribute.
+
+  var introDone = false;
+  var resolved  = false;
+  var picked    = {};  // map of data-choice → true
+
+  // Prompt starts in "VO playing" state (pulsing dot + "Voiceover playing…").
+  // It flips to "is-ready" + "What do you say?" when the INTRO VO ends.
+
+  // Shuffle the choice buttons in the DOM so position doesn't telegraph the answer
+  (function shuffleChoices() {
+    var parent = choiceEls[0] && choiceEls[0].parentNode;
+    if (!parent) return;
+    for (var i = choiceEls.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = choiceEls[i]; choiceEls[i] = choiceEls[j]; choiceEls[j] = tmp;
+    }
+    choiceEls.forEach(function (el, idx) {
+      parent.appendChild(el);                                // re-attach in new order
+      el.querySelector('.sb-choice__num').textContent = idx + 1;   // re-number visually
+    });
+  })();
+
+  // Initial state: choices disabled until INTRO VO ends
+  choiceEls.forEach(function (b) { b.disabled = true; });
+
+  // INTRO VO end → unlock choices + flip prompt to question state
+  function onIntroEnd() {
+    if (introDone) return;
+    introDone = true;
+    promptEl.classList.add('is-ready');
+    promptText.textContent = 'What do you say?';
+    choiceEls.forEach(function (b) { b.disabled = false; });
+  }
+  SandboxRuntime.voAudio.addEventListener('ended', onIntroEnd);
+
+  // Safety net: if VO never fires (e.g., standalone preview), unlock after 20s
+  setTimeout(onIntroEnd, 20000);
+
+  function pick(btn) {
+    if (!introDone || resolved) return;
+    var n = btn.getAttribute('data-choice');
+    if (picked[n]) return;
+    picked[n] = true;
+
+    var isCorrect = btn.getAttribute('data-correct') === 'true';
+
+    btn.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
+    var mark = btn.querySelector('.sb-choice__mark');
+    if (mark) mark.textContent = isCorrect ? '✓' : '✗';
+
+    conseqEl.classList.remove('is-correct', 'is-wrong');
+    conseqEl.classList.add('is-visible', isCorrect ? 'is-correct' : 'is-wrong');
+    conseqLabel.textContent = isCorrect ? 'Outcome' : 'Consequence';
+    conseqText.textContent  = btn.getAttribute('data-consequence') || '';
+
+    if (isCorrect) {
+      resolved = true;
+      choiceEls.forEach(function (b) {
+        if (b.getAttribute('data-correct') !== 'true') b.disabled = true;
+      });
+      if (reflectEl && reflectEl.getAttribute('data-has-text') === 'true') {
+        reflectEl.classList.add('is-visible');
+      }
+      try { window.parent.postMessage({ type: 'sandbox-unlock-next' }, '*'); } catch (_) {}
+    } else {
+      btn.disabled = true;
+    }
+  }
+
+  function resetScenario() {
+    if (resolved) return;
+    picked = {};
+    choiceEls.forEach(function (b) {
+      b.disabled = !introDone;
+      b.classList.remove('is-correct', 'is-wrong');
+      var mark = b.querySelector('.sb-choice__mark');
+      if (mark) mark.textContent = '';
+    });
+    conseqEl.classList.remove('is-visible', 'is-correct', 'is-wrong');
+    conseqText.textContent = 'Pick a response to see what happens.';
+    if (reflectEl) reflectEl.classList.remove('is-visible');
+  }
+
+  // Click handlers
+  choiceEls.forEach(function (b) {
+    b.addEventListener('click', function () { pick(b); });
   });
 
+  // Click-away reset: any click outside a choice resets a wrong pick
+  document.addEventListener('click', function (e) {
+    if (resolved) return;
+    if (!Object.keys(picked).length) return;
+    if (e.target.closest && e.target.closest('.sb-choice')) return;
+    resetScenario();
+  });
 })();
 </script>
 

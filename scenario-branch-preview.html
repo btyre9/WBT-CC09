@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>scenario-branch — Preview Mockup</title>
+<style>
+  /* ── Porsche Next TT typeface ─────────────────────────────────── */
+  @font-face {
+    font-family: 'Porsche Next TT';
+    src: url('course/assets/fonts/porsche-next-tt-thin.ttf') format('truetype');
+    font-weight: 300; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Porsche Next TT';
+    src: url('course/assets/fonts/porsche-next-tt.ttf') format('truetype');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Porsche Next TT';
+    src: url('course/assets/fonts/porsche-next-tt-italic.ttf') format('truetype');
+    font-weight: 400; font-style: italic; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Porsche Next TT';
+    src: url('course/assets/fonts/porsche-next-tt-bold.ttf') format('truetype');
+    font-weight: 700; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Porsche Next TT';
+    src: url('course/assets/fonts/porsche-next-tt-bold-italic.ttf') format('truetype');
+    font-weight: 700; font-style: italic; font-display: swap;
+  }
+
+  :root {
+    --pds-brand-red:     #D5001C;
+    --pds-brand-white:   #FBFCFF;
+    --pds-bg-base:       #0E0E12;
+    --pds-bg-surface:    #212225;
+    --pds-bg-surface-2:  #2A2B2F;
+    --pds-text-primary:  #FBFCFF;
+    --pds-text-secondary:rgba(251,252,255,0.75);
+    --pds-text-muted:    rgba(251,252,255,0.45);
+    --pds-border:        rgba(251,252,255,0.12);
+    --pds-border-strong: rgba(251,252,255,0.25);
+    --pds-success:       #09D087;
+    --pds-error:         #FC4040;
+    --pds-accent:        #D5001C;
+    --pds-accent-hover:  #FF0020;
+    --scale: 1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%; width: 100%;
+    background: #050507;
+    font-family: 'Porsche Next TT', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--pds-text-primary);
+    overflow: hidden;
+  }
+  .stage {
+    width: 100vw; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .slide {
+    position: relative;
+    width: 1920px; height: 920px;
+    background: var(--pds-bg-base);
+    transform: scale(var(--scale));
+    transform-origin: center center;
+    overflow: hidden;
+  }
+  .bg-image {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse at 70% 30%, rgba(213,0,28,0.10), transparent 60%),
+      linear-gradient(135deg, #1A1A1F 0%, #0E0E12 60%);
+  }
+  .bg-image::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 64px 64px;
+    pointer-events: none;
+  }
+
+  /* Header strip */
+  .header {
+    position: absolute; top: 0; left: 0; right: 0;
+    padding: 32px 80px 0;
+    z-index: 5;
+  }
+  .header__title {
+    font-size: 44px; font-weight: 700; letter-spacing: -0.01em;
+  }
+
+  /* Main layout */
+  .layout {
+    position: absolute;
+    top: 130px; height: 450px; left: 80px; right: 80px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    column-gap: 64px; z-index: 5;
+  }
+
+  /* Wide-screen image strip */
+  .imagestrip {
+    position: absolute;
+    left: 0; right: 0;
+    top: 600px; bottom: 0;
+    z-index: 4;
+    overflow: hidden;
+  }
+  .imagestrip img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center 45%;
+    filter: saturate(1.05) contrast(1.02);
+  }
+  .imagestrip::after {
+    /* Top edge fade so the strip ties into the content above */
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(14,14,18,0.85) 0%, rgba(14,14,18,0.0) 22%, rgba(14,14,18,0.0) 100%);
+    pointer-events: none;
+  }
+
+  /* Left side: setup */
+  .setup {
+    display: flex; flex-direction: column; gap: 20px; justify-content: flex-start;
+  }
+  .setup__intro {
+    font-size: 22px; color: var(--pds-text-secondary); line-height: 1.5;
+  }
+  .speech {
+    position: relative;
+    background: var(--pds-bg-surface);
+    border: 1px solid var(--pds-border-strong);
+    border-left: 4px solid var(--pds-accent);
+    padding: 28px 36px;
+    border-radius: 16px;
+    font-size: 28px; line-height: 1.35;
+    color: var(--pds-text-primary);
+    font-style: italic;
+    max-width: 720px;
+  }
+  .speech::before {
+    content: '\201C'; position: absolute;
+    top: -28px; left: 24px;
+    font-size: 110px; line-height: 1;
+    font-family: Georgia, serif;
+    color: var(--pds-accent);
+    font-style: normal;
+  }
+  .speech__attr {
+    margin-top: 18px; font-style: normal;
+    font-size: 16px; color: var(--pds-text-muted);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  /* Right side: choices + consequence */
+  .right { display: flex; flex-direction: column; gap: 14px; justify-content: flex-start; }
+  .right__prompt {
+    font-size: 18px; color: var(--pds-text-muted);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  /* Intro VO status — shown above the prompt while the slide's INTRO VO plays */
+  .vo-status {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--pds-text-muted);
+    margin-bottom: 4px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .vo-status.is-visible { opacity: 1; }
+  .vo-status::before {
+    content: ''; width: 10px; height: 10px; border-radius: 50%;
+    background: var(--pds-accent);
+    animation: vo-pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes vo-pulse {
+    0%, 100% { opacity: 0.35; transform: scale(0.85); }
+    50%      { opacity: 1;    transform: scale(1); }
+  }
+
+  .choice {
+    display: flex; align-items: center; gap: 18px;
+    text-align: left;
+    background: var(--pds-bg-surface);
+    border: 1px solid var(--pds-border);
+    color: var(--pds-text-primary);
+    font-size: 19px; line-height: 1.35;
+    padding: 16px 22px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, transform 0.18s, opacity 0.25s;
+    font-family: inherit;
+  }
+  .choice:hover:not(:disabled) {
+    background: var(--pds-bg-surface-2);
+    border-color: var(--pds-border-strong);
+    transform: translateX(4px);
+  }
+  .choice:disabled { cursor: not-allowed; opacity: 0.45; transform: none; }
+  .choice__num {
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    font-size: 16px; font-weight: 700;
+    color: var(--pds-text-muted);
+    transition: background 0.18s, color 0.18s;
+  }
+  .choice__text { flex: 1; }
+  .choice__mark {
+    flex-shrink: 0; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; font-size: 18px; font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .choice.is-correct {
+    border-color: var(--pds-success);
+    background: rgba(9,208,135,0.08);
+    opacity: 1;
+  }
+  .choice.is-correct .choice__num { background: var(--pds-success); color: #000; }
+  .choice.is-correct .choice__mark {
+    background: var(--pds-success); color: #000; opacity: 1;
+  }
+  .choice.is-wrong {
+    border-color: var(--pds-error);
+    background: rgba(252,64,64,0.06);
+  }
+  .choice.is-wrong .choice__num { background: var(--pds-error); color: #fff; }
+  .choice.is-wrong .choice__mark {
+    background: var(--pds-error); color: #fff; opacity: 1;
+  }
+
+  /* Consequence card */
+  .consequence {
+    margin-top: 4px;
+    background: var(--pds-bg-surface);
+    border: 1px solid var(--pds-border-strong);
+    border-left: 4px solid var(--pds-text-muted);
+    padding: 16px 22px;
+    border-radius: 12px;
+    font-size: 17px; line-height: 1.45;
+    color: var(--pds-text-secondary);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s, transform 0.3s, border-color 0.3s;
+    min-height: 64px;
+  }
+  .consequence.is-visible { opacity: 1; transform: none; }
+  .consequence.is-correct { border-left-color: var(--pds-success); }
+  .consequence.is-wrong   { border-left-color: var(--pds-error); }
+  .consequence__label {
+    display: block;
+    font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--pds-text-muted); margin-bottom: 8px;
+  }
+  .reflection {
+    margin-top: 16px; padding: 16px 24px;
+    background: rgba(9,208,135,0.08);
+    border: 1px solid rgba(9,208,135,0.3);
+    border-radius: 8px;
+    font-size: 18px; color: var(--pds-text-primary);
+    opacity: 0; transform: translateY(8px);
+    transition: opacity 0.4s 0.2s, transform 0.4s 0.2s;
+  }
+  .reflection.is-visible { opacity: 1; transform: none; }
+
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="slide">
+    <div class="bg-image"></div>
+
+    <header class="header">
+      <h1 class="header__title">Why Objections Still Happen</h1>
+    </header>
+
+    <div class="layout">
+      <section class="setup">
+        <p class="setup__intro" id="setupIntro">A customer is reviewing the work order at the counter. He pauses, then says:</p>
+        <div class="speech">
+          Twelve hundred dollars for brakes? I just paid eight hundred at the place down the road last year.
+          <div class="speech__attr">— Customer</div>
+        </div>
+      </section>
+
+      <section class="right">
+        <div class="vo-status" id="voStatus">Voiceover playing…</div>
+        <p class="right__prompt">What do you say?</p>
+
+        <button class="choice" data-choice="1" onclick="pick(1)" disabled>
+          <span class="choice__num">1</span>
+          <span class="choice__text">Explain why our brakes cost more than the shop down the road.</span>
+          <span class="choice__mark" aria-hidden="true"></span>
+        </button>
+        <button class="choice" data-choice="2" onclick="pick(2)" disabled>
+          <span class="choice__num">2</span>
+          <span class="choice__text">Ask what was included in the eight-hundred-dollar service.</span>
+          <span class="choice__mark" aria-hidden="true"></span>
+        </button>
+        <button class="choice" data-choice="3" onclick="pick(3)" disabled>
+          <span class="choice__num">3</span>
+          <span class="choice__text">Acknowledge it's a real difference and offer to walk him through the line items.</span>
+          <span class="choice__mark" aria-hidden="true"></span>
+        </button>
+
+        <div class="consequence" id="consequence">
+          <span class="consequence__label" id="conseqLabel">Consequence</span>
+          <div id="conseqText">Pick a response to see what happens.</div>
+        </div>
+        <div class="reflection" id="reflection">
+          Clarify before you respond. The first move on an unclear objection is always a question, not an answer.
+        </div>
+      </section>
+    </div>
+
+    <div class="imagestrip">
+      <img src="course/assets/images/1S05.jpg" alt="Customer at service counter"
+           onerror="this.onerror=null;this.src='course/assets/images/placeholders/911-GT3-90FAPorsche.jpg';">
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---- Auto-scale 1920x920 canvas to fit viewport ----
+  function scaleCanvas() {
+    const s = Math.min(window.innerWidth / 1920, window.innerHeight / 920);
+    document.documentElement.style.setProperty('--scale', s);
+  }
+  scaleCanvas();
+  window.addEventListener('resize', scaleCanvas);
+
+  // ---- Scenario data (mirrors the spec example for 1S05) ----
+  const CORRECT = 2;
+  const CONSEQUENCES = {
+    1: "His arms cross. The conversation is now about price defense, not the work.",
+    2: 'He pauses. "Honestly… I think they just did pads." The comparison falls apart on its own.',
+    3: "You're answering a question he hasn't fully asked yet. The line items won't land."
+  };
+
+  // ---- Simulated INTRO VO duration (real VO ~12-18s; preview uses 6s) ----
+  const INTRO_VO_MS = 6000;
+  let introDone = false;
+
+  const picked = new Set();
+  let resolved = false;
+
+  // Show VO status and lock choices on load; release after the simulated INTRO ends
+  window.addEventListener('DOMContentLoaded', () => {
+    const status = document.getElementById('voStatus');
+    status.classList.add('is-visible');
+    setTimeout(() => {
+      introDone = true;
+      status.classList.remove('is-visible');
+      document.querySelectorAll('.choice').forEach(b => { b.disabled = false; });
+    }, INTRO_VO_MS);
+  });
+
+  function pick(n) {
+    if (resolved) return;
+    if (picked.has(n)) return;
+
+    const btn = document.querySelector(`.choice[data-choice="${n}"]`);
+    const isCorrect = n === CORRECT;
+    picked.add(n);
+
+    // Mark the picked button
+    btn.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
+    btn.querySelector('.choice__mark').textContent = isCorrect ? '✓' : '✗';
+
+    // Show consequence card
+    const conseq = document.getElementById('consequence');
+    conseq.classList.remove('is-correct', 'is-wrong');
+    conseq.classList.add('is-visible', isCorrect ? 'is-correct' : 'is-wrong');
+    document.getElementById('conseqLabel').textContent = isCorrect ? 'Outcome' : 'Consequence';
+    document.getElementById('conseqText').textContent = CONSEQUENCES[n];
+
+    if (isCorrect) {
+      // Lock all others as un-pickable
+      document.querySelectorAll('.choice').forEach(b => {
+        if (b.dataset.choice !== String(CORRECT)) b.disabled = true;
+      });
+      // Show reflection
+      document.getElementById('reflection').classList.add('is-visible');
+      resolved = true;
+      // Player would handle advancing here — slide-level Next not present
+    } else {
+      // Lock the wrong pick, leave un-picked choices enabled
+      btn.disabled = true;
+    }
+  }
+
+  function resetScenario() {
+    picked.clear();
+    resolved = false;
+    document.querySelectorAll('.choice').forEach(b => {
+      b.disabled = false;
+      b.classList.remove('is-correct', 'is-wrong');
+      b.querySelector('.choice__mark').textContent = '';
+    });
+    const conseq = document.getElementById('consequence');
+    conseq.classList.remove('is-visible', 'is-correct', 'is-wrong');
+    document.getElementById('conseqText').textContent = 'Pick a response to see what happens.';
+    document.getElementById('reflection').classList.remove('is-visible');
+  }
+
+  // ── Click-away reset ───────────────────────────────────────────
+  // Clicking anywhere outside the choice buttons resets a wrong pick
+  // so the learner can try again. Doesn't fire when the scenario is
+  // already resolved (correct choice locked in).
+  document.addEventListener('click', (e) => {
+    if (resolved) return;
+    if (picked.size === 0) return;
+    if (e.target.closest('.choice')) return;
+    resetScenario();
+  });
+</script>
+</body>
+</html>

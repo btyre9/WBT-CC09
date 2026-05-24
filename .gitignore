@@ -8,3 +8,7 @@ course/assets/captions/*.vtt
 .env
 *.zip
 .DS_Store
+
+# Local-only excludes (not in origin/master)
+course/slides/.backup/
+outputs/

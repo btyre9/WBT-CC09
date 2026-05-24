@@ -42,7 +42,7 @@ Slide-ID: 1S01
 Template-ID: hero-title
 Slide-Title: Listening Skills that Build Trust
 Hero-Subtitle: Module 4 of 12
-Image-File: advisor_greeting_CC04.jpg
+Image-File: 1S03.jpg
 Voiceover-INTRO: Welcome to Module 4 — Listening Skills that Build Trust. Great diagnosis starts before you touch the car. In this module, you'll learn the active listening techniques that top Porsche service advisors use to turn every intake into a trust-building moment.
 Caption-Text: Welcome to Module 4 — Listening Skills that Build Trust.
 Image: Wide shot of a Porsche service advisor fully engaged with a customer during intake. Warm, professional, premium service environment.

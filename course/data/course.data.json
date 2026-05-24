@@ -15,7 +15,7 @@
     },
     {
       "id": "1S02",
-      "title": "What You'll Learn",
+      "title": "Learning Objectives",
       "audio_vo": "assets/audio/vo/1S02-INTRO.mp3"
     },
     {
@@ -44,6 +44,16 @@
       "audio_vo": "assets/audio/vo/1S07-INTRO.mp3"
     },
     {
+      "id": "2KC01",
+      "title": "Knowledge Check",
+      "audio_vo": "assets/audio/vo/2KC01-INTRO.mp3"
+    },
+    {
+      "id": "2KC02",
+      "title": "Knowledge Check",
+      "audio_vo": "assets/audio/vo/2KC01-INTRO.mp3"
+    },
+    {
       "id": "1S08",
       "title": "The CPR Framework",
       "audio_vo": "assets/audio/vo/1S08-INTRO.mp3"
@@ -54,15 +64,6 @@
       "audio_vo": "assets/audio/vo/1S09-INTRO.mp3"
     },
     {
-      "id": "2KC01",
-      "title": "Slide 10 - Knowledge Check 1",
-      "audio_vo": "assets/audio/vo/2KC01-INTRO.mp3"
-    },
-    {
-      "id": "2KC02",
-      "title": "Slide 11 - Knowledge Check 2"
-    },
-    {
       "id": "1S10",
       "title": "When the Customer Mentions Competition",
       "audio_vo": "assets/audio/vo/1S10-INTRO.mp3"
@@ -71,6 +72,16 @@
       "id": "1S11",
       "title": "The RACE Framework",
       "audio_vo": "assets/audio/vo/1S11-INTRO.mp3"
+    },
+    {
+      "id": "2KC03",
+      "title": "Knowledge Check",
+      "audio_vo": "assets/audio/vo/2KC01-INTRO.mp3"
+    },
+    {
+      "id": "2KC04",
+      "title": "Knowledge Check",
+      "audio_vo": "assets/audio/vo/2KC01-INTRO.mp3"
     },
     {
       "id": "1S12",
@@ -99,22 +110,11 @@
     },
     {
       "id": "1S17",
-      "title": "Common Objections",
-      "audio_vo": "assets/audio/vo/1S17-INTRO.mp3"
-    },
-    {
-      "id": "2KC03",
-      "title": "Slide 20 - Knowledge Check 3",
-      "audio_vo": "assets/audio/vo/2KC03-INTRO.mp3"
-    },
-    {
-      "id": "2KC04",
-      "title": "Slide 21 - Knowledge Check 4"
+      "title": "Common Objections"
     },
     {
       "id": "1S18",
-      "title": "Honesty Builds the Long Game",
-      "audio_vo": "assets/audio/vo/1S18-INTRO.mp3"
+      "title": "Honesty Builds the Long Game"
     },
     {
       "id": "1S19",
@@ -123,67 +123,63 @@
     },
     {
       "id": "1S20",
-      "title": "Accept No Gracefully",
-      "audio_vo": "assets/audio/vo/1S20-INTRO.mp3"
+      "title": "Accept No Gracefully"
     },
     {
       "id": "1S21",
-      "title": "Today's No, Tomorrow's Yes",
-      "audio_vo": "assets/audio/vo/1S21-INTRO.mp3"
+      "title": "Today's No, Tomorrow's Yes"
     },
     {
       "id": "1S22",
-      "title": "Objections and Loyalty",
-      "audio_vo": "assets/audio/vo/1S22-INTRO.mp3"
+      "title": "Objections and Loyalty"
     },
     {
       "id": "1S23",
-      "title": "Put the Concern to Work",
-      "audio_vo": "assets/audio/vo/1S23-INTRO.mp3"
+      "title": "Put the Concern to Work"
     },
     {
       "id": "3FQ01",
-      "title": "Slide 28 - Final Quiz 1"
+      "title": "Final Assessment — Question 1"
     },
     {
       "id": "3FQ02",
-      "title": "Slide 29 - Final Quiz 2"
+      "title": "Final Assessment — Question 2"
     },
     {
       "id": "3FQ03",
-      "title": "Slide 30 - Final Quiz 3"
+      "title": "Final Assessment — Question 3"
     },
     {
       "id": "3FQ04",
-      "title": "Slide 31 - Final Quiz 4"
+      "title": "Final Assessment — Question 4"
     },
     {
       "id": "3FQ05",
-      "title": "Slide 32 - Final Quiz 5"
+      "title": "Final Assessment — Question 5"
     },
     {
       "id": "3FQ06",
-      "title": "Slide 33 - Final Quiz 6"
+      "title": "Final Assessment — Question 6"
     },
     {
       "id": "3FQ07",
-      "title": "Slide 34 - Final Quiz 7"
+      "title": "Final Assessment — Question 7"
     },
     {
       "id": "3FQ08",
-      "title": "Slide 35 - Final Quiz 8"
+      "title": "Final Assessment — Question 8"
     },
     {
       "id": "3FQ09",
-      "title": "Slide 36 - Final Quiz 9"
+      "title": "Final Assessment — Question 9"
     },
     {
       "id": "3FQ10",
-      "title": "Slide 37 - Final Quiz 10"
+      "title": "Final Assessment — Question 10"
     },
     {
       "id": "3FQ-SCORE",
-      "title": "Quiz Results"
+      "title": "Module 9 Assessment Results"
     }
   ],
   "quiz": {
