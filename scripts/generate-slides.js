@@ -189,13 +189,13 @@ function resolveImagePath(slide, imageField, templateId, imageCatalog, options =
     return `../assets/images/${imageFile}`;
   }
 
-  return '../assets/images/placeholder.jpg';
+  return '../assets/images/placeholder.webp';
 }
 
 function findImageByBase(baseName) {
   if (!baseName) return null;
   const imagesDir = path.resolve('course', 'assets', 'images');
-  const filename = `${baseName}.jpg`;
+  const filename = `${baseName}.webp`;
   if (fs.existsSync(path.join(imagesDir, filename))) return filename;
   return null;
 }
